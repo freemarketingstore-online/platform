@@ -70,7 +70,7 @@
     .row-2 { display: flex; gap: 0.75rem; }
     .row-2 .form-group { flex: 1; }
 
-    .content-types { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .content-types { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
     .type-chip {
       padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid #e5e7eb;
       font-size: 0.82rem; font-weight: 500; cursor: pointer; background: #ffffff;
@@ -78,6 +78,17 @@
     }
     .type-chip.active { background: #f97316; color: #fff; border-color: #f97316; }
     .type-chip:hover:not(.active) { border-color: #f97316; color: #f97316; }
+
+    .template-select { margin-bottom: 1.5rem; }
+    .template-chips { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .tmpl-chip {
+      padding: 0.35rem 0.75rem; border-radius: 6px; border: 1px solid #e5e7eb;
+      font-size: 0.75rem; font-weight: 500; cursor: pointer; background: #ffffff;
+      transition: all 0.2s; color: #6b7280;
+    }
+    .tmpl-chip.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+    .tmpl-chip:hover:not(.active) { border-color: #f97316; color: #f97316; }
+    .tmpl-desc { font-size: 0.72rem; color: #9ca3af; margin-top: 0.35rem; }
 
     .btn-generate {
       width: 100%; padding: 0.8rem; border-radius: 8px; border: none;
@@ -103,10 +114,25 @@
     .output-actions button:hover { border-color: #f97316; color: #f97316; }
     .output-actions button.copied { background: #f97316; color: #fff; border-color: #f97316; }
 
-    .output-box {
+    .output-blocks { display: flex; flex-direction: column; gap: 1rem; }
+    .output-block {
       background: #ffffff; border: 1px solid #e5e7eb; border-radius: 10px;
-      padding: 1.5rem; min-height: 200px; white-space: pre-wrap;
-      font-size: 0.9rem; line-height: 1.7;
+      padding: 1.25rem; position: relative;
+    }
+    .output-block-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 0.6rem;
+    }
+    .output-block-label { font-size: 0.78rem; font-weight: 600; color: #f97316; text-transform: uppercase; letter-spacing: 0.03em; }
+    .block-copy-btn {
+      padding: 0.3rem 0.6rem; border-radius: 5px; border: 1px solid #e5e7eb;
+      font-size: 0.72rem; font-weight: 500; cursor: pointer; background: #ffffff;
+      font-family: inherit; transition: all 0.2s;
+    }
+    .block-copy-btn:hover { border-color: #f97316; color: #f97316; }
+    .block-copy-btn.copied { background: #f97316; color: #fff; border-color: #f97316; }
+    .output-block-text {
+      white-space: pre-wrap; font-size: 0.9rem; line-height: 1.7;
     }
 
     .refine-bar { display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap; }
@@ -142,6 +168,30 @@
       border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    .history-section {
+      margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb;
+    }
+    .history-section h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; }
+    .history-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.65rem 0.85rem; border: 1px solid #e5e7eb; border-radius: 8px;
+      margin-bottom: 0.5rem; background: #ffffff; cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .history-item:hover { border-color: #f97316; }
+    .history-meta { font-size: 0.78rem; color: #6b7280; display: flex; gap: 0.75rem; align-items: center; }
+    .history-topic { font-size: 0.85rem; font-weight: 500; flex: 1; }
+    .history-badge {
+      font-size: 0.68rem; padding: 0.15rem 0.5rem; border-radius: 4px;
+      background: #fff7ed; color: #f97316; font-weight: 500;
+    }
+    .history-delete {
+      border: none; background: none; color: #d1d5db; cursor: pointer;
+      font-size: 0.85rem; padding: 0.2rem 0.4rem; line-height: 1;
+    }
+    .history-delete:hover { color: #ef4444; }
+    .history-empty { font-size: 0.85rem; color: #9ca3af; }
   </style>
 </head>
 <body>
@@ -152,11 +202,11 @@
 
   <div class="container">
     <h1>AI Content Writer</h1>
-    <p class="subtitle">Generate marketing copy with AI (your own API key) or use built-in templates.</p>
+    <p class="subtitle">Generate marketing copy with AI (your own API key) or use built-in professional templates.</p>
 
     <div class="api-key-bar">
-      <input type="password" id="api-key" placeholder="sk-... (OpenAI API key, optional)">
-      <span class="key-status" id="key-status">No key</span>
+      <input type="password" id="api-key" placeholder="sk-... (OpenAI API key, optional — templates work without it)">
+      <span class="key-status" id="key-status">No key — using templates</span>
     </div>
     <p class="privacy-note">Your API key stays in your browser. We never see or store it on any server.</p>
 
@@ -169,6 +219,12 @@
         <span class="type-chip" data-type="email">Email Newsletter</span>
         <span class="type-chip" data-type="landing">Landing Page Copy</span>
       </div>
+    </div>
+
+    <div class="form-group template-select">
+      <label>Template Style</label>
+      <div class="template-chips" id="template-chips"></div>
+      <div class="tmpl-desc" id="tmpl-desc"></div>
     </div>
 
     <div class="form-group">
@@ -198,7 +254,7 @@
       </div>
     </div>
 
-    <button class="settings-toggle" id="settings-toggle">Advanced settings</button>
+    <button class="settings-toggle" id="settings-toggle">Advanced settings (AI mode)</button>
     <div class="settings-panel" id="settings-panel">
       <div class="row-2">
         <div class="form-group">
@@ -216,7 +272,7 @@
       </div>
       <div class="form-group">
         <label>Max Tokens</label>
-        <input type="number" id="max-tokens" value="1000" min="100" max="4000" step="100">
+        <input type="number" id="max-tokens" value="1500" min="100" max="4000" step="100">
       </div>
     </div>
 
@@ -226,10 +282,10 @@
       <div class="output-header">
         <h2>Generated Content</h2>
         <div class="output-actions">
-          <button id="copy-btn">Copy</button>
+          <button id="copy-all-btn">Copy All</button>
         </div>
       </div>
-      <div class="output-box" id="output-box"></div>
+      <div class="output-blocks" id="output-blocks"></div>
       <div class="refine-bar" id="refine-bar">
         <button data-action="regenerate">Regenerate</button>
         <button data-action="shorter">Make Shorter</button>
@@ -239,14 +295,62 @@
       </div>
       <div class="token-info" id="token-info"></div>
     </div>
+
+    <div class="history-section">
+      <h3>Recent Generations</h3>
+      <div id="history-list"></div>
+    </div>
   </div>
 
   <script>
     // --- State ---
     let apiKey = localStorage.getItem('fms-openai-key') || '';
     let selectedType = 'blog';
+    let selectedTemplate = 0;
     let lastOutput = '';
+    let lastOutputBlocks = [];
     let lastPrompt = '';
+    const HISTORY_KEY = 'fms-writer-history';
+    let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+
+    // --- Template definitions ---
+    const templateDefs = {
+      blog: [
+        { name: 'How-To', desc: 'Step-by-step instructional guide with numbered actions' },
+        { name: 'Listicle', desc: 'Numbered list format — easy to scan, high shareability' },
+        { name: 'Case Study', desc: 'Problem-solution-result narrative with real-world framing' },
+        { name: 'Comparison', desc: 'Side-by-side analysis — great for decision-stage readers' },
+        { name: 'Ultimate Guide', desc: 'Comprehensive deep-dive resource with multiple sections' }
+      ],
+      product: [
+        { name: 'Feature-Benefit', desc: 'Translate each feature into a concrete customer outcome' },
+        { name: 'Storytelling', desc: 'Narrative arc: life before vs. after using the product' },
+        { name: 'Problem-Solution', desc: 'Lead with the pain point, reveal the product as the fix' },
+        { name: 'Technical', desc: 'Spec-driven copy for detail-oriented buyers' },
+        { name: 'Lifestyle', desc: 'Aspirational tone that sells the identity, not just the product' }
+      ],
+      social: [
+        { name: 'Full Pack', desc: 'Generate 5 posts each for X, LinkedIn, and Instagram' },
+        { name: 'X Focus', desc: '5 optimized X/Twitter posts with thread starters' },
+        { name: 'LinkedIn Focus', desc: '5 professional LinkedIn posts with hooks' },
+        { name: 'Instagram Focus', desc: '5 Instagram captions with hashtag blocks' },
+        { name: 'Cross-Platform', desc: 'One topic adapted per platform with native formatting' }
+      ],
+      email: [
+        { name: 'Welcome', desc: 'New subscriber onboarding — set expectations, build trust' },
+        { name: 'Announcement', desc: 'Product launch or feature drop — build excitement' },
+        { name: 'Newsletter', desc: 'Curated value — tips, links, insights for regulars' },
+        { name: 'Re-engagement', desc: 'Win back inactive subscribers with a compelling hook' },
+        { name: 'Sale / Promo', desc: 'Time-limited offer with urgency and social proof' }
+      ],
+      landing: [
+        { name: 'SaaS Launch', desc: 'Hero + features + social proof + pricing + CTA' },
+        { name: 'Lead Magnet', desc: 'Opt-in focused with clear value proposition' },
+        { name: 'Event/Webinar', desc: 'Date, speakers, agenda, registration CTA' },
+        { name: 'Product Hunt', desc: 'Punchy copy optimized for launch day attention' },
+        { name: 'Agency/Service', desc: 'Credibility-first: results, process, testimonials' }
+      ]
+    };
 
     // --- API key handling ---
     const keyInput = document.getElementById('api-key');
@@ -265,7 +369,7 @@
     });
 
     function updateKeyStatus(active) {
-      keyStatus.textContent = active ? 'Key saved' : 'No key';
+      keyStatus.textContent = active ? 'Key saved — AI mode' : 'No key — using templates';
       keyStatus.className = 'key-status' + (active ? ' active' : '');
     }
 
@@ -276,7 +380,25 @@
       document.querySelectorAll('.type-chip').forEach(c => c.classList.remove('active'));
       chip.classList.add('active');
       selectedType = chip.dataset.type;
+      selectedTemplate = 0;
+      renderTemplateChips();
     });
+
+    function renderTemplateChips() {
+      const defs = templateDefs[selectedType];
+      const el = document.getElementById('template-chips');
+      el.innerHTML = defs.map((t, i) =>
+        `<span class="tmpl-chip ${i === selectedTemplate ? 'active' : ''}" data-idx="${i}">${t.name}</span>`
+      ).join('');
+      document.getElementById('tmpl-desc').textContent = defs[selectedTemplate].desc;
+      el.querySelectorAll('.tmpl-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          selectedTemplate = parseInt(chip.dataset.idx);
+          renderTemplateChips();
+        });
+      });
+    }
+    renderTemplateChips();
 
     // --- Settings toggle ---
     document.getElementById('settings-toggle').addEventListener('click', () => {
@@ -286,121 +408,887 @@
     // --- Template-based generation (no API key) ---
     function generateFromTemplate(type, topic, keyPoints, tone, audience) {
       const points = keyPoints.filter(Boolean);
-      const aud = audience || 'your audience';
+      const aud = audience || 'your target audience';
+      const T = topic;
+      const tIdx = selectedTemplate;
 
-      const templates = {
-        blog: () => {
-          let out = `# ${topic}\n\n`;
-          out += `## Introduction\n`;
-          out += `- Hook your reader with a surprising fact or question about ${topic}\n`;
-          out += `- Explain why ${aud} should care about this topic\n- Preview what they'll learn\n\n`;
-          const sections = points.length > 0 ? points : [
-            'Understanding the basics', 'Key strategies and approaches',
-            'Common mistakes to avoid', 'Practical tips for getting started',
-            'Tools and resources', 'Next steps'
-          ];
-          sections.forEach((s, i) => {
-            out += `## ${i + 1}. ${s}\n`;
-            out += `- Key insight about ${s.toLowerCase()}\n`;
-            out += `- Supporting evidence or example\n`;
-            out += `- Actionable takeaway for ${aud}\n\n`;
-          });
-          out += `## Conclusion\n`;
-          out += `- Summarize the main points\n- End with a clear call to action\n`;
-          return out;
-        },
-        product: () => {
-          let out = `**${topic}**\n\n`;
-          out += `*For ${aud} who want more from their tools.*\n\n`;
-          const features = points.length > 0 ? points : ['Feature 1', 'Feature 2', 'Feature 3'];
-          out += `**Key Features:**\n`;
-          features.forEach(f => { out += `- ${f} — designed to make your life easier\n`; });
-          out += `\n**Why choose ${topic}?**\n`;
-          out += `Whether you're just starting out or scaling up, ${topic} gives ${aud} everything they need `;
-          out += `in one ${tone === 'casual' ? 'awesome' : 'powerful'} package.\n\n`;
-          out += `**Get started today** — try it free, no credit card required.\n`;
-          return out;
-        },
-        social: () => {
-          let out = '';
-          out += `--- X (Twitter) ---\n`;
-          out += `${topic} is changing the game for ${aud}.\n\nHere's what nobody tells you: [thread]\n\n`;
-          out += `--- Instagram ---\n`;
-          out += `Stop scrolling — this matters.\n\n${topic} can transform how ${aud} work.\n\n`;
-          out += `Here's the breakdown:\n`;
-          points.slice(0, 3).forEach(p => { out += `\n- ${p}`; });
-          out += `\n\nSave this for later. You'll thank yourself.\n\n`;
-          out += `--- LinkedIn ---\n`;
-          out += `I've been thinking about ${topic} a lot lately.\n\n`;
-          out += `After working with ${aud} for years, here's what I've learned:\n\n`;
-          points.forEach(p => { out += `- ${p}\n`; });
-          out += `\nWhat's your take? Drop your thoughts below.\n\n`;
-          out += `--- Facebook ---\n`;
-          out += `Hey friends! Quick thought about ${topic}.\n\n`;
-          out += `If you're ${audience || 'interested in this'}, you NEED to know about this.\n\n`;
-          out += `--- TikTok ---\n`;
-          out += `[Hook] Wait — you're still doing ${topic} the old way?\n`;
-          out += `[Content] Here's the hack that ${aud} are using in 2024...\n`;
-          out += `[CTA] Follow for more tips like this!\n`;
-          return out;
-        },
-        email: () => {
-          let out = `**Subject:** ${tone === 'urgent' ? 'Don\'t miss this: ' : ''}${topic} — what ${aud} need to know\n\n`;
-          out += `---\n\n`;
-          out += `Hi [First Name],\n\n`;
-          out += `${tone === 'casual' ? 'Hope you\'re having a great week!' : 'I wanted to share something important with you.'}\n\n`;
-          out += `${topic} is something that can make a real difference for ${aud}.\n\n`;
-          if (points.length > 0) {
-            out += `Here's what you need to know:\n\n`;
-            points.forEach(p => { out += `- ${p}\n`; });
-            out += `\n`;
+      const toneAdj = { professional: 'effective', casual: 'simple', witty: 'clever', inspiring: 'transformative', urgent: 'critical' }[tone] || 'effective';
+      const toneClose = { professional: 'Best regards', casual: 'Cheers', witty: 'Stay sharp', inspiring: 'Keep building', urgent: 'Act now' }[tone] || 'Best';
+
+      const generators = {
+        blog: [
+          // How-To
+          () => {
+            const sections = [
+              { label: 'BLOG POST OUTLINE', text: `How to ${T}: A Step-by-Step Guide for ${aud}\n\nA practical, actionable guide that walks ${aud} through ${T} from start to finish.` },
+              { label: 'INTRODUCTION', text: `Hook: Start with a relatable frustration — "${aud} often struggle with ${T} because nobody breaks it down into simple steps."\n\nPromise: "By the end of this guide, you will have a clear, repeatable process for ${T} — even if you are starting from zero."\n\nCredibility: Mention that this method is based on ${points[0] || 'proven approaches'} used by leading practitioners.` },
+              { label: 'STEP 1: ASSESS YOUR STARTING POINT', text: `Before diving in, ${aud} need to understand where they stand.\n\n- Audit your current situation with ${T}\n- Identify gaps: what is missing vs. what is already working?\n- ${points[0] ? `Key factor: ${points[0]}` : 'Set measurable baseline metrics'}\n- Create a simple checklist to track progress` },
+              { label: 'STEP 2: BUILD YOUR FOUNDATION', text: `The biggest mistake with ${T} is skipping fundamentals.\n\n- Choose the right tools and frameworks for your scale\n- ${points[1] ? `Focus area: ${points[1]}` : 'Establish your core process before adding complexity'}\n- Set up tracking from day one — you cannot improve what you do not measure\n- Allocate realistic time: expect 2-4 weeks for solid foundation work` },
+              { label: 'STEP 3: EXECUTE AND ITERATE', text: `Now it is time to put your plan into action.\n\n- Start with a minimum viable approach — perfection is the enemy of progress\n- ${points[2] ? `Priority: ${points[2]}` : 'Test one variable at a time'}\n- Review results weekly and adjust course\n- Document what works so you can scale it later` },
+              { label: 'STEP 4: OPTIMIZE AND SCALE', text: `Once the basics are working, ${aud} can push for more.\n\n- ${points[3] ? points[3] : 'Double down on what is driving 80% of results'}\n- Automate repetitive tasks to free up strategic time\n- Benchmark against industry standards\n- Set quarterly goals to maintain momentum` },
+              { label: 'COMMON MISTAKES TO AVOID', text: `- Trying to do everything at once instead of focusing on high-impact actions\n- Ignoring data and relying on gut feeling\n- Copying competitors without understanding the context\n- Not revisiting and updating your approach as conditions change` },
+              { label: 'CONCLUSION + CTA', text: `${T} does not have to be overwhelming. Follow these steps, give yourself time to learn, and iterate based on results.\n\nNext action: [Start with Step 1 today — download the free checklist / sign up / read the companion guide]\n\nMeta title: How to ${T} — Step-by-Step Guide for ${aud}\nMeta description: Learn ${T} in 4 clear steps. A practical guide for ${aud} covering setup, execution, and scaling.\nSuggested word count: 1,800-2,500 words` }
+            ];
+            return sections;
+          },
+          // Listicle
+          () => {
+            const items = points.length >= 3 ? points : [
+              `Start with a clear goal — ${aud} who define success upfront get 3x better results`,
+              'Use data to make decisions, not assumptions — track everything from day one',
+              'Automate the repetitive parts so you can focus on strategy and creativity',
+              'Learn from what your competitors are doing right (and wrong)',
+              'Build a feedback loop — ask your audience what they actually want',
+              `Stay consistent — ${T} rewards steady effort over sporadic bursts`,
+              'Invest in the right tools early — the cost of the wrong tool is wasted time'
+            ];
+            const sections = [
+              { label: 'BLOG POST OUTLINE', text: `${items.length} ${toneAdj.charAt(0).toUpperCase() + toneAdj.slice(1)} Ways to Master ${T}\n\nA scannable, shareable list post for ${aud} who want actionable tactics.` },
+              { label: 'INTRODUCTION', text: `${T} can feel overwhelming when you look at everything at once. But the best ${aud} know that success comes from stacking small, ${toneAdj} moves.\n\nHere are ${items.length} proven approaches you can start using today — no massive budget or technical skills required.` }
+            ];
+            items.forEach((item, i) => {
+              sections.push({ label: `#${i + 1}`, text: `${item}\n\nWhy it matters: ${aud} who apply this consistently see measurable improvement within the first 30 days. The key is to start small, measure results, and iterate.\n\nAction step: Set aside 30 minutes this week to implement this specific tactic.` });
+            });
+            sections.push({ label: 'WRAP-UP + CTA', text: `You do not need all ${items.length} at once. Pick 2-3 that match your current situation and commit to them for 30 days.\n\nWhich one are you trying first? [Share in the comments / Reply to this email / Tag us on social]\n\nSuggested word count: 1,500-2,000 words` });
+            return sections;
+          },
+          // Case Study
+          () => {
+            const sections = [
+              { label: 'CASE STUDY OUTLINE', text: `How [Company/Person] Transformed ${T} — A Case Study for ${aud}\n\nA narrative-driven post that proves your approach works with real-world evidence.` },
+              { label: 'THE SITUATION', text: `[Company/Person] was facing a challenge familiar to many ${aud}: ${T} was not delivering the results they expected.\n\n- Context: ${points[0] || 'They had been using traditional approaches for 2+ years with diminishing returns'}\n- Team size/budget: [Customize — keep it relatable to your audience]\n- The breaking point: "We knew something had to change when [specific trigger event]"` },
+              { label: 'THE CHALLENGE', text: `The core problems were:\n\n- ${points[1] || 'Lack of a systematic, repeatable process'}\n- Limited visibility into what was actually working\n- Resources stretched thin across too many initiatives\n- Previous solutions were either too complex or too simplistic for ${aud}` },
+              { label: 'THE APPROACH', text: `Instead of a complete overhaul, they took a phased approach:\n\n- Phase 1 (Weeks 1-2): Audit current ${T} setup and identify the top 3 bottlenecks\n- Phase 2 (Weeks 3-4): ${points[2] || 'Implement targeted fixes with clear success metrics'}\n- Phase 3 (Months 2-3): Scale what works, cut what does not\n\nThe key insight: "We stopped trying to fix everything and focused on the 20% that drove 80% of results."` },
+              { label: 'THE RESULTS', text: `After 90 days:\n\n- [Primary metric] improved by [X]% (e.g., "traffic up 147%")\n- [Secondary metric] improved by [Y]% (e.g., "conversion rate from 1.2% to 3.8%")\n- ${points[3] || 'Time spent on manual work reduced by 60%'}\n- ROI: [X]x return on the investment within [timeframe]\n\nQuote: "We wish we had started sooner. The difference has been transformative for our team."` },
+              { label: 'KEY TAKEAWAYS FOR THE READER', text: `What ${aud} can apply today:\n\n1. Do not try to fix everything at once — audit first, prioritize ruthlessly\n2. Set clear metrics before you start so you can measure real progress\n3. Give your approach at least 90 days before judging — meaningful change takes time\n4. ${points[4] || 'Document your process so it is repeatable and scalable'}` },
+              { label: 'CTA', text: `Want similar results with ${T}?\n\n[Schedule a free consultation / Download the same framework / Start your free trial]\n\nSuggested word count: 2,000-3,000 words` }
+            ];
+            return sections;
+          },
+          // Comparison
+          () => {
+            const sections = [
+              { label: 'COMPARISON POST OUTLINE', text: `${T}: Comparing the Top Approaches for ${aud}\n\nA balanced, decision-stage post that helps readers choose the right path.` },
+              { label: 'INTRODUCTION', text: `${aud} researching ${T} face a common dilemma: there are too many options and not enough clarity about which approach fits their situation.\n\nThis guide compares the leading approaches side-by-side so you can make an informed decision based on your goals, budget, and timeline.` },
+              { label: 'APPROACH A: ${points[0] || "The Traditional Method"}', text: `Overview: The established, widely-adopted approach to ${T}\n\nStrengths:\n- Proven track record with extensive documentation and community support\n- Lower risk — well-understood tradeoffs\n- Easier to find people with experience\n\nWeaknesses:\n- Can be slower to implement and harder to customize\n- May not leverage newer capabilities\n- Often requires more manual effort\n\nBest for: ${aud} who value stability and have time to invest in setup` },
+              { label: 'APPROACH B: ${points[1] || "The Modern Method"}', text: `Overview: The newer, more automated approach to ${T}\n\nStrengths:\n- Faster time-to-value with streamlined setup\n- Built-in automation for common workflows\n- Better suited to current tools and platforms\n\nWeaknesses:\n- Smaller ecosystem and fewer case studies\n- May require new skills or mindset shifts\n- Pricing can be less predictable at scale\n\nBest for: ${aud} who want speed and are comfortable being early adopters` },
+              { label: 'SIDE-BY-SIDE COMPARISON TABLE', text: `| Factor           | Approach A    | Approach B    |\n|------------------|---------------|---------------|\n| Setup time       | 2-4 weeks     | 3-5 days      |\n| Learning curve   | Moderate      | Low-Moderate  |\n| Ongoing effort   | High (manual) | Low (automated)|\n| Cost at scale    | Predictable   | Variable      |\n| Best for         | Established teams | Growing teams |\n| ROI timeline     | 6-12 months   | 2-4 months    |` },
+              { label: 'THE VERDICT', text: `There is no universal winner — the right choice depends on your specific situation.\n\nChoose Approach A if: You have an established process, a larger team, and value predictability.\nChoose Approach B if: You need results quickly, have a smaller team, and are comfortable with newer tools.\n\n${points[2] ? `Editor's pick for most ${aud}: ${points[2]}` : `For most ${aud} starting fresh, Approach B offers the better risk-reward ratio.`}` },
+              { label: 'CTA', text: `Not sure which approach fits your situation? [Take our 2-minute quiz / Book a free strategy call / Download the decision framework]\n\nSuggested word count: 2,000-2,800 words` }
+            ];
+            return sections;
+          },
+          // Ultimate Guide
+          () => {
+            const allPoints = points.length >= 3 ? points : [
+              'Understanding the fundamentals', 'Building your strategy',
+              'Choosing the right tools', 'Execution best practices',
+              'Measuring and optimizing results', 'Scaling what works'
+            ];
+            const sections = [
+              { label: 'ULTIMATE GUIDE OUTLINE', text: `The Ultimate Guide to ${T} for ${aud} (2024 Edition)\n\nA comprehensive, bookmark-worthy resource that covers ${T} from basics to advanced tactics.` },
+              { label: 'TABLE OF CONTENTS', text: allPoints.map((p, i) => `${i + 1}. ${p}`).join('\n') + '\n\nEstimated reading time: 15-20 minutes' },
+              { label: 'INTRODUCTION', text: `${T} is one of the most impactful things ${aud} can invest in — but the landscape is noisy, contradictory, and changes faster than most guides can keep up with.\n\nThis guide cuts through the noise. Whether you are a complete beginner or you have been working on ${T} for years, you will find actionable frameworks, tools, and examples to take your results to the next level.\n\nLast updated: [Current month/year] — we revise this guide quarterly.` }
+            ];
+            allPoints.forEach((p, i) => {
+              sections.push({
+                label: `CHAPTER ${i + 1}: ${p.toUpperCase()}`,
+                text: `${p} is where most ${aud} either build a strong foundation or create problems they will fight later.\n\nKey principles:\n- Start with the goal, not the tactic — what outcome are you actually trying to drive?\n- Quality beats quantity at every stage — one excellent execution outperforms ten mediocre ones\n- Build systems, not one-off efforts — the best ${aud} create repeatable processes\n\nCommon mistakes:\n- Skipping this step because it feels "basic" — fundamentals matter at every level\n- Over-researching and under-executing — set a deadline and ship\n\nActionable framework: [Include a simple 3-step framework specific to this chapter]`
+              });
+            });
+            sections.push({ label: 'RESOURCES + TOOLS', text: `Recommended tools for ${T}:\n\n- [Tool 1] — best for [use case], free tier available\n- [Tool 2] — best for [use case], from $X/mo\n- [Tool 3] — best for [use case], open source\n\nFurther reading:\n- [Resource 1] — deep dive on [subtopic]\n- [Resource 2] — case studies and examples\n- [Resource 3] — community and support` });
+            sections.push({ label: 'CONCLUSION + NEXT STEPS', text: `${T} is not a one-time project — it is an ongoing practice. The ${aud} who win are the ones who commit to continuous improvement.\n\nYour next 3 actions:\n1. [Specific first step from Chapter 1]\n2. [Specific tool to set up from Resources]\n3. [Specific metric to start tracking]\n\nBookmark this guide and revisit it monthly. [Subscribe for updates when we publish new sections]\n\nSuggested word count: 4,000-6,000 words` });
+            return sections;
           }
-          out += `**What to do next:**\n`;
-          out += `[Your CTA here — link to resource, landing page, or reply]\n\n`;
-          out += `${tone === 'casual' ? 'Cheers' : 'Best regards'},\n[Your Name]\n\n`;
-          out += `P.S. ${tone === 'urgent' ? 'This won\'t last forever — act now.' : 'Hit reply if you have questions. I read every email.'}\n`;
-          return out;
-        },
-        landing: () => {
-          let out = `## HERO SECTION\n\n`;
-          out += `**Headline:** ${topic} — Built for ${aud}\n`;
-          out += `**Subheadline:** ${points[0] || 'Everything you need, nothing you don\'t.'}\n`;
-          out += `**CTA Button:** Get Started Free\n\n`;
-          out += `---\n\n## FEATURES\n\n`;
-          const feats = points.length > 0 ? points : ['Fast & reliable', 'Easy to use', 'Affordable pricing'];
-          feats.forEach(f => { out += `**${f}**\nBrief explanation of how this helps ${aud}.\n\n`; });
-          out += `---\n\n## SOCIAL PROOF\n\n`;
-          out += `"${topic} completely changed how we work. Can't imagine going back."\n— [Customer Name], ${audience || 'Happy Customer'}\n\n`;
-          out += `---\n\n## FINAL CTA\n\n`;
-          out += `**Ready to try ${topic}?**\n`;
-          out += `Join thousands of ${aud} who already made the switch.\n`;
-          out += `[Get Started] [See Pricing]\n`;
-          return out;
-        }
-      };
+        ],
+        product: [
+          // Feature-Benefit
+          () => {
+            const features = points.length >= 2 ? points : ['Intuitive interface that anyone can use in minutes', 'Real-time analytics dashboard', 'Automated workflows that save hours every week', 'Seamless integrations with tools you already use'];
+            const benefits = ['Eliminate the learning curve — your team is productive on day one', 'See exactly what is working and make smarter decisions', 'Reclaim 5+ hours per week for strategic work', 'No disruption to your existing workflow'];
+            const sections = [
+              { label: 'PRODUCT DESCRIPTION', text: `${T}\n\nBuilt for ${aud} who demand results without complexity.` },
+              { label: 'OPENING HOOK', text: `What if the tool you use every day actually made your work easier instead of adding to the chaos?\n\n${T} was built with one principle: every feature must translate into a clear, measurable benefit for ${aud}.` }
+            ];
+            features.forEach((f, i) => {
+              sections.push({ label: `FEATURE ${i + 1}`, text: `${f}\n\nWhat this means for you: ${benefits[i] || `This directly addresses the #${i + 1} frustration ${aud} report — saving time and reducing friction.`}\n\nReal impact: [Include specific number or timeframe, e.g., "Teams report a 40% reduction in setup time"]` });
+            });
+            sections.push({ label: 'SOCIAL PROOF', text: `"${T} replaced 3 tools we were paying for separately. The ROI was obvious within the first week."\n— [Name], [Title] at [Company]\n\nTrusted by 2,000+ ${aud} worldwide.` });
+            sections.push({ label: 'CTA', text: `Start free — no credit card required. See the difference in your first session.\n\n[Start Free Trial]  [See Pricing]  [Book a Demo]` });
+            return sections;
+          },
+          // Storytelling
+          () => {
+            return [
+              { label: 'PRODUCT DESCRIPTION', text: `${T}\n\nThe ${toneAdj} solution ${aud} have been waiting for.` },
+              { label: 'THE BEFORE', text: `Picture this: You are a [role in ${aud}]. It is 9 AM and you are already behind.\n\nYour ${points[0] || 'current workflow'} is a patchwork of spreadsheets, sticky notes, and half-remembered conversations. Every week, hours disappear into tasks that should take minutes. You know there has to be a better way — you just have not found it yet.\n\nSound familiar? You are not alone. We talked to 200+ ${aud} and heard the same story over and over.` },
+              { label: 'THE TURNING POINT', text: `That is exactly why we built ${T}.\n\nNot another bloated tool with 500 features you will never use. A focused, ${toneAdj} solution designed specifically for ${aud} who are tired of workarounds.\n\n${points[1] ? `The core idea: ${points[1]}` : 'We asked: what if the tool got out of your way and just worked?'}` },
+              { label: 'THE AFTER', text: `Now picture this: Same Monday morning, but different.\n\nYou open ${T}, and everything you need is right there. ${points[2] || 'Your workflow is streamlined, your data is organized, and you actually have time to think strategically.'}\n\nYour team is aligned. Your results are improving. And that low-grade stress about dropped balls? Gone.\n\nThis is not a fantasy — it is what our users report within the first 2 weeks.` },
+              { label: 'WHAT MAKES IT DIFFERENT', text: `We did not build ${T} in a vacuum. Every feature exists because ${aud} asked for it.\n\n- ${points[0] || 'Clean, focused interface — no feature bloat'}\n- ${points[1] || 'Works with your existing tools, not against them'}\n- ${points[2] || '5-minute setup, not 5-week implementation'}\n- ${points[3] || 'Pricing that actually makes sense for your scale'}` },
+              { label: 'CTA', text: `Your better Monday morning starts here.\n\n[Try ${T} Free for 14 Days] — No credit card. No sales calls. Just a better way to work.\n\nP.S. If you do not see the difference in 14 days, we will personally help you find a solution that works — even if it is not us.` }
+            ];
+          },
+          // Problem-Solution
+          () => {
+            return [
+              { label: 'PRODUCT DESCRIPTION', text: `${T}\n\nStop fighting your tools. Start getting results.` },
+              { label: 'THE PROBLEM', text: `Let us be honest: ${T.toLowerCase().includes('how') ? 'this process' : T} is broken for most ${aud}.\n\n- ${points[0] || 'Current solutions are either too complex or too basic'}\n- Teams waste 5-10 hours per week on tasks that should be automated\n- Data lives in 4 different places, and none of them agree\n- Every "simple" project turns into a 3-month odyssey\n\nThe cost is not just money — it is missed opportunities, burned-out team members, and competitors who move faster.` },
+              { label: 'WHY EXISTING SOLUTIONS FAIL', text: `We analyzed the top alternatives and found 3 recurring failures:\n\n1. They are built for enterprises, then "simplified" for smaller teams (it shows)\n2. They solve the easy problems and ignore the hard ones\n3. They require a dedicated admin just to keep them running\n\n${aud} deserve a tool built for their reality — not a stripped-down version of someone else's.` },
+              { label: 'THE SOLUTION', text: `${T} takes a fundamentally different approach.\n\n- ${points[1] || 'One source of truth — everything in one place, always in sync'}\n- ${points[2] || 'Automation-first — if a task is repetitive, the system handles it'}\n- ${points[3] || 'Set up in minutes, not months — no implementation consultants needed'}\n\nThe result: ${aud} get back 5+ hours per week and can focus on work that actually matters.` },
+              { label: 'PROOF', text: `"We switched to ${T} after trying 3 other solutions. It is the first one that actually solved the problem instead of adding new ones."\n— [Customer name], [Company]\n\n- 4.8/5 average rating across 500+ reviews\n- 94% of users see ROI within 30 days\n- Used by teams at [recognizable company names]` },
+              { label: 'CTA', text: `Stop paying for problems. Start paying for solutions.\n\n[Start Free Trial] — See results in your first week, or walk away.\n\n30-day money-back guarantee. Cancel anytime. No hard feelings.` }
+            ];
+          },
+          // Technical
+          () => {
+            const specs = points.length >= 2 ? points : ['99.9% uptime SLA with global CDN', 'REST API + webhooks + native SDKs (JS, Python, Go)', 'SOC 2 Type II compliant, GDPR-ready', 'Sub-100ms response times at p99'];
+            return [
+              { label: 'PRODUCT DESCRIPTION', text: `${T}\n\nEngineered for ${aud} who read the specs before the marketing.` },
+              { label: 'OVERVIEW', text: `${T} is a [category] platform built for ${aud} who need reliability, performance, and flexibility without vendor lock-in.\n\nCore architecture: [Cloud-native / On-premise / Hybrid] with [key technical differentiator].\nDeployment: SaaS, self-hosted, or air-gapped — your infrastructure, your choice.` },
+              { label: 'TECHNICAL SPECIFICATIONS', text: specs.map(s => `- ${s}`).join('\n') + `\n\nAdditional specs:\n- Data encryption at rest (AES-256) and in transit (TLS 1.3)\n- Role-based access control with SSO (SAML 2.0, OIDC)\n- Audit logging with 90-day retention (unlimited on Enterprise)\n- Rate limiting: 10,000 requests/minute on standard plan` },
+              { label: 'INTEGRATION ECOSYSTEM', text: `Native integrations:\n- [Category 1]: Slack, Teams, Discord\n- [Category 2]: GitHub, GitLab, Bitbucket\n- [Category 3]: Jira, Linear, Asana\n- [Category 4]: Zapier, Make, n8n (for everything else)\n\nAPI-first design: Everything you can do in the UI, you can do via API. Full OpenAPI 3.0 spec available.\n\nWebhooks: Real-time event streaming with configurable retry policies.` },
+              { label: 'ARCHITECTURE + RELIABILITY', text: `- Multi-region deployment with automatic failover\n- Zero-downtime deployments with blue-green strategy\n- Database: [Postgres / DynamoDB / etc.] with point-in-time recovery\n- Monitoring: Built-in observability with Prometheus-compatible metrics export\n- Incident response: 15-minute SLA for P1 issues on Enterprise plan` },
+              { label: 'SECURITY + COMPLIANCE', text: `- SOC 2 Type II certified (report available under NDA)\n- GDPR compliant with EU data residency option\n- HIPAA BAA available on Enterprise plan\n- Penetration tested quarterly by [security firm]\n- Bug bounty program: https://[domain]/security` },
+              { label: 'PRICING + CTA', text: `Starter: Free for up to 5 users / 1,000 API calls per month\nPro: $[X]/user/month — unlimited API calls, priority support\nEnterprise: Custom — dedicated infrastructure, SLA, onboarding\n\n[Start Free] [View API Docs] [Talk to Engineering]` }
+            ];
+          },
+          // Lifestyle
+          () => {
+            return [
+              { label: 'PRODUCT DESCRIPTION', text: `${T}\n\nFor ${aud} who refuse to settle for good enough.` },
+              { label: 'THE VISION', text: `You did not become ${audience || 'a professional'} to spend your days fighting with clunky tools and broken workflows.\n\nYou did it to create. To build. To make an impact.\n\n${T} exists so you can get back to the work that made you fall in love with your craft in the first place.` },
+              { label: 'THE EXPERIENCE', text: `From the moment you open ${T}, everything feels intentional.\n\n- ${points[0] || 'A clean, focused workspace that respects your attention'}\n- ${points[1] || 'Workflows that adapt to how you think, not the other way around'}\n- ${points[2] || 'Beautiful output you are proud to share with clients and colleagues'}\n\nThis is not about more features. It is about the right features, designed with care.` },
+              { label: 'WHO IT IS FOR', text: `${T} is for ${aud} who:\n\n- Value quality over quantity in everything they do\n- Believe their tools should be as thoughtful as their work\n- Want to spend less time on process and more time on craft\n- Appreciate design that is functional, not just decorative\n\nIf that sounds like you, you are in the right place.` },
+              { label: 'THE DETAILS', text: `Crafted with:\n- ${points[0] || 'Premium materials / components / technology'}\n- ${points[1] || 'Obsessive attention to the details that matter'}\n- ${points[2] || 'Input from 500+ beta testers in the community'}\n- ${points[3] || 'A commitment to sustainability and ethical practices'}` },
+              { label: 'CTA', text: `Join ${aud} who have already made the switch.\n\n[Experience ${T}] — Your standards deserve tools that match them.\n\nFree to start. Grow at your own pace. No pressure, ever.` }
+            ];
+          }
+        ],
+        social: [
+          // Full Pack
+          () => {
+            const pt = points[0] || `it simplifies everything for ${aud}`;
+            const pt2 = points[1] || 'saves time and reduces friction';
+            const pt3 = points[2] || 'already trusted by thousands';
+            return [
+              { label: 'X / TWITTER (5 posts)', text:
+`1. THREAD STARTER
+${T} is changing the game for ${aud}.
 
-      return templates[type]();
+Here is what nobody tells you about making it work: [thread]
+
+2. HOT TAKE
+Unpopular opinion: most ${aud} are doing ${T} wrong.
+
+The fix? ${pt}.
+
+Agree or fight me in the replies.
+
+3. TIP POST
+Quick tip for ${aud}:
+
+Stop overcomplicating ${T}.
+
+The best approach: ${pt2}.
+
+That is it. Bookmark this.
+
+4. QUESTION
+What is the #1 thing holding ${aud} back from ${T}?
+
+Reply with yours — I will share the best solutions tomorrow.
+
+5. ANNOUNCEMENT
+Excited to share: ${T} just got even better.
+
+- ${pt}
+- ${pt2}
+- ${pt3}
+
+Details in the replies.` },
+              { label: 'LINKEDIN (5 posts)', text:
+`1. THOUGHT LEADERSHIP
+I have been studying ${T} for the past 6 months.
+
+Here is what separates ${aud} who succeed from those who struggle:
+
+It is not about tools. It is not about budget. It is about ${pt}.
+
+The ones who get this right build systems. The rest chase tactics.
+
+What pattern have you noticed?
+
+2. PERSONAL STORY
+3 years ago, I was completely lost on ${T}.
+
+I tried everything: courses, consultants, frameworks. Nothing clicked.
+
+Then I simplified. I focused on ${pt2}.
+
+Within 90 days, everything changed. Not because of a magic tool — because of a mindset shift.
+
+If you are in that "lost" phase right now, here is my advice: stop adding, start subtracting.
+
+3. DATA INSIGHT
+I analyzed 100+ ${aud} who are succeeding with ${T}.
+
+The common thread was not what I expected:
+
+- 87% focused on ${pt} before anything else
+- Only 12% used the "industry standard" approach
+- The top performers spent 2x more time on planning than execution
+
+The takeaway: slow down to speed up.
+
+4. CONTRARIAN POST
+Hot take: ${T} does not need to be complicated.
+
+The industry wants you to believe it is hard so you buy more tools, hire more consultants, attend more conferences.
+
+Here is the truth: ${pt}.
+
+That is 80% of the battle. The rest is consistency.
+
+Agree or disagree?
+
+5. CASE STUDY
+One of my clients transformed their ${T} approach in 60 days.
+
+Before: ${points[0] || 'Scattered efforts, unclear metrics, frustrated team'}
+After: ${points[1] || 'Focused strategy, clear KPIs, energized team'}
+
+The biggest change? ${pt2}.
+
+Sometimes the simplest shifts create the biggest results.
+
+DM me "strategy" if you want to know exactly how they did it.` },
+              { label: 'INSTAGRAM (5 captions)', text:
+`1. EDUCATIONAL CAROUSEL
+Stop scrolling — ${aud} NEED to know this about ${T}.
+
+Here is the 5-step framework that actually works:
+
+Step 1: ${pt}
+Step 2: Set clear metrics before you start
+Step 3: Execute for 30 days without changing course
+Step 4: Review, adjust, repeat
+Step 5: Scale what works, cut what does not
+
+Save this for when you are ready to take action.
+
+#${T.replace(/\s+/g, '')} #marketingtips #${(audience || 'business').replace(/\s+/g, '')} #growthmindset #strategy
+
+2. BEHIND THE SCENES
+The real story behind ${T}:
+
+We built this because ${aud} kept telling us the same thing — existing solutions were too complex, too expensive, or just did not work.
+
+So we fixed it.
+
+${pt2}
+
+Swipe to see the before and after.
+
+#buildinpublic #startup #entrepreneurlife #${T.replace(/\s+/g, '')}
+
+3. SOCIAL PROOF
+"${T} changed how I approach everything."
+
+We hear this from ${aud} every single week.
+
+Not because it is fancy.
+Because it actually works.
+
+${pt3}
+
+Link in bio to try it yourself.
+
+#testimonial #results #${T.replace(/\s+/g, '')} #proofisinthepudding
+
+4. TIPS + VALUE
+3 things ${aud} get wrong about ${T}:
+
+1. They start without a plan
+2. They copy what works for others instead of testing their own approach
+3. They give up after 2 weeks instead of committing to 90 days
+
+The fix is simpler than you think. See slide 4.
+
+Save this. Share it with someone who needs it.
+
+#marketingmistakes #learnfromothers #${T.replace(/\s+/g, '')} #tipsforbusiness
+
+5. QUESTION / ENGAGEMENT
+Real talk: what is the biggest challenge you face with ${T}?
+
+Drop it in the comments and I will reply with specific advice.
+
+No generic "it depends" answers. Real solutions for real ${aud}.
+
+Let us help each other out.
+
+#community #askme #${T.replace(/\s+/g, '')} #helpingeachother` }
+            ];
+          },
+          // X Focus
+          () => {
+            const pt = points[0] || 'a focused, proven approach';
+            return [{ label: 'X / TWITTER (5 posts)', text:
+`1. THREAD STARTER (high-engagement format)
+I spent 6 months studying how the best ${aud} handle ${T}.
+
+Here are 7 lessons that changed everything:
+
+[1/7] ${pt}
+Most people skip this. The top performers obsess over it.
+
+[2/7] Simplify ruthlessly.
+If your ${T} strategy does not fit on one page, it is too complex.
+
+[3/7] Measure what matters.
+Vanity metrics feel good. Revenue metrics pay the bills.
+
+[4/7] ${points[1] || 'Build systems, not one-off campaigns.'}
+The best results come from repeatable processes.
+
+[5/7] Speed beats perfection.
+Ship in 1 week. Iterate for 4 weeks. That beats 5 weeks of planning every time.
+
+[6/7] ${points[2] || 'Steal from adjacent industries.'}
+Your competitors are all reading the same playbooks. Look elsewhere for edge.
+
+[7/7] Stay consistent.
+${T} rewards steady effort over sporadic bursts. 90 days minimum commitment.
+
+If this was useful, repost the first tweet so more ${aud} see it.
+
+2. HOT TAKE (drives replies)
+${T} "best practices" are just "average practices" that everyone agreed on.
+
+The ${aud} winning right now are doing the opposite of what the experts recommend.
+
+Here is what I mean:
+
+3. QUICK TIP (save-worthy)
+Free ${T} tip that is worth more than most courses:
+
+${pt}
+
+That is it. No funnel. No upsell. Just a tip that works.
+
+Save this. Try it Monday.
+
+4. QUESTION (drives engagement)
+Honest question for ${aud}:
+
+What is the one ${T} mistake you wish someone had warned you about earlier?
+
+I will go first: [your mistake here]
+
+5. STORY (builds connection)
+Last year, I almost gave up on ${T}.
+
+Results were flat. Team was frustrated. Budget was shrinking.
+
+Then I made one change: ${pt}
+
+Within 60 days, everything shifted.
+
+The lesson: sometimes the fix is smaller than you think.` }];
+          },
+          // LinkedIn Focus
+          () => {
+            const pt = points[0] || 'clarity over complexity';
+            return [{ label: 'LINKEDIN (5 posts)', text:
+`1. THOUGHT LEADERSHIP (build authority)
+After working with 50+ ${aud} on ${T}, here is the pattern I see:
+
+The ones who succeed share 3 traits:
+- They start with ${pt} (not tools or tactics)
+- They measure relentlessly but change slowly
+- They invest in systems before they invest in scale
+
+The ones who struggle? They do the exact opposite.
+
+This is not about talent. It is about approach.
+
+Which camp are you in? Be honest.
+
+---
+
+2. PERSONAL NARRATIVE (build trust)
+I need to be honest about something.
+
+When I first started working on ${T}, I made every mistake in the book:
+- Chased every shiny new tool
+- Changed strategy every 2 weeks
+- Compared myself to people 5 years ahead of me
+
+The turning point came when a mentor said: "Stop optimizing. Start executing."
+
+${points[1] || 'I picked one approach, committed for 90 days, and finally saw results.'}
+
+If you are in that "shiny object" phase right now, here is your sign to simplify.
+
+What was your turning point with ${T}?
+
+---
+
+3. DATA-DRIVEN INSIGHT (establish credibility)
+I pulled data from 200+ ${aud} projects over the last year.
+
+The #1 predictor of success with ${T}?
+
+It was not budget.
+It was not team size.
+It was not tools.
+
+It was ${pt}.
+
+The teams that documented their approach and reviewed it monthly outperformed everyone else by 3x.
+
+Here is the simple framework they used: [share in comments or link]
+
+---
+
+4. CONTRARIAN (drive discussion)
+Controversial opinion: 90% of ${T} advice is designed to sell you something, not help you.
+
+Here is what actually works for ${aud}:
+- ${pt}
+- ${points[1] || 'Consistency over intensity'}
+- ${points[2] || 'Simple tracking over complex dashboards'}
+
+No certification required. No $2,000 course needed.
+
+The information is free. The execution is what costs effort.
+
+Tag someone who needs to hear this.
+
+---
+
+5. CASE STUDY SNIPPET (social proof)
+Quick win from one of our ${aud}:
+
+Challenge: ${T} was consuming 15+ hours per week with diminishing results.
+
+Change: They simplified to ${pt} and automated 60% of manual tasks.
+
+Result: Same output quality. 5 hours per week instead of 15. Team morale up significantly.
+
+Time to implement: 2 weeks.
+
+Sometimes the best optimization is subtraction, not addition.
+
+DM me "framework" and I will share exactly what they did.` }];
+          },
+          // Instagram Focus
+          () => {
+            const tag1 = T.replace(/\s+/g, '').toLowerCase();
+            const tag2 = (audience || 'business').replace(/\s+/g, '').toLowerCase();
+            return [{ label: 'INSTAGRAM (5 captions with hashtag blocks)', text:
+`1. EDUCATIONAL (save-worthy)
+The ${T} cheat sheet every ${audience || 'professional'} needs:
+
+Step 1: ${points[0] || 'Start with one clear goal (not five)'}
+Step 2: ${points[1] || 'Choose one channel and go deep before going wide'}
+Step 3: ${points[2] || 'Track 3 metrics max — more than that is noise'}
+Step 4: Review weekly, adjust monthly, commit quarterly
+
+Save this post. Come back to it when you need a reset.
+
+.
+.
+.
+#${tag1} #marketingstrategy #${tag2} #businessgrowth #contentmarketing #digitalstrategy #growthhacking #entrepreneurtips #marketingtips #biztips
+
+---
+
+2. STORYTELLING (builds connection)
+Nobody talks about the messy middle of ${T}.
+
+The part where nothing is working.
+Where the metrics are flat.
+Where you wonder if you picked the wrong path.
+
+Here is the truth: every single ${audience || 'professional'} who succeeded went through this.
+
+The difference? They did not quit at month 2.
+
+If you are in the messy middle right now, keep going.
+
+.
+.
+.
+#realtalk #entrepreneurjourney #${tag1} #${tag2} #keepgoing #growthmindset #businessadvice #honestbusiness #startuplife #motivation
+
+---
+
+3. TIPS CAROUSEL (engagement)
+5 ${T} myths ${aud} need to stop believing:
+
+Myth 1: You need a big budget to start
+Truth: Start with what you have. Optimize later.
+
+Myth 2: Results should be immediate
+Truth: Give any approach 90 days minimum.
+
+Myth 3: More tools = better results
+Truth: One tool used well beats five used poorly.
+
+Myth 4: You should copy what competitors do
+Truth: Test what works for YOUR audience.
+
+Myth 5: There is a "perfect" strategy
+Truth: The best strategy is the one you actually execute.
+
+Which myth were you believing? Drop a number below.
+
+.
+.
+.
+#mythbusting #${tag1} #marketingfacts #${tag2} #truthbomb #businessmyths #marketingreality #stopbelieving #factsonly #learnandgrow
+
+---
+
+4. QUESTION (drives comments)
+I need your honest answer:
+
+What is the ONE thing you would change about how you currently handle ${T}?
+
+No judgment. No sales pitch. Just a conversation.
+
+Drop your answer below. I read and reply to every comment.
+
+.
+.
+.
+#asktheaudience #${tag1} #community #${tag2} #letsconnect #conversation #feedback #marketing #businessowners #growthtogether
+
+---
+
+5. CTA / PROMOTIONAL
+We built something ${aud} have been asking for.
+
+${T} — simplified.
+
+What is different:
+- ${points[0] || 'Works in 5 minutes, not 5 weeks'}
+- ${points[1] || 'No learning curve'}
+- ${points[2] || 'Free to start'}
+
+Link in bio. No credit card needed.
+
+Try it this weekend. Come back Monday and tell us what you think.
+
+.
+.
+.
+#newlaunch #${tag1} #${tag2} #tryfree #toolsforpros #productlaunch #businesstools #worksmarter #efficiency #levelup` }];
+          },
+          // Cross-Platform
+          () => {
+            const pt = points[0] || 'a simpler, better approach';
+            return [
+              { label: 'X / TWITTER', text: `${T} — here is the 30-second version:\n\n${pt}\n\nBookmark this thread for the full breakdown.\n\n(280 chars optimized — punchy, no fluff)` },
+              { label: 'LINKEDIN', text: `I have been thinking about ${T} for a while.\n\nMost ${aud} overcomplicate it. Here is what actually moves the needle:\n\n${pt}\n\nThe best part? It does not require a massive budget or a dedicated team. It requires clarity and consistency.\n\nWhat is your experience with ${T}? I would love to hear different perspectives.\n\n(LinkedIn-optimized — professional, invites discussion)` },
+              { label: 'INSTAGRAM', text: `The ${T} framework that actually works:\n\n1. ${points[0] || 'Start with one clear goal'}\n2. ${points[1] || 'Pick one channel, go deep'}\n3. ${points[2] || 'Track what matters, ignore vanity metrics'}\n4. Review. Adjust. Repeat.\n\nSave this for later.\n\n#${T.replace(/\s+/g, '')} #marketingtips #${(audience || 'business').replace(/\s+/g, '')} #strategy #growth\n\n(Instagram-optimized — visual list, save-bait, hashtags)` },
+              { label: 'FACEBOOK', text: `Quick question for this group: How are you handling ${T} right now?\n\nI have been testing a new approach — ${pt} — and the results have been really promising.\n\nWould love to compare notes. Drop your approach in the comments!\n\n(Facebook-optimized — conversational, community-focused)` },
+              { label: 'TIKTOK SCRIPT', text: `[HOOK — first 1.5 seconds]\n"Stop doing ${T} the hard way."\n\n[CONTENT — 15-30 seconds]\n"Here is what ${aud} who are crushing it do differently: ${pt}. That is it. No fancy tools, no $2000 courses."\n\n[CTA — last 3 seconds]\n"Follow for more — I break down what actually works."\n\n(TikTok-optimized — front-loaded hook, fast pace, follow CTA)` }
+            ];
+          }
+        ],
+        email: [
+          // Welcome
+          () => {
+            return [
+              { label: 'SUBJECT LINE', text: `Welcome to ${T} — here is what happens next` },
+              { label: 'PREVIEW TEXT', text: `You just made a great decision. Let me show you around.` },
+              { label: 'EMAIL BODY', text: `Hi [First Name],
+
+Welcome to ${T}. I am genuinely glad you are here.
+
+I know your inbox is crowded, so I will keep this short and useful.
+
+Here is what you get as a ${audience || 'new member'}:
+
+1. ${points[0] || 'Immediate access to all core features — no setup required'}
+2. ${points[1] || 'A weekly email with one actionable tip (no fluff, no filler)'}
+3. ${points[2] || 'Priority access to new features as we release them'}
+
+YOUR FIRST STEP:
+
+The single most impactful thing you can do right now is [specific first action]. It takes about 3 minutes and sets up everything else.
+
+[Button: Take Your First Step]
+
+If you have any questions at all, just reply to this email. I read every response personally.
+
+${toneClose},
+[Your Name]
+Founder, ${T}
+
+P.S. I have been building ${T} for ${aud} for [X] years. If you are curious about the story behind it, here is a 2-minute read: [link]` }
+            ];
+          },
+          // Announcement
+          () => {
+            return [
+              { label: 'SUBJECT LINE (A/B test both)', text: `A: ${T} — this changes everything\nB: The #1 feature request is finally here` },
+              { label: 'PREVIEW TEXT', text: `We listened. We built it. It is live now.` },
+              { label: 'EMAIL BODY', text: `Hi [First Name],
+
+Big news today.
+
+After months of development (and hundreds of requests from ${aud} like you), we are launching: ${T}.
+
+WHAT IT DOES:
+
+${points[0] ? `- ${points[0]}` : '- Solves the #1 pain point you have been telling us about'}
+${points[1] ? `- ${points[1]}` : '- Works seamlessly with everything you already use'}
+${points[2] ? `- ${points[2]}` : '- Zero learning curve — if you can click a button, you can use it'}
+
+WHY IT MATTERS:
+
+This is not a minor update. This is the feature that ${aud} have been asking for since day one.
+
+We took our time because we wanted to get it right. And based on beta feedback, we did.
+
+"${T} is exactly what I needed. I cannot believe it took this long for someone to build it."
+— [Beta user name], [Company]
+
+[Button: Try It Now — Free]
+
+WHAT IS NEXT:
+
+We have a roadmap full of improvements based on your feedback. This is just the beginning.
+
+${toneClose},
+[Your Name]
+
+P.S. The first 100 people to try it get [bonus / extended trial / exclusive access]. We are already at [X] — do not wait.` }
+            ];
+          },
+          // Newsletter
+          () => {
+            return [
+              { label: 'SUBJECT LINE', text: `[${T} Weekly] ${points[0] || 'The one metric that actually matters'}` },
+              { label: 'PREVIEW TEXT', text: `Plus: ${points[1] || '3 tools worth trying and a framework you can steal'}` },
+              { label: 'EMAIL BODY', text: `Hi [First Name],
+
+Here is your weekly dose of ${T} insights. 5-minute read, zero filler.
+
+---
+
+THIS WEEK'S BIG IDEA:
+
+${points[0] || `Most ${aud} track too many metrics.`}
+
+The highest-performing ${aud} we studied focus on one primary metric per quarter and let everything else be secondary.
+
+The question: What is the ONE number that, if it improved, would make everything else better?
+
+Find that number. Build your week around it.
+
+---
+
+3 THINGS WORTH YOUR TIME:
+
+1. ${points[1] || '[Tool/Resource] — a free tool that does [specific thing] better than the $99/mo alternatives'}
+2. ${points[2] || '[Article/Video] — a 10-minute deep dive on [relevant topic] that changed how I think about it'}
+3. ${points[3] || '[Framework] — a simple 2x2 matrix for prioritizing your ${T} efforts'}
+
+---
+
+QUICK TIP:
+
+"${T} becomes 10x easier when you stop trying to be everywhere and start trying to be excellent somewhere."
+
+Pick one area. Go deep for 90 days. Then expand.
+
+---
+
+That is it for this week. Hit reply if any of this sparked a thought — I read every response.
+
+${toneClose},
+[Your Name]
+
+[Unsubscribe] [Preferences] [Share with a friend]` }
+            ];
+          },
+          // Re-engagement
+          () => {
+            return [
+              { label: 'SUBJECT LINE (A/B test both)', text: `A: We miss you (and we have something new)\nB: A lot has changed since you left — here is the highlight reel` },
+              { label: 'PREVIEW TEXT', text: `5 major updates you might have missed. Worth 2 minutes of your time.` },
+              { label: 'EMAIL BODY', text: `Hi [First Name],
+
+It has been a while. No guilt trip — just a quick update on what you have missed.
+
+We have been busy making ${T} better for ${aud}. Here is the short version:
+
+WHAT CHANGED SINCE YOU LAST VISITED:
+
+1. ${points[0] || 'Complete redesign — faster, cleaner, more intuitive'}
+2. ${points[1] || 'New [feature] that eliminates [specific pain point]'}
+3. ${points[2] || '3x performance improvement across the board'}
+4. ${points[3] || 'New free plan — no credit card, no time limit'}
+
+"I almost did not come back. So glad I did — it is a completely different product now."
+— [User name]
+
+WHY COME BACK?
+
+We listened to the feedback from ${aud} like you. The #1 complaint was [specific issue]. We fixed it. Completely.
+
+[Button: See What Is New]
+
+NO PRESSURE:
+
+If ${T} is not the right fit anymore, no hard feelings. You can unsubscribe below and we will not bother you again.
+
+But if you give it 5 minutes, I think you will be surprised.
+
+${toneClose},
+[Your Name]
+
+[Unsubscribe] — We respect your time. One click and you are off this list permanently.` }
+            ];
+          },
+          // Sale / Promo
+          () => {
+            return [
+              { label: 'SUBJECT LINE (A/B test both)', text: `A: ${tone === 'urgent' ? 'FINAL HOURS: ' : ''}${T} — [X]% off ends [day]\nB: The one time a year we do this` },
+              { label: 'PREVIEW TEXT', text: `${aud}: this is the best deal we have ever offered. Seriously.` },
+              { label: 'EMAIL BODY', text: `Hi [First Name],
+
+I will cut to the chase: we are offering [X]% off ${T} for the next [48 hours / this week only].
+
+This is not a fake countdown that resets tomorrow. When it is over, it is over.
+
+THE DEAL:
+
+- ${points[0] || '[Plan name] — was $[X]/mo, now $[Y]/mo'}
+- ${points[1] || 'Includes everything: [feature 1], [feature 2], [feature 3]'}
+- ${points[2] || 'Lock in this price for as long as you stay subscribed'}
+
+[Button: Claim Your [X]% Off]
+
+WHY NOW?
+
+We are celebrating [milestone — users, anniversary, product launch]. Instead of a press release nobody reads, we decided to pass the savings to the ${aud} who matter most.
+
+THE MATH:
+
+At the discounted price, ${T} costs less than [relatable comparison — a coffee per week, one hour of a freelancer's time, etc.].
+
+The average user saves [X hours/week or $X/month] — the ROI is not even close.
+
+SOCIAL PROOF:
+
+- [X]+ ${aud} already using ${T}
+- [X]-star average rating
+- "Best investment I made this year" — [Customer]
+
+[Button: Get [X]% Off Before It Expires]
+
+${toneClose},
+[Your Name]
+
+P.S. If you have been on the fence, this is the nudge. [X]% off does not happen again until next year.
+
+[Unsubscribe]` }
+            ];
+          }
+        ],
+        landing: [
+          // SaaS Launch
+          () => {
+            const feats = points.length >= 2 ? points : ['Lightning-fast setup — be live in 5 minutes', 'Built-in analytics that show what matters', 'Integrations with every tool you already use'];
+            return [
+              { label: 'HERO SECTION', text: `Headline: ${T} — Built for ${aud} Who Move Fast\n\nSubheadline: ${feats[0] || 'Stop fighting your tools. Start getting results.'}\n\n[Primary CTA: Start Free Trial]\n[Secondary CTA: See How It Works (2 min video)]` },
+              { label: 'SOCIAL PROOF BAR', text: `"Trusted by 2,000+ ${aud}" | 4.8/5 on G2 | Featured in [Publication]\n\n[Logo row: 5-6 recognizable company logos]` },
+              { label: 'FEATURES SECTION', text: feats.map((f, i) => `Feature ${i + 1}: ${f}\n\nBrief: Explain exactly how this helps ${aud} in 1-2 sentences. Include a specific number or timeframe. Show a screenshot or visual.\n`).join('\n') },
+              { label: 'HOW IT WORKS', text: `Step 1: Sign up in 30 seconds (no credit card)\nStep 2: [Core setup action — takes 5 minutes]\nStep 3: [Start seeing results — specific outcome]\n\n"From signup to first results in under 10 minutes. We timed it."` },
+              { label: 'TESTIMONIALS', text: `"${T} replaced 3 tools and saved us $400/month. The ROI was obvious from week one."\n— [Name], [Title] at [Company]\n\n"I was skeptical, but the free trial convinced me in 2 days. Now my whole team uses it."\n— [Name], [Title]\n\n"Finally, something built for ${aud} — not enterprises pretending to care about us."\n— [Name], [Title]` },
+              { label: 'PRICING', text: `Free: $0/mo — For individuals just starting out. [Core features].\nPro: $[X]/mo — For serious ${aud}. [Everything in Free + advanced features].\nTeam: $[X]/user/mo — For teams. [Everything in Pro + collaboration + admin].\n\nAll plans include: [key differentiator]. No hidden fees. Cancel anytime.` },
+              { label: 'FINAL CTA', text: `Ready to see what ${T} can do for you?\n\nJoin ${aud} who already made the switch. Start free — upgrade when you are ready.\n\n[Primary CTA: Start Free Trial]\n\n30-day money-back guarantee. No credit card required. No sales calls.` }
+            ];
+          },
+          // Lead Magnet
+          () => {
+            return [
+              { label: 'HERO', text: `Headline: The Free ${T} Playbook for ${aud}\n\nSubheadline: ${points[0] || 'Everything you need to know, in one actionable guide. No fluff. No upsells.'}\n\n[CTA: Download Free Playbook]` },
+              { label: 'WHAT YOU GET', text: `Inside the playbook:\n\n- ${points[0] || 'The exact framework top performers use'} (page 3)\n- ${points[1] || 'Common mistakes that cost you time and money'} (page 7)\n- ${points[2] || 'Plug-and-play templates you can use today'} (page 12)\n- ${points[3] || 'Case study: how one team 3x their results in 90 days'} (page 15)\n\n32 pages. 15-minute read. Immediate ROI.` },
+              { label: 'SOCIAL PROOF', text: `"This playbook saved me 6 months of trial and error." — [Name]\n\nDownloaded by 5,000+ ${aud} | 4.9/5 reader rating` },
+              { label: 'OPT-IN FORM', text: `Enter your email:\n[Email input]\n[Button: Get the Free Playbook]\n\nNo spam. Unsubscribe anytime. We will send you the playbook immediately + one follow-up with bonus resources.` },
+              { label: 'FAQ', text: `Q: Is this really free?\nA: Yes. No credit card, no "free trial that auto-charges." Just enter your email.\n\nQ: Who is this for?\nA: ${aud} who want a proven, practical approach to ${T}.\n\nQ: Will I get spammed?\nA: You will get the playbook + 1 follow-up email with bonus resources. That is it unless you opt into our newsletter.` }
+            ];
+          },
+          // Event/Webinar
+          () => {
+            return [
+              { label: 'HERO', text: `Headline: [Live Webinar] How ${aud} Are Winning with ${T}\n\nDate: [Day], [Date] at [Time] [Timezone]\nDuration: 45 minutes + live Q&A\n\n[CTA: Reserve Your Spot — Free]` },
+              { label: 'WHAT YOU WILL LEARN', text: `In this session, you will learn:\n\n- ${points[0] || `The #1 strategy top ${aud} use for ${T} (and why most people get it wrong)`}\n- ${points[1] || 'Live walkthrough: building a complete workflow from scratch in 15 minutes'}\n- ${points[2] || 'The 3 metrics that actually matter (and the 10 you should ignore)'}\n- Live Q&A: get your specific questions answered in real time` },
+              { label: 'SPEAKERS', text: `[Speaker 1 Name] — [Title, Company]\n[2-line bio: credibility, specific expertise, notable achievement]\n\n[Speaker 2 Name] — [Title, Company]\n[2-line bio]` },
+              { label: 'SOCIAL PROOF', text: `Previous webinar attendees:\n"This was the most practical webinar I have attended all year." — [Name]\n"I implemented one tip and saw results the same week." — [Name]\n\nAttendees from: [Company logos]` },
+              { label: 'REGISTRATION + URGENCY', text: `[CTA: Reserve Your Spot — Free]\n\nLimited to [X] attendees. [X] spots remaining.\n\nCannot make it live? Register anyway and we will send you the recording within 24 hours.\n\nCalendar reminder will be sent upon registration.` }
+            ];
+          },
+          // Product Hunt
+          () => {
+            return [
+              { label: 'TAGLINE', text: `${T} — ${points[0] || `The ${toneAdj} tool ${aud} have been waiting for`}` },
+              { label: 'DESCRIPTION (first 2 lines — most important)', text: `${T} helps ${aud} [primary benefit] without [primary pain point].\n\nBuilt by [team description] who got tired of [problem that inspired the product].` },
+              { label: 'KEY FEATURES (bullet format)', text: `- ${points[0] || 'Feature 1: [specific benefit, not just feature name]'}\n- ${points[1] || 'Feature 2: [specific benefit]'}\n- ${points[2] || 'Feature 3: [specific benefit]'}\n- Free to start, no credit card required\n- Built with [tech/approach that the PH audience cares about]` },
+              { label: 'MAKER COMMENT', text: `Hi PH! [Your name] here, [role] at ${T}.\n\nWe built this because [personal story — 2-3 sentences max].\n\nWe are launching with [launch offer — discount, lifetime deal, extended trial].\n\nWould love your feedback — especially from fellow ${aud}. What features would make this a must-have for you?\n\nHappy to answer any questions in the comments.` },
+              { label: 'LAUNCH DAY SOCIAL', text: `We are LIVE on Product Hunt!\n\n${T}: [one-line description]\n\n[Link]\n\nWould mean the world if you checked it out and shared your honest feedback.\n\nLaunch-day special: [offer]` }
+            ];
+          },
+          // Agency/Service
+          () => {
+            return [
+              { label: 'HERO', text: `Headline: ${T} — Results-Driven [Service] for ${aud}\n\nSubheadline: We have helped [X] ${aud} achieve [specific outcome]. Here is how we can help you.\n\n[CTA: Book a Free Strategy Call]` },
+              { label: 'RESULTS (lead with proof)', text: `Our clients see:\n\n- [Metric 1]: ${points[0] || '[X]% increase in [KPI] within 90 days'}\n- [Metric 2]: ${points[1] || '[X]x ROI on average'}\n- [Metric 3]: ${points[2] || '[X] hours saved per week'}\n\nThese are not projections. These are averaged across our last 20 clients.` },
+              { label: 'OUR PROCESS', text: `Step 1: Discovery (Week 1)\nWe audit your current ${T} setup, identify gaps, and build a custom roadmap.\n\nStep 2: Strategy + Execution (Weeks 2-4)\nWe implement proven frameworks tailored to your specific situation.\n\nStep 3: Optimize + Scale (Ongoing)\nMonthly reviews, continuous improvement, transparent reporting.\n\nNo long-term contracts. Stay because it works, not because you are locked in.` },
+              { label: 'TESTIMONIALS', text: `"We tried doing ${T} in-house for 2 years. In 90 days, [Agency] got us results we could not get in 24 months."\n— [Name], [Title] at [Company]\n\n"Finally, an agency that actually delivers what they promise. Our [KPI] is up [X]% and growing."\n— [Name], [Title]` },
+              { label: 'FAQ', text: `Q: How much does it cost?\nA: Engagements start at $[X]/month. We will give you an exact quote on our strategy call.\n\nQ: How long until we see results?\nA: Most clients see measurable improvement within 30-60 days.\n\nQ: What makes you different?\nA: We specialize in ${T} for ${aud}. Not generalists — specialists with proven results in your space.` },
+              { label: 'CTA', text: `Ready to stop guessing and start growing?\n\n[Book a Free 30-Minute Strategy Call]\n\nNo pressure, no hard sell. Just an honest conversation about whether we can help.\n\nOr email us: [email] — we respond within 24 hours.` }
+            ];
+          }
+        ]
+      };
+      return generators[type][tIdx]();
     }
 
     // --- OpenAI API call ---
     async function callOpenAI(prompt, action) {
       const model = document.getElementById('model').value;
       const temp = parseFloat(document.getElementById('temperature').value) || 0.7;
-      const maxTokens = parseInt(document.getElementById('max-tokens').value) || 1000;
+      const maxTokens = parseInt(document.getElementById('max-tokens').value) || 1500;
 
       const messages = [
-        { role: 'system', content: 'You are an expert marketing copywriter. Write compelling, clear content. Output only the content, no meta commentary.' },
+        { role: 'system', content: `You are a world-class marketing copywriter with 15 years of experience writing for startups, SaaS companies, and direct-to-consumer brands. Your copy is specific, concrete, and persuasive — never generic or placeholder-filled.
+
+Rules:
+- Write copy that sounds like a real human expert, not a template
+- Include specific numbers, timeframes, and outcomes wherever possible
+- Use proven copywriting frameworks (PAS, AIDA, Before-After-Bridge) where appropriate
+- Match the requested tone precisely
+- Every sentence must earn its place — cut ruthless fluff
+- Write for the specific audience mentioned — use their language and reference their real pain points
+- Output only the content, no meta commentary or explanations` },
         { role: 'user', content: prompt }
       ];
 
       if (action && lastOutput) {
         messages.push({ role: 'assistant', content: lastOutput });
         const actionPrompts = {
-          regenerate: 'Generate a completely different version of the same content. Different angle, different structure.',
-          shorter: 'Make this significantly shorter while keeping the key message. Cut by ~40%.',
-          longer: 'Expand this with more detail, examples, and depth. Add ~50% more content.',
-          formal: 'Rewrite this in a more professional, formal tone. Keep the same structure.',
-          casual: 'Rewrite this in a more casual, conversational tone. Keep the same structure.'
+          regenerate: 'Generate a completely different version. Different angle, different structure, different hook. Do not reuse any phrases from the previous version.',
+          shorter: 'Cut this by 40% while keeping every sentence impactful. Remove fluff, combine redundant points, tighten language.',
+          longer: 'Expand with specific examples, data points, and deeper explanations. Add 50% more content. Every addition must add real value.',
+          formal: 'Rewrite in a polished, professional tone suitable for Fortune 500 executives. Same structure, elevated language.',
+          casual: 'Rewrite in a warm, conversational tone — like texting a smart friend. Same structure, relaxed language.'
         };
         messages.push({ role: 'user', content: actionPrompts[action] });
       }
@@ -427,20 +1315,93 @@
     // --- Build prompt ---
     function buildPrompt(type, topic, keyPoints, tone, audience) {
       const points = keyPoints.filter(Boolean);
-      const typeLabels = {
-        blog: 'blog post outline with 5-7 section headers and bullet points for each',
-        product: 'compelling product description highlighting features and benefits',
-        social: '5 social media posts (one each for X/Twitter, Instagram, LinkedIn, Facebook, TikTok)',
-        email: 'email newsletter with subject line and body',
-        landing: 'landing page copy with hero section, features, social proof, and CTA'
+      const tmplName = templateDefs[type][selectedTemplate].name;
+
+      const typePrompts = {
+        blog: `Write a complete blog post outline in the "${tmplName}" format.
+
+Structure requirements:
+- Compelling title optimized for search and social sharing
+- Introduction with a hook, promise, and credibility statement
+- 5-7 detailed section headers with 3-4 bullet points each (not generic — specific, actionable content)
+- Each section should have: key insight, supporting evidence/example, actionable takeaway
+- Conclusion with summary and specific call to action
+- Suggested meta title and meta description for SEO`,
+        product: `Write a product description in the "${tmplName}" style.
+
+Requirements:
+- Opening hook that immediately communicates the core value proposition
+- Every feature translated into a specific, measurable benefit
+- Social proof elements (testimonials, numbers, trust signals)
+- Specific CTAs with clear next steps
+- The copy should make the reader feel the pain of NOT having this product`,
+        social: `Generate a social media content pack in the "${tmplName}" style.
+
+Requirements:
+- Platform-native formatting (character limits, line breaks, tone)
+- X/Twitter: 280 chars, punchy, thread-ready
+- LinkedIn: Professional, story-driven, 1300+ chars, paragraph breaks
+- Instagram: Visual-ready captions with line breaks, CTAs, and hashtag blocks (10-15 relevant hashtags per post)
+- Each post should have a strong hook in the first line
+- Include 5 posts per platform
+- Vary post types: question, tip, story, hot take, announcement`,
+        email: `Write a complete email in the "${tmplName}" format.
+
+Requirements:
+- 2 subject line variations for A/B testing (under 50 chars each)
+- Preview text (under 90 chars)
+- Full email body with clear sections
+- One primary CTA with supporting context
+- P.S. line (these get 79% higher readership than body copy)
+- Appropriate for ${audience || 'the target audience'}'s inbox — not too long, not too salesy`,
+        landing: `Write complete landing page copy in the "${tmplName}" format.
+
+Requirements:
+- Hero section: headline (under 10 words), subheadline, primary CTA, secondary CTA
+- Social proof elements throughout (not just one section)
+- Feature sections with specific, benefit-driven copy (not generic placeholders)
+- At least 2 testimonial placements with realistic quotes
+- FAQ section addressing top 3-4 objections
+- Final CTA section with urgency or value reinforcement
+- Every section should reduce a specific buying objection`
       };
 
-      let prompt = `Write a ${typeLabels[type]}.\n\n`;
+      let prompt = typePrompts[type] + '\n\n';
       prompt += `Topic/Product: ${topic}\n`;
       prompt += `Tone: ${tone}\n`;
-      prompt += `Target audience: ${audience || 'general'}\n`;
+      prompt += `Target audience: ${audience || 'general business professionals'}\n`;
       if (points.length > 0) prompt += `Key points to cover:\n${points.map(p => '- ' + p).join('\n')}\n`;
+      prompt += `\nWrite the content now. Be specific, not generic. Use real-sounding examples and numbers.`;
       return prompt;
+    }
+
+    // --- Render output blocks ---
+    function renderOutputBlocks(blocks) {
+      const container = document.getElementById('output-blocks');
+      container.innerHTML = blocks.map((b, i) => `
+        <div class="output-block">
+          <div class="output-block-header">
+            <span class="output-block-label">${b.label}</span>
+            <button class="block-copy-btn" data-idx="${i}">Copy</button>
+          </div>
+          <div class="output-block-text">${escapeHtml(b.text)}</div>
+        </div>
+      `).join('');
+
+      container.querySelectorAll('.block-copy-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = parseInt(btn.dataset.idx);
+          navigator.clipboard.writeText(blocks[idx].text).then(() => {
+            btn.textContent = 'Copied!';
+            btn.classList.add('copied');
+            setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+          });
+        });
+      });
+    }
+
+    function escapeHtml(text) {
+      return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
 
     // --- Generate handler ---
@@ -457,23 +1418,28 @@
       btn.innerHTML = '<span class="loading-spinner"></span> Generating...';
 
       try {
-        let output;
+        let blocks;
         if (apiKey && apiKey.startsWith('sk-')) {
           const prompt = buildPrompt(selectedType, topic, keyPoints, tone, audience);
           lastPrompt = prompt;
           const result = await callOpenAI(prompt);
-          output = result.content;
+          blocks = [{ label: 'AI-GENERATED CONTENT', text: result.content }];
+          lastOutput = result.content;
           showTokenInfo(result.usage);
         } else {
-          output = generateFromTemplate(selectedType, topic, keyPoints, tone, audience);
-          document.getElementById('token-info').textContent = 'Generated from template (add OpenAI API key for AI-powered content)';
+          blocks = generateFromTemplate(selectedType, topic, keyPoints, tone, audience);
+          lastOutput = blocks.map(b => `--- ${b.label} ---\n${b.text}`).join('\n\n');
+          document.getElementById('token-info').textContent = 'Generated from template (add an OpenAI API key for AI-powered content)';
         }
 
-        lastOutput = output;
-        document.getElementById('output-box').textContent = output;
+        lastOutputBlocks = blocks;
+        renderOutputBlocks(blocks);
         document.getElementById('output-section').classList.add('visible');
+
+        // Save to history
+        saveToHistory(selectedType, templateDefs[selectedType][selectedTemplate].name, topic, blocks);
       } catch (e) {
-        document.getElementById('output-box').textContent = `Error: ${e.message}`;
+        document.getElementById('output-blocks').innerHTML = `<div class="output-block"><div class="output-block-text" style="color:#ef4444">Error: ${escapeHtml(e.message)}</div></div>`;
         document.getElementById('output-section').classList.add('visible');
       }
 
@@ -488,17 +1454,9 @@
       const action = btn.dataset.action;
 
       if (!apiKey || !apiKey.startsWith('sk-')) {
-        // Template mode: simple transformations
-        if (action === 'shorter') {
-          const lines = lastOutput.split('\n').filter(Boolean);
-          lastOutput = lines.slice(0, Math.ceil(lines.length * 0.6)).join('\n');
-        } else if (action === 'longer') {
-          lastOutput += '\n\n[Add more detail here — connect an API key for AI expansion]';
-        } else if (action === 'regenerate') {
+        if (action === 'regenerate') {
           document.getElementById('generate-btn').click();
-          return;
         }
-        document.getElementById('output-box').textContent = lastOutput;
         return;
       }
 
@@ -507,10 +1465,11 @@
       try {
         const result = await callOpenAI(lastPrompt, action);
         lastOutput = result.content;
-        document.getElementById('output-box').textContent = lastOutput;
+        lastOutputBlocks = [{ label: 'AI-GENERATED CONTENT', text: result.content }];
+        renderOutputBlocks(lastOutputBlocks);
         showTokenInfo(result.usage);
       } catch (e) {
-        document.getElementById('output-box').textContent = `Error: ${e.message}`;
+        document.getElementById('output-blocks').innerHTML = `<div class="output-block"><div class="output-block-text" style="color:#ef4444">Error: ${escapeHtml(e.message)}</div></div>`;
       }
       btn.disabled = false;
       btn.textContent = { regenerate: 'Regenerate', shorter: 'Make Shorter', longer: 'Make Longer', formal: 'More Formal', casual: 'More Casual' }[action];
@@ -527,15 +1486,77 @@
         `Tokens: ${usage.prompt_tokens} in + ${usage.completion_tokens} out = ${usage.total_tokens} total | Est. cost: $${totalCost}`;
     }
 
-    // --- Copy ---
-    document.getElementById('copy-btn').addEventListener('click', () => {
+    // --- Copy All ---
+    document.getElementById('copy-all-btn').addEventListener('click', () => {
       navigator.clipboard.writeText(lastOutput).then(() => {
-        const btn = document.getElementById('copy-btn');
+        const btn = document.getElementById('copy-all-btn');
         btn.textContent = 'Copied!';
         btn.classList.add('copied');
-        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+        setTimeout(() => { btn.textContent = 'Copy All'; btn.classList.remove('copied'); }, 2000);
       });
     });
+
+    // --- History ---
+    function saveToHistory(type, template, topic, blocks) {
+      history.unshift({
+        type, template, topic,
+        output: blocks.map(b => `--- ${b.label} ---\n${b.text}`).join('\n\n'),
+        blocks,
+        time: Date.now()
+      });
+      if (history.length > 10) history = history.slice(0, 10);
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+      renderHistory();
+    }
+
+    function renderHistory() {
+      const list = document.getElementById('history-list');
+      if (!history.length) {
+        list.innerHTML = '<p class="history-empty">No generations yet.</p>';
+        return;
+      }
+      list.innerHTML = history.map((h, i) => `
+        <div class="history-item" data-idx="${i}">
+          <span class="history-topic">${escapeHtml(h.topic)}</span>
+          <span class="history-meta">
+            <span class="history-badge">${h.type} / ${h.template}</span>
+            <span>${new Date(h.time).toLocaleDateString()}</span>
+            <button class="history-delete" data-idx="${i}" title="Remove">x</button>
+          </span>
+        </div>
+      `).join('');
+
+      list.querySelectorAll('.history-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+          if (e.target.classList.contains('history-delete')) return;
+          const idx = parseInt(item.dataset.idx);
+          const h = history[idx];
+          if (h.blocks) {
+            lastOutputBlocks = h.blocks;
+            lastOutput = h.output;
+            renderOutputBlocks(h.blocks);
+          } else {
+            lastOutput = h.output;
+            lastOutputBlocks = [{ label: 'RESTORED', text: h.output }];
+            renderOutputBlocks(lastOutputBlocks);
+          }
+          document.getElementById('output-section').classList.add('visible');
+          document.getElementById('token-info').textContent = `Restored from history (${new Date(h.time).toLocaleString()})`;
+          document.getElementById('output-section').scrollIntoView({ behavior: 'smooth' });
+        });
+      });
+
+      list.querySelectorAll('.history-delete').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const idx = parseInt(btn.dataset.idx);
+          history.splice(idx, 1);
+          localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+          renderHistory();
+        });
+      });
+    }
+    renderHistory();
   </script>
   <script src="/related.js" defer></script>
 </body>

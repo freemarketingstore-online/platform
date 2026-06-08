@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Headline A/B Tester — FreeMarketingStore</title>
-  <meta name="description" content="Score and compare headlines on emotion, power words, clarity, and predicted CTR.">
+  <meta name="description" content="Score and compare headlines on emotion, power words, clarity, readability, and predicted CTR.">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -30,7 +30,7 @@
     .nav-back { font-size: 0.85rem; color: #6b7280; text-decoration: none; }
     .nav-back:hover { color: #f97316; }
 
-    .container { max-width: 700px; margin: 0 auto; padding: 2rem 1.5rem; }
+    .container { max-width: 780px; margin: 0 auto; padding: 2rem 1.5rem; }
     h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; }
     .subtitle { color: #6b7280; font-size: 0.95rem; margin-bottom: 2rem; }
 
@@ -79,8 +79,9 @@
       line-height: 1.4;
     }
     .score-big {
-      font-size: 2rem; font-weight: 700; color: #f97316; margin-bottom: 0.75rem;
+      font-size: 2rem; font-weight: 700; color: #f97316; margin-bottom: 0.25rem;
     }
+    .score-grade { font-size: 0.82rem; font-weight: 600; margin-bottom: 0.75rem; }
     .score-label { font-size: 0.75rem; color: #6b7280; }
 
     .criteria-list { margin-top: 1rem; }
@@ -90,15 +91,85 @@
     }
     .criteria-item:last-child { border-bottom: none; }
     .criteria-name { font-size: 0.82rem; font-weight: 500; }
+    .criteria-bar-wrap { display: flex; align-items: center; gap: 0.5rem; }
     .criteria-bar {
       width: 80px; height: 6px; background: #e5e7eb; border-radius: 3px; overflow: hidden;
     }
-    .criteria-fill { height: 100%; border-radius: 3px; background: #f97316; }
+    .criteria-fill { height: 100%; border-radius: 3px; background: #f97316; transition: width 0.4s; }
     .criteria-score { font-size: 0.75rem; color: #6b7280; width: 30px; text-align: right; }
+
+    /* Word analysis */
+    .word-analysis {
+      background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px;
+      padding: 1.5rem; margin-bottom: 1.5rem;
+    }
+    .word-analysis h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; }
+    .analyzed-text { line-height: 2; margin-bottom: 1rem; }
+    .analyzed-text .word { display: inline; padding: 0.15rem 0.1rem; border-radius: 3px; }
+    .analyzed-text .word.power { background: #fef3c7; color: #92400e; font-weight: 600; }
+    .analyzed-text .word.emotional { background: #fce7f3; color: #9d174d; font-weight: 600; }
+    .analyzed-text .word.common { background: #e0f2fe; color: #075985; font-weight: 600; }
+    .word-legend {
+      display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.75rem;
+    }
+    .word-legend-item { display: flex; align-items: center; gap: 0.3rem; }
+    .word-legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+
+    /* Emotional triggers */
+    .triggers-section {
+      background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px;
+      padding: 1.5rem; margin-bottom: 1.5rem;
+    }
+    .triggers-section h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; }
+    .trigger-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 0.5rem;
+    }
+    .trigger-item {
+      padding: 0.5rem 0.75rem; border-radius: 8px; border: 1px solid #e5e7eb;
+      text-align: center; font-size: 0.78rem;
+    }
+    .trigger-item .trigger-label { font-weight: 600; display: block; margin-bottom: 0.15rem; }
+    .trigger-item .trigger-score { color: #6b7280; font-size: 0.72rem; }
+    .trigger-item.active { border-color: #f97316; background: #fff7ed; }
+
+    /* Readability */
+    .readability-section {
+      background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px;
+      padding: 1.5rem; margin-bottom: 1.5rem;
+    }
+    .readability-section h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; }
+    .readability-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;
+    }
+    .readability-stat {
+      text-align: center; padding: 0.75rem; background: #f9fafb; border-radius: 8px;
+    }
+    .readability-stat .stat-value { font-size: 1.3rem; font-weight: 700; color: #f97316; }
+    .readability-stat .stat-label { font-size: 0.72rem; color: #6b7280; margin-top: 0.2rem; }
+
+    /* Formula match */
+    .formulas-section {
+      background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px;
+      padding: 1.5rem; margin-bottom: 1.5rem;
+    }
+    .formulas-section h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; }
+    .formula-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.55rem 0; border-bottom: 1px solid #f3f4f6; font-size: 0.85rem;
+    }
+    .formula-item:last-child { border-bottom: none; }
+    .formula-name { font-weight: 500; }
+    .formula-example { color: #6b7280; font-size: 0.78rem; }
+    .formula-match {
+      font-size: 0.72rem; font-weight: 600; padding: 0.2rem 0.5rem;
+      border-radius: 4px; white-space: nowrap;
+    }
+    .formula-match.yes { background: #dcfce7; color: #166534; }
+    .formula-match.no { background: #f3f4f6; color: #9ca3af; }
 
     .suggestions {
       background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px;
-      padding: 1.5rem; margin-bottom: 2rem;
+      padding: 1.5rem; margin-bottom: 1.5rem;
     }
     .suggestions h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; }
     .suggestion-item {
@@ -109,22 +180,62 @@
       content: '\2022'; color: #f97316; font-weight: 700; flex-shrink: 0;
     }
 
+    /* Improve button */
+    .improve-section {
+      background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px;
+      padding: 1.5rem; margin-bottom: 1.5rem;
+    }
+    .improve-section h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; }
+    .improved-headline {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.7rem 1rem; background: #f9fafb; border-radius: 8px;
+      margin-bottom: 0.5rem; font-size: 0.88rem;
+    }
+    .improved-headline .ih-text { flex: 1; font-weight: 500; }
+    .improved-headline .ih-score { font-weight: 600; color: #f97316; margin-left: 1rem; font-size: 0.82rem; }
+    .ih-copy {
+      margin-left: 0.5rem; padding: 0.25rem 0.5rem; border-radius: 4px;
+      border: 1px solid #e5e7eb; font-size: 0.72rem; cursor: pointer;
+      background: #fff; font-family: inherit; font-weight: 500;
+    }
+    .ih-copy:hover { border-color: #f97316; color: #f97316; }
+    .ih-copy.copied { background: #f97316; color: #fff; border-color: #f97316; }
+
+    .btn-improve {
+      padding: 0.6rem 1.2rem; border-radius: 8px; border: 1px solid #e5e7eb;
+      background: #ffffff; font-family: inherit; font-size: 0.85rem;
+      font-weight: 600; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-improve:hover { border-color: #f97316; color: #f97316; }
+
     .history {
       background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.5rem;
     }
-    .history h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; }
+    .history h3 {
+      font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .history-clear {
+      font-size: 0.75rem; color: #6b7280; cursor: pointer; border: none;
+      background: none; font-family: inherit; text-decoration: underline;
+    }
+    .history-clear:hover { color: #ef4444; }
     .history-item {
       display: flex; justify-content: space-between; align-items: center;
       padding: 0.6rem 0; border-bottom: 1px solid #f3f4f6;
-      font-size: 0.85rem;
+      font-size: 0.85rem; cursor: pointer;
     }
     .history-item:last-child { border-bottom: none; }
+    .history-item:hover { color: #f97316; }
     .history-headline { flex: 1; }
     .history-score { font-weight: 600; color: #f97316; margin-left: 1rem; }
+    .history-date { font-size: 0.72rem; color: #9ca3af; margin-left: 0.5rem; }
     .history-empty { font-size: 0.85rem; color: #6b7280; }
 
     @media (max-width: 600px) {
       .input-section, .comparison { grid-template-columns: 1fr; }
+      .readability-grid { grid-template-columns: 1fr; }
+      .trigger-grid { grid-template-columns: repeat(3, 1fr); }
     }
   </style>
 </head>
@@ -136,7 +247,7 @@
 
   <div class="container">
     <h1>Headline A/B Tester</h1>
-    <p class="subtitle">Enter two headlines to score and compare them. Find out which one will get more clicks.</p>
+    <p class="subtitle">Enter two headlines to score and compare them. Deep analysis of emotion, power words, readability, and predicted CTR.</p>
 
     <div class="input-section">
       <div class="input-group">
@@ -153,11 +264,19 @@
 
     <div class="results" id="results">
       <div class="comparison" id="comparison"></div>
+      <div class="word-analysis" id="word-analysis"></div>
+      <div class="triggers-section" id="triggers-section"></div>
+      <div class="readability-section" id="readability-section"></div>
+      <div class="formulas-section" id="formulas-section"></div>
       <div class="suggestions" id="suggestions"></div>
+      <div class="improve-section" id="improve-section"></div>
     </div>
 
     <div class="history">
-      <h3>Test History</h3>
+      <h3>
+        Test History
+        <button class="history-clear" id="history-clear">Clear all</button>
+      </h3>
       <div id="history-list"></div>
     </div>
   </div>
@@ -166,116 +285,497 @@
     const STORAGE_KEY = 'fms-headline-history';
     let history = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
 
-    const powerWords = ['free','new','secret','proven','instant','guaranteed','exclusive','limited','ultimate','essential','incredible','powerful','shocking','amazing','discover','unlock','transform','boost','skyrocket','explosive','urgent','breakthrough','revolutionary','masterclass','effortless'];
-    const emotionalWords = ['love','hate','fear','joy','surprising','heartbreaking','devastating','thrilling','terrifying','hilarious','stunning','unforgettable','outrageous','brilliant','cruel','beautiful','painful','magical','impossible','obsessed'];
+    // --- 50+ power words ---
+    const powerWords = [
+      'free','new','secret','proven','instant','guaranteed','exclusive','limited','ultimate',
+      'essential','incredible','powerful','shocking','amazing','discover','unlock','transform',
+      'boost','skyrocket','explosive','urgent','breakthrough','revolutionary','masterclass',
+      'effortless','surprising','remarkable','insane','unbelievable','brilliant','critical',
+      'dangerous','deadly','devastating','epic','forbidden','hack','hidden','killer',
+      'massive','obsessed','outrageous','rare','savage','sensational','stunning','supercharge',
+      'turbocharge','undeniable','unleash','viral','warning','wicked'
+    ];
+
+    // --- 50+ emotional words ---
+    const emotionalWords = [
+      'love','hate','fear','joy','surprising','heartbreaking','devastating','thrilling',
+      'terrifying','hilarious','stunning','unforgettable','outrageous','brilliant','cruel',
+      'beautiful','painful','magical','impossible','obsessed','anxious','desperate','furious',
+      'grateful','guilty','hopeless','jealous','lonely','miserable','overwhelmed','panicked',
+      'passionate','regret','resentful','satisfied','scared','shameful','thrilled','worried',
+      'excited','confused','disgusted','embarrassed','horrified','inspired','nostalgic',
+      'proud','relieved','skeptical','vulnerable','yearning'
+    ];
+
+    // --- Common headline words (high-CTR words from data) ---
+    const commonHeadlineWords = [
+      'how','why','what','when','best','top','ways','tips','guide','step','steps',
+      'need','know','every','never','always','without','before','after','mistakes',
+      'simple','easy','fast','quick','today','now','this','these','people','things'
+    ];
+
+    // --- Emotional trigger categories ---
+    const triggerCategories = {
+      fear: ['fear','afraid','warning','dangerous','risk','threat','avoid','never','mistake','fail','lose','losing','worst','scary','terrifying','devastating','alarming','crisis'],
+      curiosity: ['secret','hidden','surprising','unexpected','strange','weird','mysterious','nobody','unknown','revealed','truth','behind','really','actually','why','how','what'],
+      urgency: ['now','today','immediately','hurry','limited','last','deadline','before','fast','quick','running','ending','final','urgent','breaking','alert','act'],
+      greed: ['free','save','money','cheap','discount','deal','profit','rich','wealth','earn','bonus','double','triple','passive','income','revenue','cash'],
+      vanity: ['best','top','elite','smart','genius','successful','leader','expert','master','winning','ahead','first','exclusive','premium','superior','outperform'],
+      trust: ['proven','guaranteed','research','study','data','science','expert','certified','tested','verified','backed','evidence','results','official','authentic']
+    };
+
     const numberPattern = /\b\d+\b/;
     const questionPattern = /\?$/;
     const howToPattern = /^how\s+(to|i|we)/i;
     const listPattern = /^\d+\s/;
 
+    // --- Headline formulas ---
+    const headlineFormulas = [
+      { name: 'How to X', pattern: /^how\s+to\s/i, example: 'How to Write Better Headlines' },
+      { name: 'N Ways to Y', pattern: /^\d+\s+(ways?|methods?|strategies|tactics|techniques?|approaches?)\s+to\s/i, example: '7 Ways to Boost Engagement' },
+      { name: 'Why X Matters', pattern: /^why\s.+(matters?|important|essential|crucial)/i, example: 'Why SEO Matters More Than Ever' },
+      { name: 'The Ultimate Guide', pattern: /(ultimate|complete|definitive|comprehensive)\s+guide/i, example: 'The Ultimate Guide to Email Marketing' },
+      { name: 'X vs Y', pattern: /\bvs\.?\b|\bversus\b/i, example: 'SEO vs PPC: Which Is Better?' },
+      { name: 'Number + Superlative', pattern: /^\d+\s+(best|top|worst|biggest|most|fastest)/i, example: '10 Best Tools for Marketers' },
+      { name: 'Question', pattern: /\?$/, example: 'Are You Making These SEO Mistakes?' },
+      { name: 'How I/We Did X', pattern: /^how\s+(i|we)\s/i, example: 'How I Grew to 100K Followers' },
+      { name: 'What/Why/When', pattern: /^(what|why|when|where|who)\s/i, example: 'What Nobody Tells You About Startups' },
+      { name: 'Negative/Warning', pattern: /\b(stop|never|avoid|don'?t|mistake|wrong|worst|fail|warning)\b/i, example: 'Stop Making These 5 Marketing Mistakes' }
+    ];
+
+    // --- Flesch-Kincaid ---
+    function countSyllables(word) {
+      word = word.toLowerCase().replace(/[^a-z]/g, '');
+      if (word.length <= 2) return 1;
+      word = word.replace(/(?:[^laeiouy]es|ed|[^laeiouy]e)$/, '');
+      word = word.replace(/^y/, '');
+      const m = word.match(/[aeiouy]{1,2}/g);
+      return m ? m.length : 1;
+    }
+
+    function fleschKincaid(text) {
+      const words = text.split(/\s+/).filter(Boolean);
+      const wordCount = words.length;
+      if (wordCount === 0) return { readingEase: 0, gradeLevel: 0 };
+      const sentenceCount = 1; // headlines are one sentence
+      const syllableCount = words.reduce((sum, w) => sum + countSyllables(w), 0);
+      const readingEase = 206.835 - 1.015 * (wordCount / sentenceCount) - 84.6 * (syllableCount / wordCount);
+      const gradeLevel = 0.39 * (wordCount / sentenceCount) + 11.8 * (syllableCount / wordCount) - 15.59;
+      return {
+        readingEase: Math.max(0, Math.min(100, Math.round(readingEase))),
+        gradeLevel: Math.max(0, Math.round(gradeLevel * 10) / 10),
+        syllablesPerWord: Math.round(syllableCount / wordCount * 10) / 10,
+        wordCount
+      };
+    }
+
+    // --- Score headline ---
     function scoreHeadline(headline) {
       const words = headline.toLowerCase().split(/\s+/);
+      const cleanWords = words.map(w => w.replace(/[^a-z']/g, ''));
       const wordCount = words.length;
       let scores = {};
 
-      // Emotion (0-100)
-      const emotionCount = words.filter(w => emotionalWords.includes(w.replace(/[^a-z]/g, ''))).length;
-      scores.emotion = Math.min(100, emotionCount * 35 + (questionPattern.test(headline) ? 20 : 0));
-
       // Power words (0-100)
-      const powerCount = words.filter(w => powerWords.includes(w.replace(/[^a-z]/g, ''))).length;
-      scores.power = Math.min(100, powerCount * 30);
+      const foundPower = cleanWords.filter(w => powerWords.includes(w));
+      const powerCount = foundPower.length;
+      scores.power = Math.min(100, powerCount * 25 + (powerCount > 0 ? 15 : 0));
+
+      // Emotion (0-100)
+      const foundEmotional = cleanWords.filter(w => emotionalWords.includes(w));
+      const emotionCount = foundEmotional.length;
+      scores.emotion = Math.min(100, emotionCount * 30 + (questionPattern.test(headline) ? 15 : 0));
+
+      // Readability (0-100) — Flesch-Kincaid based
+      const fk = fleschKincaid(headline);
+      if (fk.readingEase >= 60) scores.readability = Math.min(100, 50 + fk.readingEase * 0.5);
+      else if (fk.readingEase >= 30) scores.readability = 30 + fk.readingEase * 0.4;
+      else scores.readability = Math.max(10, fk.readingEase);
 
       // Length (ideal 6-12 words, 50-65 chars)
       const charLen = headline.length;
       if (charLen >= 50 && charLen <= 65) scores.length = 100;
       else if (charLen >= 40 && charLen <= 75) scores.length = 75;
       else if (charLen >= 30 && charLen <= 85) scores.length = 50;
-      else scores.length = 25;
+      else if (charLen >= 20 && charLen <= 100) scores.length = 30;
+      else scores.length = 15;
 
-      // Clarity (penalize jargon, reward simplicity)
+      // Clarity (penalize jargon, reward simplicity + common headline words)
       const avgWordLen = words.reduce((sum, w) => sum + w.length, 0) / wordCount;
-      scores.clarity = avgWordLen <= 5 ? 90 : avgWordLen <= 6 ? 70 : avgWordLen <= 7 ? 50 : 30;
-      if (wordCount >= 5 && wordCount <= 12) scores.clarity = Math.min(100, scores.clarity + 15);
+      const commonCount = cleanWords.filter(w => commonHeadlineWords.includes(w)).length;
+      scores.clarity = avgWordLen <= 5 ? 80 : avgWordLen <= 6 ? 65 : avgWordLen <= 7 ? 45 : 25;
+      scores.clarity += Math.min(20, commonCount * 7);
+      if (wordCount >= 5 && wordCount <= 12) scores.clarity = Math.min(100, scores.clarity + 10);
+      scores.clarity = Math.min(100, scores.clarity);
 
       // Curiosity (numbers, questions, how-to, specific)
       scores.curiosity = 0;
-      if (numberPattern.test(headline)) scores.curiosity += 30;
-      if (questionPattern.test(headline)) scores.curiosity += 25;
-      if (howToPattern.test(headline)) scores.curiosity += 25;
-      if (listPattern.test(headline)) scores.curiosity += 20;
-      if (headline.includes(':') || headline.includes('—')) scores.curiosity += 10;
+      if (numberPattern.test(headline)) scores.curiosity += 25;
+      if (questionPattern.test(headline)) scores.curiosity += 20;
+      if (howToPattern.test(headline)) scores.curiosity += 20;
+      if (listPattern.test(headline)) scores.curiosity += 15;
+      if (headline.includes(':') || headline.includes('\u2014') || headline.includes(' - ')) scores.curiosity += 10;
+      if (/\b(secret|hidden|nobody|surprising|truth)\b/i.test(headline)) scores.curiosity += 15;
       scores.curiosity = Math.min(100, scores.curiosity);
 
-      // Overall CTR prediction (weighted average)
+      // Emotional triggers
+      const triggers = {};
+      for (const [cat, words_list] of Object.entries(triggerCategories)) {
+        const found = cleanWords.filter(w => words_list.includes(w));
+        triggers[cat] = { count: found.length, words: found, score: Math.min(100, found.length * 35) };
+      }
+
+      // Overall CTR prediction (weighted)
       const overall = Math.round(
-        scores.emotion * 0.2 +
-        scores.power * 0.2 +
-        scores.length * 0.15 +
-        scores.clarity * 0.2 +
-        scores.curiosity * 0.25
+        scores.power * 0.18 +
+        scores.emotion * 0.18 +
+        scores.readability * 0.12 +
+        scores.length * 0.12 +
+        scores.clarity * 0.18 +
+        scores.curiosity * 0.22
       );
 
-      return { scores, overall };
+      // Grade
+      let grade;
+      if (overall >= 80) grade = 'A+';
+      else if (overall >= 70) grade = 'A';
+      else if (overall >= 60) grade = 'B+';
+      else if (overall >= 50) grade = 'B';
+      else if (overall >= 40) grade = 'C+';
+      else if (overall >= 30) grade = 'C';
+      else grade = 'D';
+
+      // Formula matches
+      const formulaMatches = headlineFormulas.map(f => ({
+        ...f,
+        match: f.pattern.test(headline)
+      }));
+
+      return { scores, overall, grade, triggers, fk, foundPower, foundEmotional, formulaMatches };
     }
 
-    function getSuggestions(headline, scores) {
+    function getSuggestions(headline, result) {
       const suggestions = [];
-      if (scores.emotion < 40) suggestions.push('Add emotional trigger words like "surprising," "stunning," or "powerful" to create a stronger reaction.');
-      if (scores.power < 40) suggestions.push('Include power words like "proven," "instant," "exclusive," or "secret" to increase urgency.');
-      if (scores.length < 60) suggestions.push('Aim for 50-65 characters (6-12 words) for optimal display in search and social.');
-      if (scores.clarity < 60) suggestions.push('Simplify your language. Use shorter, more common words for better readability.');
-      if (scores.curiosity < 40) suggestions.push('Add a number, ask a question, or use "How to..." format to spark curiosity.');
-      if (!numberPattern.test(headline)) suggestions.push('Consider adding a specific number (e.g., "7 ways..." or "in 30 days") — numbers boost CTR by 20-36%.');
-      if (suggestions.length === 0) suggestions.push('Strong headline! Consider A/B testing minor variations of wording or structure.');
+      const { scores } = result;
+
+      if (scores.power < 30) suggestions.push('Add a power word like "proven," "instant," "exclusive," or "secret." Headlines with power words get 12-15% higher CTR on average.');
+      if (scores.emotion < 30) suggestions.push('Inject emotional language. Words like "surprising," "devastating," or "thrilling" trigger stronger reader reactions and increase shares.');
+      if (scores.readability < 50) suggestions.push('Simplify the language. Replace multi-syllable words with shorter alternatives. Headlines at a 5th-8th grade reading level perform best.');
+      if (scores.length < 60) {
+        if (headline.length < 40) suggestions.push('Your headline is too short. Aim for 50-65 characters (6-12 words) for optimal display in search results and social feeds.');
+        else if (headline.length > 75) suggestions.push('Your headline is too long. Aim for 50-65 characters. Google truncates after ~60 characters in search results.');
+      }
+      if (scores.clarity < 50) suggestions.push('Use more common headline words like "how," "why," "best," "top," "guide," or "tips." These signal value immediately.');
+      if (scores.curiosity < 40) {
+        if (!numberPattern.test(headline)) suggestions.push('Add a specific number. Headlines with numbers get 36% more clicks (Conductor study). Odd numbers slightly outperform even.');
+        if (!questionPattern.test(headline) && !howToPattern.test(headline)) suggestions.push('Try framing as a question or "How to..." format. These formats trigger curiosity and drive 20%+ more clicks.');
+      }
+      if (!result.formulaMatches.some(f => f.match)) suggestions.push('Your headline does not match any proven formula. Try adapting it to: "How to X," "N Ways to Y," or "Why X Matters" format.');
+
+      // Trigger-specific
+      const activeTriggers = Object.entries(result.triggers).filter(([_, v]) => v.count > 0).map(([k]) => k);
+      if (activeTriggers.length === 0) suggestions.push('No emotional triggers detected. Consider adding words that trigger curiosity ("secret," "hidden"), urgency ("now," "limited"), or trust ("proven," "data").');
+
+      if (suggestions.length === 0) suggestions.push('Excellent headline! Consider A/B testing minor variations — swap one word at a time to find the optimal version.');
       return suggestions;
     }
 
+    // --- Generate improved versions ---
+    function generateImprovements(headline, result) {
+      const words = headline.split(/\s+/);
+      const improvements = [];
+
+      // 1: Add a number if missing
+      if (!numberPattern.test(headline)) {
+        const nums = ['7', '10', '5', '12', '9'];
+        const num = nums[Math.floor(Math.random() * nums.length)];
+        if (howToPattern.test(headline)) {
+          improvements.push(headline.replace(/^(how\s+to\s+)/i, `${num} Ways to `));
+        } else {
+          improvements.push(`${num} ${headline}`);
+        }
+      }
+
+      // 2: Add a power word
+      if (result.foundPower.length === 0) {
+        const pw = ['Proven', 'Ultimate', 'Essential', 'Powerful'];
+        const pick = pw[Math.floor(Math.random() * pw.length)];
+        if (listPattern.test(headline)) {
+          improvements.push(headline.replace(/^(\d+\s+)/, `$1${pick} `));
+        } else {
+          improvements.push(`The ${pick} Guide: ${headline}`);
+        }
+      }
+
+      // 3: Turn into a question
+      if (!questionPattern.test(headline)) {
+        if (/^how\s+to/i.test(headline)) {
+          improvements.push(`Do You Know ${headline}?`);
+        } else {
+          improvements.push(`Are You Missing Out on ${headline}?`);
+        }
+      }
+
+      // 4: Add urgency
+      if (!result.triggers.urgency || result.triggers.urgency.count === 0) {
+        improvements.push(`${headline} (Before It's Too Late)`);
+        improvements.push(`${headline} [2024 Update]`);
+      }
+
+      // 5: Negative angle
+      if (!/\b(stop|never|avoid|don'?t|mistake|wrong|worst|fail)\b/i.test(headline)) {
+        const topic = words.slice(Math.min(2, words.length - 1)).join(' ');
+        improvements.push(`Stop Getting ${topic} Wrong`);
+      }
+
+      // Score each improvement and return top 5
+      return improvements
+        .filter(h => h !== headline)
+        .map(h => ({ text: h, score: scoreHeadline(h).overall }))
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 5);
+    }
+
+    // --- Word-by-word analysis ---
+    function renderWordAnalysis(headlineA, resultA, headlineB, resultB) {
+      function analyzeWords(text) {
+        return text.split(/(\s+)/).map(part => {
+          if (/^\s+$/.test(part)) return part;
+          const clean = part.toLowerCase().replace(/[^a-z']/g, '');
+          let cls = '';
+          if (powerWords.includes(clean)) cls = 'power';
+          else if (emotionalWords.includes(clean)) cls = 'emotional';
+          else if (commonHeadlineWords.includes(clean)) cls = 'common';
+          return `<span class="word${cls ? ' ' + cls : ''}">${part}</span>`;
+        }).join('');
+      }
+
+      document.getElementById('word-analysis').innerHTML = `
+        <h3>Word-by-Word Analysis</h3>
+        <div style="margin-bottom:1rem">
+          <div style="font-size:0.78rem;color:#6b7280;margin-bottom:0.3rem;font-weight:600">Headline A</div>
+          <div class="analyzed-text">${analyzeWords(headlineA)}</div>
+        </div>
+        <div style="margin-bottom:1rem">
+          <div style="font-size:0.78rem;color:#6b7280;margin-bottom:0.3rem;font-weight:600">Headline B</div>
+          <div class="analyzed-text">${analyzeWords(headlineB)}</div>
+        </div>
+        <div class="word-legend">
+          <div class="word-legend-item"><div class="word-legend-dot" style="background:#fef3c7"></div> Power word</div>
+          <div class="word-legend-item"><div class="word-legend-dot" style="background:#fce7f3"></div> Emotional word</div>
+          <div class="word-legend-item"><div class="word-legend-dot" style="background:#e0f2fe"></div> High-CTR word</div>
+        </div>
+      `;
+    }
+
+    // --- Render triggers ---
+    function renderTriggers(resultA, resultB) {
+      const cats = Object.keys(triggerCategories);
+      document.getElementById('triggers-section').innerHTML = `
+        <h3>Emotional Trigger Detection</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+          <div>
+            <div style="font-size:0.78rem;color:#6b7280;margin-bottom:0.5rem;font-weight:600">Headline A</div>
+            <div class="trigger-grid">
+              ${cats.map(cat => {
+                const t = resultA.triggers[cat];
+                return `<div class="trigger-item ${t.count > 0 ? 'active' : ''}">
+                  <span class="trigger-label">${cat.charAt(0).toUpperCase() + cat.slice(1)}</span>
+                  <span class="trigger-score">${t.count > 0 ? t.words.join(', ') : 'None'}</span>
+                </div>`;
+              }).join('')}
+            </div>
+          </div>
+          <div>
+            <div style="font-size:0.78rem;color:#6b7280;margin-bottom:0.5rem;font-weight:600">Headline B</div>
+            <div class="trigger-grid">
+              ${cats.map(cat => {
+                const t = resultB.triggers[cat];
+                return `<div class="trigger-item ${t.count > 0 ? 'active' : ''}">
+                  <span class="trigger-label">${cat.charAt(0).toUpperCase() + cat.slice(1)}</span>
+                  <span class="trigger-score">${t.count > 0 ? t.words.join(', ') : 'None'}</span>
+                </div>`;
+              }).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- Render readability ---
+    function renderReadability(resultA, resultB) {
+      document.getElementById('readability-section').innerHTML = `
+        <h3>Readability Analysis</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+          <div>
+            <div style="font-size:0.78rem;color:#6b7280;margin-bottom:0.5rem;font-weight:600">Headline A</div>
+            <div class="readability-grid">
+              <div class="readability-stat">
+                <div class="stat-value">${resultA.fk.readingEase}</div>
+                <div class="stat-label">Flesch Reading Ease</div>
+              </div>
+              <div class="readability-stat">
+                <div class="stat-value">${resultA.fk.gradeLevel}</div>
+                <div class="stat-label">Grade Level</div>
+              </div>
+              <div class="readability-stat">
+                <div class="stat-value">${resultA.fk.syllablesPerWord}</div>
+                <div class="stat-label">Syll/Word</div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:0.78rem;color:#6b7280;margin-bottom:0.5rem;font-weight:600">Headline B</div>
+            <div class="readability-grid">
+              <div class="readability-stat">
+                <div class="stat-value">${resultB.fk.readingEase}</div>
+                <div class="stat-label">Flesch Reading Ease</div>
+              </div>
+              <div class="readability-stat">
+                <div class="stat-value">${resultB.fk.gradeLevel}</div>
+                <div class="stat-label">Grade Level</div>
+              </div>
+              <div class="readability-stat">
+                <div class="stat-value">${resultB.fk.syllablesPerWord}</div>
+                <div class="stat-label">Syll/Word</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:0.72rem;color:#9ca3af;margin-top:0.75rem;text-align:center">
+          Optimal headline: Reading Ease 60-80 (easily understood), Grade Level 5-8 (accessible to most readers)
+        </div>
+      `;
+    }
+
+    // --- Render formulas ---
+    function renderFormulas(resultA, resultB) {
+      document.getElementById('formulas-section').innerHTML = `
+        <h3>Headline Formula Match</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+          <div>
+            <div style="font-size:0.78rem;color:#6b7280;margin-bottom:0.5rem;font-weight:600">Headline A</div>
+            ${resultA.formulaMatches.map(f => `
+              <div class="formula-item">
+                <div>
+                  <div class="formula-name">${f.name}</div>
+                  <div class="formula-example">${f.example}</div>
+                </div>
+                <span class="formula-match ${f.match ? 'yes' : 'no'}">${f.match ? 'Match' : '--'}</span>
+              </div>
+            `).join('')}
+          </div>
+          <div>
+            <div style="font-size:0.78rem;color:#6b7280;margin-bottom:0.5rem;font-weight:600">Headline B</div>
+            ${resultB.formulaMatches.map(f => `
+              <div class="formula-item">
+                <div>
+                  <div class="formula-name">${f.name}</div>
+                  <div class="formula-example">${f.example}</div>
+                </div>
+                <span class="formula-match ${f.match ? 'yes' : 'no'}">${f.match ? 'Match' : '--'}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // --- Run test ---
     function runTest() {
       const a = document.getElementById('headline-a').value.trim();
       const b = document.getElementById('headline-b').value.trim();
       if (!a || !b) return;
 
-      const scoreA = scoreHeadline(a);
-      const scoreB = scoreHeadline(b);
-      const winnerIs = scoreA.overall >= scoreB.overall ? 'A' : 'B';
+      const resultA = scoreHeadline(a);
+      const resultB = scoreHeadline(b);
+      const winnerIs = resultA.overall >= resultB.overall ? 'A' : 'B';
 
+      // Comparison cards
       const compEl = document.getElementById('comparison');
       compEl.innerHTML = [
-        { label: 'Headline A', text: a, data: scoreA, isWinner: winnerIs === 'A' },
-        { label: 'Headline B', text: b, data: scoreB, isWinner: winnerIs === 'B' }
+        { label: 'Headline A', text: a, data: resultA, isWinner: winnerIs === 'A' },
+        { label: 'Headline B', text: b, data: resultB, isWinner: winnerIs === 'B' }
       ].map(h => `
         <div class="result-card ${h.isWinner ? 'winner' : ''}">
           ${h.isWinner ? '<span class="winner-badge">WINNER</span>' : ''}
           <h3>${h.label}</h3>
           <div class="headline-text">${h.text}</div>
           <div class="score-big">${h.data.overall}</div>
+          <div class="score-grade" style="color:${h.data.overall >= 60 ? '#16a34a' : h.data.overall >= 40 ? '#f97316' : '#ef4444'}">Grade: ${h.data.grade}</div>
           <div class="score-label">Predicted CTR Score</div>
           <div class="criteria-list">
-            ${['emotion','power','length','clarity','curiosity'].map(key => `
+            ${['power','emotion','readability','length','clarity','curiosity'].map(key => `
               <div class="criteria-item">
                 <span class="criteria-name">${key.charAt(0).toUpperCase() + key.slice(1)}</span>
-                <div class="criteria-bar"><div class="criteria-fill" style="width:${h.data.scores[key]}%"></div></div>
-                <span class="criteria-score">${h.data.scores[key]}</span>
+                <div class="criteria-bar-wrap">
+                  <div class="criteria-bar"><div class="criteria-fill" style="width:${h.data.scores[key]}%"></div></div>
+                  <span class="criteria-score">${h.data.scores[key]}</span>
+                </div>
               </div>
             `).join('')}
           </div>
         </div>
       `).join('');
 
+      // Word analysis
+      renderWordAnalysis(a, resultA, b, resultB);
+
+      // Triggers
+      renderTriggers(resultA, resultB);
+
+      // Readability
+      renderReadability(resultA, resultB);
+
+      // Formulas
+      renderFormulas(resultA, resultB);
+
       // Suggestions for the loser
-      const loser = winnerIs === 'A' ? { text: b, scores: scoreB.scores } : { text: a, scores: scoreA.scores };
-      const suggestions = getSuggestions(loser.text, loser.scores);
+      const loser = winnerIs === 'A' ? { text: b, result: resultB } : { text: a, result: resultA };
+      const suggestions = getSuggestions(loser.text, loser.result);
       document.getElementById('suggestions').innerHTML = `
         <h3>Suggestions to Improve ${winnerIs === 'A' ? 'Headline B' : 'Headline A'}</h3>
         ${suggestions.map(s => `<div class="suggestion-item">${s}</div>`).join('')}
       `;
 
+      // Improved versions
+      const loserText = winnerIs === 'A' ? b : a;
+      const loserResult = winnerIs === 'A' ? resultB : resultA;
+      const improvements = generateImprovements(loserText, loserResult);
+
+      document.getElementById('improve-section').innerHTML = `
+        <h3>Improved Versions of ${winnerIs === 'A' ? 'Headline B' : 'Headline A'}</h3>
+        ${improvements.length > 0 ? improvements.map((imp, i) => `
+          <div class="improved-headline">
+            <span class="ih-text">${imp.text}</span>
+            <span class="ih-score">${imp.score}</span>
+            <button class="ih-copy" data-text="${imp.text.replace(/"/g, '&quot;')}">Copy</button>
+          </div>
+        `).join('') : '<p style="font-size:0.85rem;color:#6b7280">This headline is already well-optimized.</p>'}
+      `;
+
+      // Copy handlers for improvements
+      document.querySelectorAll('.ih-copy').forEach(btn => {
+        btn.addEventListener('click', () => {
+          navigator.clipboard.writeText(btn.dataset.text).then(() => {
+            btn.textContent = 'Copied!';
+            btn.classList.add('copied');
+            setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+          });
+        });
+      });
+
       document.getElementById('results').classList.add('visible');
 
       // Save to history
-      history.unshift({ a, b, scoreA: scoreA.overall, scoreB: scoreB.overall, winner: winnerIs, time: Date.now() });
-      if (history.length > 20) history = history.slice(0, 20);
+      history.unshift({
+        a, b,
+        scoreA: resultA.overall, gradeA: resultA.grade,
+        scoreB: resultB.overall, gradeB: resultB.grade,
+        winner: winnerIs,
+        time: Date.now()
+      });
+      if (history.length > 30) history = history.slice(0, 30);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
       renderHistory();
     }
@@ -286,17 +786,35 @@
         list.innerHTML = '<p class="history-empty">No tests yet. Compare your first pair of headlines above.</p>';
         return;
       }
-      list.innerHTML = history.slice(0, 10).map(h => `
-        <div class="history-item">
+      list.innerHTML = history.slice(0, 15).map(h => `
+        <div class="history-item" data-a="${h.a.replace(/"/g, '&quot;')}" data-b="${h.b.replace(/"/g, '&quot;')}">
           <span class="history-headline">${h.winner === 'A' ? h.a : h.b}</span>
-          <span class="history-score">${Math.max(h.scoreA, h.scoreB)}</span>
+          <span style="display:flex;align-items:center;gap:0.5rem">
+            <span class="history-score">${Math.max(h.scoreA, h.scoreB)} (${h.winner === 'A' ? h.gradeA || '' : h.gradeB || ''})</span>
+            <span class="history-date">${new Date(h.time).toLocaleDateString()}</span>
+          </span>
         </div>
       `).join('');
+
+      list.querySelectorAll('.history-item').forEach(item => {
+        item.addEventListener('click', () => {
+          document.getElementById('headline-a').value = item.dataset.a;
+          document.getElementById('headline-b').value = item.dataset.b;
+          runTest();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      });
     }
 
     document.getElementById('test-btn').addEventListener('click', runTest);
     document.querySelectorAll('#headline-a, #headline-b').forEach(el => {
       el.addEventListener('keydown', e => { if (e.key === 'Enter') runTest(); });
+    });
+
+    document.getElementById('history-clear').addEventListener('click', () => {
+      history = [];
+      localStorage.removeItem(STORAGE_KEY);
+      renderHistory();
     });
 
     renderHistory();

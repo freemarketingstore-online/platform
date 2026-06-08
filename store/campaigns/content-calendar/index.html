@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Content Calendar — FreeMarketingStore</title>
-  <meta name="description" content="Visual weekly/monthly calendar to plan and schedule social media posts across platforms.">
+  <meta name="description" content="Visual weekly/monthly calendar to plan and schedule content across platforms with recurring posts, themes, and export.">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,207 +18,214 @@
       min-height: 100vh;
     }
     nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 1rem 1.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+      max-width: 1200px; margin: 0 auto; padding: 1rem 1.5rem;
       border-bottom: 1px solid #e5e7eb;
     }
     .nav-brand {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-weight: 700;
-      font-size: 0.95rem;
-      text-decoration: none;
-      color: #1a1a1a;
+      display: flex; align-items: center; gap: 0.5rem;
+      font-weight: 700; font-size: 0.95rem; text-decoration: none; color: #1a1a1a;
     }
     .nav-brand img { width: 24px; height: 24px; }
-    .nav-back {
-      font-size: 0.85rem;
-      color: #6b7280;
-      text-decoration: none;
-    }
+    .nav-back { font-size: 0.85rem; color: #6b7280; text-decoration: none; }
     .nav-back:hover { color: #f97316; }
 
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 2rem 1.5rem;
-    }
-    h1 {
-      font-size: 1.8rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-    }
-    .subtitle {
-      color: #6b7280;
-      font-size: 0.95rem;
-      margin-bottom: 2rem;
-    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; }
+    h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .subtitle { color: #6b7280; font-size: 0.95rem; margin-bottom: 2rem; }
 
     .toolbar {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-      flex-wrap: wrap;
+      display: flex; align-items: center; gap: 0.75rem;
+      margin-bottom: 1.25rem; flex-wrap: wrap;
     }
     .toolbar button, .toolbar select {
-      font-family: inherit;
-      font-size: 0.85rem;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      border: 1px solid #e5e7eb;
-      background: #ffffff;
-      cursor: pointer;
-      font-weight: 500;
-      transition: border-color 0.2s;
+      font-family: inherit; font-size: 0.82rem; padding: 0.45rem 0.85rem;
+      border-radius: 8px; border: 1px solid #e5e7eb; background: #ffffff;
+      cursor: pointer; font-weight: 500; transition: border-color 0.2s;
     }
     .toolbar button:hover, .toolbar select:hover { border-color: #f97316; }
-    .toolbar .btn-primary {
-      background: #f97316;
-      color: #fff;
-      border-color: #f97316;
-    }
+    .toolbar .btn-primary { background: #f97316; color: #fff; border-color: #f97316; }
     .toolbar .btn-primary:hover { background: #ea580c; }
-    .month-nav { display: flex; align-items: center; gap: 0.75rem; }
-    .month-nav .month-label { font-weight: 600; font-size: 1rem; min-width: 160px; text-align: center; }
+    .month-nav { display: flex; align-items: center; gap: 0.5rem; }
+    .month-nav .month-label { font-weight: 600; font-size: 0.95rem; min-width: 150px; text-align: center; }
+    .view-toggle { display: flex; gap: 0; }
+    .view-toggle button {
+      border-radius: 0; border-right: none;
+    }
+    .view-toggle button:first-child { border-radius: 8px 0 0 8px; }
+    .view-toggle button:last-child { border-radius: 0 8px 8px 0; border-right: 1px solid #e5e7eb; }
+    .view-toggle button.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+
+    .filter-bar {
+      display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; align-items: center;
+    }
+    .filter-bar .filter-label { font-size: 0.75rem; color: #6b7280; font-weight: 600; }
+    .filter-chip {
+      padding: 0.3rem 0.65rem; border-radius: 6px; border: 1px solid #e5e7eb;
+      font-size: 0.72rem; font-weight: 500; cursor: pointer; background: #ffffff;
+      transition: all 0.15s; font-family: inherit;
+    }
+    .filter-chip.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+    .filter-chip:hover:not(.active) { border-color: #f97316; }
 
     .legend {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 1rem;
-      flex-wrap: wrap;
+      display: flex; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap;
     }
     .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-size: 0.78rem;
-      color: #6b7280;
+      display: flex; align-items: center; gap: 0.35rem;
+      font-size: 0.72rem; color: #6b7280;
     }
-    .legend-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-    }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
 
+    /* Calendar - Month view */
     .calendar {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      overflow: hidden;
-      background: #ffffff;
+      display: grid; grid-template-columns: repeat(7, 1fr);
+      border: 1px solid #e5e7eb; border-radius: 12px;
+      overflow: hidden; background: #ffffff;
     }
     .day-header {
-      padding: 0.75rem 0.5rem;
-      text-align: center;
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: #6b7280;
-      background: #f9fafb;
-      border-bottom: 1px solid #e5e7eb;
+      padding: 0.6rem 0.5rem; text-align: center;
+      font-size: 0.72rem; font-weight: 600; color: #6b7280;
+      background: #f9fafb; border-bottom: 1px solid #e5e7eb;
     }
     .day-cell {
-      min-height: 110px;
-      padding: 0.5rem;
-      border-right: 1px solid #e5e7eb;
-      border-bottom: 1px solid #e5e7eb;
-      position: relative;
-      cursor: pointer;
-      transition: background 0.15s;
+      min-height: 100px; padding: 0.4rem;
+      border-right: 1px solid #e5e7eb; border-bottom: 1px solid #e5e7eb;
+      position: relative; cursor: pointer; transition: background 0.15s;
     }
     .day-cell:nth-child(7n) { border-right: none; }
     .day-cell:hover { background: #fff7ed; }
     .day-cell.other-month { opacity: 0.3; }
     .day-cell.today { background: #fff7ed; }
+    .day-cell.best-time { }
     .day-num {
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: #6b7280;
-      margin-bottom: 0.3rem;
+      font-size: 0.72rem; font-weight: 600; color: #6b7280;
+      margin-bottom: 0.2rem; display: flex; justify-content: space-between; align-items: center;
     }
     .day-cell.today .day-num { color: #f97316; }
-    .post-pill {
-      font-size: 0.68rem;
-      padding: 0.2rem 0.4rem;
-      border-radius: 4px;
-      margin-bottom: 0.2rem;
-      color: #fff;
-      font-weight: 500;
-      cursor: grab;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    .best-dot {
+      width: 5px; height: 5px; border-radius: 50%; background: #f97316; display: inline-block;
+      title: 'Suggested posting day';
     }
+    .post-pill {
+      font-size: 0.62rem; padding: 0.15rem 0.35rem; border-radius: 3px;
+      margin-bottom: 0.15rem; color: #fff; font-weight: 500;
+      cursor: grab; white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis; display: flex; align-items: center; gap: 0.25rem;
+    }
+    .post-pill .pill-icon { font-size: 0.6rem; flex-shrink: 0; }
+    /* Platform colors */
     .post-pill.twitter { background: #1d9bf0; }
     .post-pill.instagram { background: #e1306c; }
     .post-pill.linkedin { background: #0a66c2; }
-    .post-pill.email { background: #16a34a; }
+    .post-pill.email-pl { background: #16a34a; }
+    .post-pill.facebook { background: #1877f2; }
+    .post-pill.tiktok { background: #010101; }
+    .post-pill.youtube { background: #ff0000; }
+    /* Content type overlays */
+    .post-pill.type-blog { border-left: 3px solid #fbbf24; }
+    .post-pill.type-social { border-left: 3px solid #a78bfa; }
+    .post-pill.type-email { border-left: 3px solid #34d399; }
+    .post-pill.type-video { border-left: 3px solid #f87171; }
+    .post-pill.type-podcast { border-left: 3px solid #fb923c; }
     .post-pill.dragging { opacity: 0.5; }
+    .post-pill.recurring { font-style: italic; }
+
+    /* Week view */
+    .week-view { display: none; }
+    .week-view.active { display: block; }
+    .calendar.month-view { }
+    .calendar.hidden { display: none; }
+    .week-grid {
+      display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.75rem;
+    }
+    .week-day {
+      background: #ffffff; border: 1px solid #e5e7eb; border-radius: 10px;
+      padding: 0.75rem; min-height: 200px;
+    }
+    .week-day.today { border-color: #f97316; }
+    .week-day-header {
+      font-size: 0.78rem; font-weight: 600; color: #6b7280;
+      margin-bottom: 0.5rem; display: flex; justify-content: space-between;
+    }
+    .week-day-header .wdh-date { color: #1a1a1a; }
+    .week-day.today .week-day-header .wdh-date { color: #f97316; }
+    .week-post {
+      padding: 0.5rem; border-radius: 6px; margin-bottom: 0.4rem;
+      font-size: 0.78rem; cursor: pointer; border-left: 3px solid;
+      background: #f9fafb;
+    }
+    .week-post:hover { background: #fff7ed; }
+    .week-post .wp-title { font-weight: 600; margin-bottom: 0.15rem; }
+    .week-post .wp-meta { font-size: 0.68rem; color: #6b7280; display: flex; gap: 0.5rem; }
+    .week-post .wp-badge {
+      font-size: 0.62rem; padding: 0.1rem 0.35rem; border-radius: 3px;
+      color: #fff; font-weight: 500;
+    }
+    .week-add {
+      font-size: 0.72rem; color: #9ca3af; cursor: pointer; padding: 0.3rem;
+      text-align: center; border: 1px dashed #e5e7eb; border-radius: 6px;
+      transition: all 0.15s;
+    }
+    .week-add:hover { border-color: #f97316; color: #f97316; }
+
+    /* Best time highlights */
+    .best-time-indicator {
+      position: absolute; top: 0.3rem; right: 0.3rem;
+      width: 6px; height: 6px; border-radius: 50%; background: #f97316;
+    }
 
     /* Modal */
     .modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.4);
-      z-index: 100;
-      align-items: center;
-      justify-content: center;
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.4); z-index: 100;
+      align-items: center; justify-content: center;
     }
     .modal-overlay.active { display: flex; }
     .modal {
-      background: #ffffff;
-      border-radius: 12px;
-      padding: 2rem;
-      width: 90%;
-      max-width: 440px;
+      background: #ffffff; border-radius: 12px; padding: 1.75rem;
+      width: 90%; max-width: 480px;
       box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+      max-height: 90vh; overflow-y: auto;
     }
-    .modal h2 {
-      font-size: 1.2rem;
-      margin-bottom: 1.25rem;
-    }
+    .modal h2 { font-size: 1.1rem; margin-bottom: 1rem; }
     .modal label {
-      display: block;
-      font-size: 0.82rem;
-      font-weight: 600;
-      margin-bottom: 0.3rem;
-      color: #6b7280;
+      display: block; font-size: 0.78rem; font-weight: 600;
+      margin-bottom: 0.25rem; color: #6b7280;
     }
     .modal input, .modal select, .modal textarea {
-      width: 100%;
-      padding: 0.6rem 0.8rem;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      font-family: inherit;
-      font-size: 0.88rem;
-      margin-bottom: 1rem;
-      background: #fafafa;
+      width: 100%; padding: 0.55rem 0.75rem; border: 1px solid #e5e7eb;
+      border-radius: 8px; font-family: inherit; font-size: 0.85rem;
+      margin-bottom: 0.85rem; background: #fafafa;
     }
-    .modal textarea { resize: vertical; min-height: 70px; }
+    .modal textarea { resize: vertical; min-height: 65px; }
     .modal input:focus, .modal select:focus, .modal textarea:focus {
-      outline: none;
-      border-color: #f97316;
+      outline: none; border-color: #f97316;
     }
-    .modal-actions {
-      display: flex;
-      gap: 0.75rem;
-      justify-content: flex-end;
+    .modal-row { display: flex; gap: 0.75rem; }
+    .modal-row > * { flex: 1; }
+    .theme-chips { display: flex; gap: 0.35rem; flex-wrap: wrap; margin-bottom: 0.85rem; }
+    .theme-chip {
+      padding: 0.3rem 0.6rem; border-radius: 6px; border: 1px solid #e5e7eb;
+      font-size: 0.72rem; font-weight: 500; cursor: pointer; background: #ffffff;
+      font-family: inherit; transition: all 0.15s;
     }
+    .theme-chip.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+    .theme-chip:hover:not(.active) { border-color: #f97316; }
+
+    .recurring-section { margin-bottom: 0.85rem; }
+    .recurring-toggle {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 0.82rem; margin-bottom: 0.5rem; cursor: pointer;
+    }
+    .recurring-toggle input { width: auto; margin: 0; }
+    .recurring-options { display: none; }
+    .recurring-options.visible { display: block; }
+
+    .modal-actions { display: flex; gap: 0.75rem; justify-content: flex-end; }
     .modal-actions button {
-      font-family: inherit;
-      font-size: 0.85rem;
-      padding: 0.6rem 1.2rem;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-      font-weight: 600;
+      font-family: inherit; font-size: 0.82rem; padding: 0.55rem 1.1rem;
+      border-radius: 8px; border: none; cursor: pointer; font-weight: 600;
     }
     .btn-cancel { background: #f3f4f6; color: #6b7280; }
     .btn-cancel:hover { background: #e5e7eb; }
@@ -227,66 +234,89 @@
     .btn-delete { background: #ef4444; color: #fff; }
     .btn-delete:hover { background: #dc2626; }
 
-    .export-section {
-      margin-top: 2rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid #e5e7eb;
-    }
-    .export-section h3 {
-      font-size: 1rem;
-      margin-bottom: 0.75rem;
-    }
-    .export-btns { display: flex; gap: 0.75rem; }
+    .export-section { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb; }
+    .export-section h3 { font-size: 1rem; margin-bottom: 0.75rem; }
+    .export-btns { display: flex; gap: 0.75rem; flex-wrap: wrap; }
     .export-btns button {
-      font-family: inherit;
-      font-size: 0.82rem;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      border: 1px solid #e5e7eb;
-      background: #fff;
-      cursor: pointer;
-      font-weight: 500;
+      font-family: inherit; font-size: 0.82rem; padding: 0.5rem 1rem;
+      border-radius: 8px; border: 1px solid #e5e7eb; background: #fff;
+      cursor: pointer; font-weight: 500;
     }
     .export-btns button:hover { border-color: #f97316; color: #f97316; }
+
+    @media (max-width: 768px) {
+      .week-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
   <nav>
-    <a href="/" class="nav-brand">
-      <img src="/favicon.svg" alt="FMS">
-      <span>FreeMarketingStore</span>
-    </a>
+    <a href="/" class="nav-brand"><img src="/favicon.svg" alt="FMS"><span>FreeMarketingStore</span></a>
     <a href="/" class="nav-back">&larr; All tools</a>
   </nav>
 
   <div class="container">
     <h1>Content Calendar</h1>
-    <p class="subtitle">Plan and schedule social media posts across platforms. Drag posts between days to reschedule.</p>
-
-    <div class="legend">
-      <div class="legend-item"><div class="legend-dot" style="background:#1d9bf0"></div>X / Twitter</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#e1306c"></div>Instagram</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#0a66c2"></div>LinkedIn</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#16a34a"></div>Email</div>
-    </div>
+    <p class="subtitle">Plan and schedule content across platforms. Drag to reschedule, set recurring posts, and export your plan.</p>
 
     <div class="toolbar">
       <div class="month-nav">
-        <button id="prev-month">&larr;</button>
-        <span class="month-label" id="month-label"></span>
-        <button id="next-month">&rarr;</button>
+        <button id="prev-btn">&larr;</button>
+        <span class="month-label" id="period-label"></span>
+        <button id="next-btn">&rarr;</button>
       </div>
       <button id="today-btn">Today</button>
+      <div class="view-toggle">
+        <button class="active" id="month-view-btn">Month</button>
+        <button id="week-view-btn">Week</button>
+      </div>
       <button class="btn-primary" id="add-post-btn">+ Add Post</button>
     </div>
 
+    <div class="filter-bar">
+      <span class="filter-label">Platform:</span>
+      <button class="filter-chip active" data-filter="all">All</button>
+      <button class="filter-chip" data-filter="twitter">X</button>
+      <button class="filter-chip" data-filter="instagram">IG</button>
+      <button class="filter-chip" data-filter="linkedin">LI</button>
+      <button class="filter-chip" data-filter="facebook">FB</button>
+      <button class="filter-chip" data-filter="email-pl">Email</button>
+      <button class="filter-chip" data-filter="youtube">YT</button>
+      <button class="filter-chip" data-filter="tiktok">TT</button>
+      <span class="filter-label" style="margin-left:0.5rem">Type:</span>
+      <button class="filter-chip active" data-type-filter="all">All</button>
+      <button class="filter-chip" data-type-filter="blog">Blog</button>
+      <button class="filter-chip" data-type-filter="social">Social</button>
+      <button class="filter-chip" data-type-filter="email">Email</button>
+      <button class="filter-chip" data-type-filter="video">Video</button>
+      <button class="filter-chip" data-type-filter="podcast">Podcast</button>
+    </div>
+
+    <div class="legend" id="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#1d9bf0"></div>X/Twitter</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#e1306c"></div>Instagram</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#0a66c2"></div>LinkedIn</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#1877f2"></div>Facebook</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#16a34a"></div>Email</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#ff0000"></div>YouTube</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#010101"></div>TikTok</div>
+      <div class="legend-item" style="margin-left:0.5rem"><div class="legend-dot" style="background:#fbbf24;border-radius:2px"></div>Blog</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#a78bfa;border-radius:2px"></div>Social</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#34d399;border-radius:2px"></div>Email</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f87171;border-radius:2px"></div>Video</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#fb923c;border-radius:2px"></div>Podcast</div>
+    </div>
+
     <div class="calendar" id="calendar"></div>
+    <div class="week-view" id="week-view"></div>
 
     <div class="export-section">
       <h3>Export Calendar</h3>
       <div class="export-btns">
-        <button id="export-json">Export JSON</button>
+        <button id="export-ics">Export ICS (Calendar)</button>
         <button id="export-csv">Export CSV</button>
+        <button id="export-md">Export Markdown</button>
+        <button id="export-json">Export JSON</button>
       </div>
     </div>
   </div>
@@ -295,19 +325,78 @@
   <div class="modal-overlay" id="modal">
     <div class="modal">
       <h2 id="modal-title">Add Post</h2>
-      <label for="post-platform">Platform</label>
-      <select id="post-platform">
-        <option value="twitter">X / Twitter</option>
-        <option value="instagram">Instagram</option>
-        <option value="linkedin">LinkedIn</option>
-        <option value="email">Email</option>
-      </select>
+
+      <div class="modal-row">
+        <div>
+          <label for="post-platform">Platform</label>
+          <select id="post-platform">
+            <option value="twitter">X / Twitter</option>
+            <option value="instagram">Instagram</option>
+            <option value="linkedin">LinkedIn</option>
+            <option value="facebook">Facebook</option>
+            <option value="email-pl">Email</option>
+            <option value="youtube">YouTube</option>
+            <option value="tiktok">TikTok</option>
+          </select>
+        </div>
+        <div>
+          <label for="post-type">Content Type</label>
+          <select id="post-type">
+            <option value="social">Social Post</option>
+            <option value="blog">Blog Article</option>
+            <option value="email">Email Campaign</option>
+            <option value="video">Video</option>
+            <option value="podcast">Podcast Episode</option>
+          </select>
+        </div>
+      </div>
+
       <label for="post-date">Date</label>
       <input type="date" id="post-date">
+
+      <label for="post-time">Time (optional)</label>
+      <input type="time" id="post-time">
+
       <label for="post-title">Title</label>
       <input type="text" id="post-title" placeholder="Post title or topic">
-      <label for="post-content">Content</label>
+
+      <label for="post-content">Content / Notes</label>
       <textarea id="post-content" placeholder="Post content or notes..."></textarea>
+
+      <label>Theme</label>
+      <div class="theme-chips" id="theme-chips">
+        <button class="theme-chip" data-theme="education">Education</button>
+        <button class="theme-chip" data-theme="promotion">Promotion</button>
+        <button class="theme-chip" data-theme="behind-the-scenes">Behind-the-scenes</button>
+        <button class="theme-chip" data-theme="user-generated">User-generated</button>
+        <button class="theme-chip" data-theme="engagement">Engagement</button>
+        <button class="theme-chip" data-theme="announcement">Announcement</button>
+        <button class="theme-chip" data-theme="seasonal">Seasonal</button>
+      </div>
+
+      <div class="recurring-section">
+        <label class="recurring-toggle">
+          <input type="checkbox" id="recurring-check"> Recurring post
+        </label>
+        <div class="recurring-options" id="recurring-options">
+          <div class="modal-row">
+            <div>
+              <label for="recurring-freq">Frequency</label>
+              <select id="recurring-freq">
+                <option value="weekly">Every week</option>
+                <option value="biweekly">Every 2 weeks</option>
+                <option value="monthly-day">Same day each month (e.g., every Monday)</option>
+                <option value="monthly-date">Same date each month (e.g., 1st)</option>
+              </select>
+            </div>
+            <div>
+              <label for="recurring-until">Until</label>
+              <input type="date" id="recurring-until">
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="modal-actions">
         <button class="btn-delete" id="delete-btn" style="display:none">Delete</button>
         <button class="btn-cancel" id="cancel-btn">Cancel</button>
@@ -320,90 +409,207 @@
     const STORAGE_KEY = 'fms-content-calendar';
     let posts = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
     let currentDate = new Date();
+    let currentView = 'month'; // 'month' or 'week'
     let editingId = null;
     let dragPostId = null;
+    let activeFilter = 'all';
+    let activeTypeFilter = 'all';
+    let selectedTheme = '';
 
     const calendarEl = document.getElementById('calendar');
-    const monthLabel = document.getElementById('month-label');
+    const weekViewEl = document.getElementById('week-view');
+    const periodLabel = document.getElementById('period-label');
     const modal = document.getElementById('modal');
-    const modalTitle = document.getElementById('modal-title');
-    const postPlatform = document.getElementById('post-platform');
-    const postDate = document.getElementById('post-date');
-    const postTitle = document.getElementById('post-title');
-    const postContent = document.getElementById('post-content');
-    const deleteBtn = document.getElementById('delete-btn');
+
+    const platformIcons = {
+      twitter: 'X', instagram: 'IG', linkedin: 'LI', facebook: 'FB',
+      'email-pl': 'Em', youtube: 'YT', tiktok: 'TT'
+    };
+
+    const typeIcons = {
+      blog: 'B', social: 'S', email: 'E', video: 'V', podcast: 'P'
+    };
+
+    // Best posting times by platform (day of week: 0=Sun, 1=Mon, ...)
+    const bestTimes = {
+      twitter: { days: [1, 2, 3, 4], hours: [9, 12] },
+      instagram: { days: [1, 3, 5], hours: [11, 14, 19] },
+      linkedin: { days: [1, 2, 3], hours: [8, 10, 12] },
+      facebook: { days: [2, 3, 4], hours: [9, 13] },
+      'email-pl': { days: [1, 2, 4], hours: [6, 10] },
+      youtube: { days: [4, 5, 6], hours: [14, 17] },
+      tiktok: { days: [1, 2, 3, 4, 5], hours: [19, 21] }
+    };
 
     function save() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
     }
 
-    function formatDate(d) {
+    function fmtDate(d) {
       return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
     }
 
-    function renderCalendar() {
+    function getPostsForDate(dateStr) {
+      let filtered = posts.filter(p => p.date === dateStr);
+      // Add recurring post instances
+      posts.filter(p => p.recurring).forEach(p => {
+        if (p.date === dateStr) return; // already included
+        if (dateStr < p.date) return; // before start
+        if (p.recurringUntil && dateStr > p.recurringUntil) return;
+        const pDate = new Date(p.date + 'T00:00:00');
+        const tDate = new Date(dateStr + 'T00:00:00');
+        let matches = false;
+        if (p.recurringFreq === 'weekly') {
+          matches = pDate.getDay() === tDate.getDay();
+        } else if (p.recurringFreq === 'biweekly') {
+          const diff = Math.round((tDate - pDate) / (7 * 24 * 60 * 60 * 1000));
+          matches = diff > 0 && diff % 2 === 0 && pDate.getDay() === tDate.getDay();
+        } else if (p.recurringFreq === 'monthly-day') {
+          matches = pDate.getDay() === tDate.getDay() &&
+            Math.floor((pDate.getDate() - 1) / 7) === Math.floor((tDate.getDate() - 1) / 7);
+        } else if (p.recurringFreq === 'monthly-date') {
+          matches = pDate.getDate() === tDate.getDate();
+        }
+        if (matches) {
+          filtered.push({ ...p, id: p.id + '_' + dateStr, date: dateStr, _recurring: true });
+        }
+      });
+      // Apply filters
+      if (activeFilter !== 'all') filtered = filtered.filter(p => p.platform === activeFilter);
+      if (activeTypeFilter !== 'all') filtered = filtered.filter(p => p.contentType === activeTypeFilter);
+      return filtered;
+    }
+
+    function isBestDay(dateStr) {
+      const d = new Date(dateStr + 'T00:00:00');
+      const dow = d.getDay();
+      return Object.values(bestTimes).some(bt => bt.days.includes(dow));
+    }
+
+    // --- Month view ---
+    function renderMonth() {
       const year = currentDate.getFullYear();
       const month = currentDate.getMonth();
       const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-      monthLabel.textContent = `${monthNames[month]} ${year}`;
+      periodLabel.textContent = `${monthNames[month]} ${year}`;
 
       const firstDay = new Date(year, month, 1).getDay();
       const daysInMonth = new Date(year, month + 1, 0).getDate();
       const daysInPrev = new Date(year, month, 0).getDate();
-      const today = formatDate(new Date());
+      const today = fmtDate(new Date());
 
       let html = '';
       const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
       days.forEach(d => html += `<div class="day-header">${d}</div>`);
 
       const totalCells = Math.ceil((firstDay + daysInMonth) / 7) * 7;
-
       for (let i = 0; i < totalCells; i++) {
         let dayNum, dateStr, isOther = false;
         if (i < firstDay) {
           dayNum = daysInPrev - firstDay + i + 1;
-          dateStr = formatDate(new Date(year, month - 1, dayNum));
+          dateStr = fmtDate(new Date(year, month - 1, dayNum));
           isOther = true;
         } else if (i >= firstDay + daysInMonth) {
           dayNum = i - firstDay - daysInMonth + 1;
-          dateStr = formatDate(new Date(year, month + 1, dayNum));
+          dateStr = fmtDate(new Date(year, month + 1, dayNum));
           isOther = true;
         } else {
           dayNum = i - firstDay + 1;
-          dateStr = formatDate(new Date(year, month, dayNum));
+          dateStr = fmtDate(new Date(year, month, dayNum));
         }
 
         const isToday = dateStr === today;
-        const dayPosts = posts.filter(p => p.date === dateStr);
+        const dayPosts = getPostsForDate(dateStr);
+        const best = !isOther && isBestDay(dateStr);
 
         html += `<div class="day-cell ${isOther ? 'other-month' : ''} ${isToday ? 'today' : ''}" data-date="${dateStr}"
                       ondragover="event.preventDefault();this.style.background='#fff7ed'"
                       ondragleave="this.style.background=''"
                       ondrop="handleDrop(event, '${dateStr}')">
-          <div class="day-num">${dayNum}</div>
-          ${dayPosts.map(p => `<div class="post-pill ${p.platform}" draggable="true"
+          <div class="day-num">
+            <span>${dayNum}</span>
+            ${best ? '<span class="best-dot" title="Suggested posting day"></span>' : ''}
+          </div>
+          ${dayPosts.slice(0, 4).map(p => `<div class="post-pill ${p.platform} type-${p.contentType || 'social'} ${p.recurring || p._recurring ? 'recurring' : ''}" draggable="${p._recurring ? 'false' : 'true'}"
             ondragstart="startDrag(event, '${p.id}')"
-            onclick="event.stopPropagation();editPost('${p.id}')"
-            title="${p.title}">${p.title}</div>`).join('')}
+            onclick="event.stopPropagation();editPost('${p._recurring ? p.id.split('_')[0] : p.id}')"
+            title="${p.title}${p.theme ? ' [' + p.theme + ']' : ''}${p.time ? ' @ ' + p.time : ''}"><span class="pill-icon">${typeIcons[p.contentType || 'social'] || 'S'}</span>${p.title}</div>`).join('')}
+          ${dayPosts.length > 4 ? `<div style="font-size:0.62rem;color:#6b7280;padding:0.1rem 0.2rem">+${dayPosts.length - 4} more</div>` : ''}
         </div>`;
       }
 
       calendarEl.innerHTML = html;
+      calendarEl.classList.remove('hidden');
+      weekViewEl.classList.remove('active');
 
-      // Click on day to add post
       calendarEl.querySelectorAll('.day-cell').forEach(cell => {
-        cell.addEventListener('click', () => {
-          openModal(cell.dataset.date);
-        });
+        cell.addEventListener('click', () => openModal(cell.dataset.date));
       });
     }
 
+    // --- Week view ---
+    function renderWeek() {
+      const today = new Date();
+      const todayStr = fmtDate(today);
+      const startOfWeek = new Date(currentDate);
+      startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
+
+      const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+      let weekStart = fmtDate(startOfWeek);
+      let weekEndDate = new Date(startOfWeek);
+      weekEndDate.setDate(weekEndDate.getDate() + 6);
+      periodLabel.textContent = `${monthNames[startOfWeek.getMonth()]} ${startOfWeek.getDate()} - ${monthNames[weekEndDate.getMonth()]} ${weekEndDate.getDate()}, ${weekEndDate.getFullYear()}`;
+
+      let html = '<div class="week-grid">';
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(startOfWeek);
+        d.setDate(d.getDate() + i);
+        const dateStr = fmtDate(d);
+        const isToday = dateStr === todayStr;
+        const dayPosts = getPostsForDate(dateStr);
+        const best = isBestDay(dateStr);
+
+        html += `<div class="week-day ${isToday ? 'today' : ''}">
+          <div class="week-day-header">
+            <span>${dayNames[d.getDay()]}</span>
+            <span class="wdh-date">${d.getDate()} ${best ? '<span class="best-dot" title="Suggested posting day"></span>' : ''}</span>
+          </div>
+          ${dayPosts.map(p => {
+            const plColor = { twitter:'#1d9bf0', instagram:'#e1306c', linkedin:'#0a66c2', facebook:'#1877f2', 'email-pl':'#16a34a', youtube:'#ff0000', tiktok:'#010101' }[p.platform] || '#6b7280';
+            return `<div class="week-post" style="border-left-color:${plColor}" onclick="editPost('${p._recurring ? p.id.split('_')[0] : p.id}')">
+              <div class="wp-title">${p.title}</div>
+              <div class="wp-meta">
+                <span class="wp-badge" style="background:${plColor}">${platformIcons[p.platform] || '?'}</span>
+                <span>${p.contentType || 'social'}</span>
+                ${p.time ? `<span>${p.time}</span>` : ''}
+                ${p.theme ? `<span>${p.theme}</span>` : ''}
+                ${p.recurring || p._recurring ? '<span style="font-style:italic">recurring</span>' : ''}
+              </div>
+            </div>`;
+          }).join('')}
+          <div class="week-add" onclick="openModal('${dateStr}')">+ Add</div>
+        </div>`;
+      }
+      html += '</div>';
+
+      weekViewEl.innerHTML = html;
+      weekViewEl.classList.add('active');
+      calendarEl.classList.add('hidden');
+    }
+
+    function render() {
+      if (currentView === 'month') renderMonth();
+      else renderWeek();
+    }
+
+    // --- Drag and drop ---
     window.startDrag = function(e, id) {
       dragPostId = id;
       e.target.classList.add('dragging');
       e.dataTransfer.effectAllowed = 'move';
     };
-
     window.handleDrop = function(e, date) {
       e.preventDefault();
       e.currentTarget.style.background = '';
@@ -412,110 +618,232 @@
       if (post) {
         post.date = date;
         save();
-        renderCalendar();
+        render();
       }
       dragPostId = null;
     };
 
+    // --- Modal ---
     function openModal(date, id) {
       editingId = id || null;
+      selectedTheme = '';
+      document.getElementById('recurring-check').checked = false;
+      document.getElementById('recurring-options').classList.remove('visible');
+
       if (id) {
         const post = posts.find(p => p.id === id);
-        modalTitle.textContent = 'Edit Post';
-        postPlatform.value = post.platform;
-        postDate.value = post.date;
-        postTitle.value = post.title;
-        postContent.value = post.content || '';
-        deleteBtn.style.display = 'inline-block';
+        if (!post) return;
+        document.getElementById('modal-title').textContent = 'Edit Post';
+        document.getElementById('post-platform').value = post.platform;
+        document.getElementById('post-type').value = post.contentType || 'social';
+        document.getElementById('post-date').value = post.date;
+        document.getElementById('post-time').value = post.time || '';
+        document.getElementById('post-title').value = post.title;
+        document.getElementById('post-content').value = post.content || '';
+        selectedTheme = post.theme || '';
+        if (post.recurring) {
+          document.getElementById('recurring-check').checked = true;
+          document.getElementById('recurring-options').classList.add('visible');
+          document.getElementById('recurring-freq').value = post.recurringFreq || 'weekly';
+          document.getElementById('recurring-until').value = post.recurringUntil || '';
+        }
+        document.getElementById('delete-btn').style.display = 'inline-block';
       } else {
-        modalTitle.textContent = 'Add Post';
-        postPlatform.value = 'twitter';
-        postDate.value = date || formatDate(new Date());
-        postTitle.value = '';
-        postContent.value = '';
-        deleteBtn.style.display = 'none';
+        document.getElementById('modal-title').textContent = 'Add Post';
+        document.getElementById('post-platform').value = 'twitter';
+        document.getElementById('post-type').value = 'social';
+        document.getElementById('post-date').value = date || fmtDate(new Date());
+        document.getElementById('post-time').value = '';
+        document.getElementById('post-title').value = '';
+        document.getElementById('post-content').value = '';
+        document.getElementById('delete-btn').style.display = 'none';
       }
+      renderThemeChips();
       modal.classList.add('active');
     }
 
-    window.editPost = function(id) {
-      openModal(null, id);
-    };
+    window.editPost = function(id) { openModal(null, id); };
 
     function closeModal() {
       modal.classList.remove('active');
       editingId = null;
     }
 
+    function renderThemeChips() {
+      document.querySelectorAll('#theme-chips .theme-chip').forEach(chip => {
+        chip.classList.toggle('active', chip.dataset.theme === selectedTheme);
+      });
+    }
+
+    document.getElementById('theme-chips').addEventListener('click', (e) => {
+      const chip = e.target.closest('.theme-chip');
+      if (!chip) return;
+      selectedTheme = selectedTheme === chip.dataset.theme ? '' : chip.dataset.theme;
+      renderThemeChips();
+    });
+
+    document.getElementById('recurring-check').addEventListener('change', function() {
+      document.getElementById('recurring-options').classList.toggle('visible', this.checked);
+    });
+
     document.getElementById('cancel-btn').addEventListener('click', closeModal);
     modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
 
     document.getElementById('save-btn').addEventListener('click', () => {
-      const title = postTitle.value.trim();
+      const title = document.getElementById('post-title').value.trim();
       if (!title) return;
+      const postData = {
+        platform: document.getElementById('post-platform').value,
+        contentType: document.getElementById('post-type').value,
+        date: document.getElementById('post-date').value,
+        time: document.getElementById('post-time').value || '',
+        title,
+        content: document.getElementById('post-content').value,
+        theme: selectedTheme,
+        recurring: document.getElementById('recurring-check').checked,
+        recurringFreq: document.getElementById('recurring-freq').value,
+        recurringUntil: document.getElementById('recurring-until').value || ''
+      };
+
       if (editingId) {
         const post = posts.find(p => p.id === editingId);
-        post.platform = postPlatform.value;
-        post.date = postDate.value;
-        post.title = title;
-        post.content = postContent.value;
+        if (post) Object.assign(post, postData);
       } else {
         posts.push({
           id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-          platform: postPlatform.value,
-          date: postDate.value,
-          title: title,
-          content: postContent.value
+          ...postData
         });
       }
       save();
-      renderCalendar();
+      render();
       closeModal();
     });
 
-    deleteBtn.addEventListener('click', () => {
+    document.getElementById('delete-btn').addEventListener('click', () => {
       if (editingId) {
         posts = posts.filter(p => p.id !== editingId);
         save();
-        renderCalendar();
+        render();
         closeModal();
       }
     });
 
-    document.getElementById('add-post-btn').addEventListener('click', () => openModal(formatDate(new Date())));
-    document.getElementById('prev-month').addEventListener('click', () => {
-      currentDate.setMonth(currentDate.getMonth() - 1);
-      renderCalendar();
+    // --- Navigation ---
+    document.getElementById('add-post-btn').addEventListener('click', () => openModal(fmtDate(new Date())));
+
+    document.getElementById('prev-btn').addEventListener('click', () => {
+      if (currentView === 'month') currentDate.setMonth(currentDate.getMonth() - 1);
+      else currentDate.setDate(currentDate.getDate() - 7);
+      render();
     });
-    document.getElementById('next-month').addEventListener('click', () => {
-      currentDate.setMonth(currentDate.getMonth() + 1);
-      renderCalendar();
+    document.getElementById('next-btn').addEventListener('click', () => {
+      if (currentView === 'month') currentDate.setMonth(currentDate.getMonth() + 1);
+      else currentDate.setDate(currentDate.getDate() + 7);
+      render();
     });
     document.getElementById('today-btn').addEventListener('click', () => {
       currentDate = new Date();
-      renderCalendar();
+      render();
     });
 
-    // Export
-    document.getElementById('export-json').addEventListener('click', () => {
-      const blob = new Blob([JSON.stringify(posts, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'content-calendar.json'; a.click();
-      URL.revokeObjectURL(url);
+    // --- View toggle ---
+    document.getElementById('month-view-btn').addEventListener('click', () => {
+      currentView = 'month';
+      document.getElementById('month-view-btn').classList.add('active');
+      document.getElementById('week-view-btn').classList.remove('active');
+      render();
+    });
+    document.getElementById('week-view-btn').addEventListener('click', () => {
+      currentView = 'week';
+      document.getElementById('week-view-btn').classList.add('active');
+      document.getElementById('month-view-btn').classList.remove('active');
+      render();
     });
 
+    // --- Filters ---
+    document.querySelectorAll('[data-filter]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeFilter = btn.dataset.filter;
+        render();
+      });
+    });
+    document.querySelectorAll('[data-type-filter]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-type-filter]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeTypeFilter = btn.dataset.typeFilter;
+        render();
+      });
+    });
+
+    // --- Export ICS ---
+    document.getElementById('export-ics').addEventListener('click', () => {
+      let ics = 'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//FreeMarketingStore//Content Calendar//EN\r\n';
+      posts.forEach(p => {
+        const dateClean = p.date.replace(/-/g, '');
+        const uid = p.id + '@freemarketing.store';
+        ics += `BEGIN:VEVENT\r\nUID:${uid}\r\nDTSTART;VALUE=DATE:${dateClean}\r\nSUMMARY:[${p.platform}] ${p.title}\r\nDESCRIPTION:Type: ${p.contentType || 'social'}${p.theme ? '\\nTheme: ' + p.theme : ''}${p.content ? '\\n\\n' + p.content.replace(/\n/g, '\\n') : ''}\r\n`;
+        if (p.recurring) {
+          let rrule = '';
+          if (p.recurringFreq === 'weekly') rrule = 'FREQ=WEEKLY';
+          else if (p.recurringFreq === 'biweekly') rrule = 'FREQ=WEEKLY;INTERVAL=2';
+          else if (p.recurringFreq === 'monthly-day' || p.recurringFreq === 'monthly-date') rrule = 'FREQ=MONTHLY';
+          if (p.recurringUntil) rrule += ';UNTIL=' + p.recurringUntil.replace(/-/g, '');
+          if (rrule) ics += `RRULE:${rrule}\r\n`;
+        }
+        ics += 'END:VEVENT\r\n';
+      });
+      ics += 'END:VCALENDAR\r\n';
+      downloadFile(ics, 'content-calendar.ics', 'text/calendar');
+    });
+
+    // --- Export CSV ---
     document.getElementById('export-csv').addEventListener('click', () => {
-      const header = 'Date,Platform,Title,Content\n';
-      const rows = posts.map(p => `"${p.date}","${p.platform}","${p.title.replace(/"/g,'""')}","${(p.content||'').replace(/"/g,'""')}"`).join('\n');
-      const blob = new Blob([header + rows], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'content-calendar.csv'; a.click();
-      URL.revokeObjectURL(url);
+      const header = 'Date,Time,Platform,Content Type,Theme,Title,Content,Recurring\n';
+      const rows = posts.map(p =>
+        `"${p.date}","${p.time || ''}","${p.platform}","${p.contentType || 'social'}","${p.theme || ''}","${esc(p.title)}","${esc(p.content || '')}","${p.recurring ? p.recurringFreq : ''}"`
+      ).join('\n');
+      downloadFile(header + rows, 'content-calendar.csv', 'text/csv');
     });
 
-    renderCalendar();
+    // --- Export Markdown ---
+    document.getElementById('export-md').addEventListener('click', () => {
+      const sorted = [...posts].sort((a, b) => a.date.localeCompare(b.date));
+      let md = '# Content Calendar\n\n';
+      let currentWeek = '';
+      sorted.forEach(p => {
+        const d = new Date(p.date + 'T00:00:00');
+        const weekStart = new Date(d);
+        weekStart.setDate(d.getDate() - d.getDay());
+        const weekKey = fmtDate(weekStart);
+        if (weekKey !== currentWeek) {
+          currentWeek = weekKey;
+          md += `\n## Week of ${weekStart.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}\n\n`;
+          md += '| Date | Platform | Type | Title | Theme |\n|------|----------|------|-------|-------|\n';
+        }
+        md += `| ${p.date} | ${p.platform} | ${p.contentType || 'social'} | ${p.title} | ${p.theme || '-'} |\n`;
+      });
+      downloadFile(md, 'content-calendar.md', 'text/markdown');
+    });
+
+    // --- Export JSON ---
+    document.getElementById('export-json').addEventListener('click', () => {
+      downloadFile(JSON.stringify(posts, null, 2), 'content-calendar.json', 'application/json');
+    });
+
+    function esc(s) { return s.replace(/"/g, '""').replace(/\n/g, ' '); }
+
+    function downloadFile(content, filename, type) {
+      const blob = new Blob([content], { type });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename; a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    render();
   </script>
   <script src="/related.js" defer></script>
 </body>

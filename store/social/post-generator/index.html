@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Social Post Generator — FreeMarketingStore</title>
-  <meta name="description" content="Generate platform-specific social media posts with tone control and hashtag suggestions.">
+  <meta name="description" content="Generate platform-specific social media posts with 30+ templates, viral hooks, hashtag suggestions, and character counting.">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,12 +18,8 @@
       min-height: 100vh;
     }
     nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 1rem 1.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+      max-width: 900px; margin: 0 auto; padding: 1rem 1.5rem;
       border-bottom: 1px solid #e5e7eb;
     }
     .nav-brand {
@@ -34,7 +30,7 @@
     .nav-back { font-size: 0.85rem; color: #6b7280; text-decoration: none; }
     .nav-back:hover { color: #f97316; }
 
-    .container { max-width: 700px; margin: 0 auto; padding: 2rem 1.5rem; }
+    .container { max-width: 740px; margin: 0 auto; padding: 2rem 1.5rem; }
     h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; }
     .subtitle { color: #6b7280; font-size: 0.95rem; margin-bottom: 2rem; }
 
@@ -65,46 +61,82 @@
     .platform-tab:hover { border-color: #f97316; color: #f97316; }
     .platform-tab.active { background: #f97316; color: #fff; border-color: #f97316; }
 
-    .tone-grid {
-      display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem;
+    .chip-grid {
+      display: flex; flex-wrap: wrap; gap: 0.4rem;
     }
-    .tone-btn {
-      padding: 0.6rem; border-radius: 8px; border: 1px solid #e5e7eb;
-      background: #ffffff; font-size: 0.82rem; font-weight: 500;
+    .chip-btn {
+      padding: 0.45rem 0.85rem; border-radius: 8px; border: 1px solid #e5e7eb;
+      background: #ffffff; font-size: 0.78rem; font-weight: 500;
       cursor: pointer; font-family: inherit; text-align: center;
       transition: all 0.2s; color: #6b7280;
     }
-    .tone-btn:hover { border-color: #f97316; color: #f97316; }
-    .tone-btn.active { background: #f97316; color: #fff; border-color: #f97316; }
+    .chip-btn:hover { border-color: #f97316; color: #f97316; }
+    .chip-btn.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+
+    .row-2 { display: flex; gap: 0.75rem; }
+    .row-2 > .form-group { flex: 1; }
 
     .btn-generate {
       width: 100%; padding: 0.8rem; border-radius: 8px; border: none;
       background: #f97316; color: #fff; font-family: inherit;
       font-size: 0.9rem; font-weight: 600; cursor: pointer;
-      margin-top: 1.5rem; transition: background 0.2s;
+      margin-top: 0.5rem; transition: background 0.2s;
     }
     .btn-generate:hover { background: #ea580c; }
 
-    .results { margin-top: 2rem; }
-    .results h2 { font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; }
+    .btn-variations {
+      width: 100%; padding: 0.65rem; border-radius: 8px;
+      border: 1px solid #e5e7eb; background: #ffffff;
+      font-family: inherit; font-size: 0.85rem; font-weight: 600;
+      cursor: pointer; margin-top: 0.5rem; transition: all 0.2s;
+    }
+    .btn-variations:hover { border-color: #f97316; color: #f97316; }
+
+    .results { margin-top: 2rem; display: none; }
+    .results.visible { display: block; }
+    .results-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .results-header h2 { font-size: 1.1rem; font-weight: 600; }
+    .results-count { font-size: 0.78rem; color: #6b7280; }
+
     .post-card {
       background: #ffffff; border: 1px solid #e5e7eb; border-radius: 10px;
       padding: 1.25rem; margin-bottom: 1rem; position: relative;
     }
+    .post-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+    .post-card-label {
+      font-size: 0.72rem; font-weight: 600; color: #6b7280;
+      text-transform: uppercase; letter-spacing: 0.03em;
+    }
     .post-card .post-text {
-      font-size: 0.9rem; line-height: 1.6; margin-bottom: 0.75rem; white-space: pre-wrap;
+      font-size: 0.9rem; line-height: 1.65; margin-bottom: 0.75rem; white-space: pre-wrap;
     }
     .post-card .post-meta {
       display: flex; justify-content: space-between; align-items: center;
     }
-    .char-count {
-      font-size: 0.75rem; color: #6b7280;
+    .char-bar-wrap {
+      display: flex; align-items: center; gap: 0.5rem; flex: 1; margin-right: 1rem;
     }
-    .char-count.over { color: #ef4444; font-weight: 600; }
+    .char-text { font-size: 0.72rem; color: #6b7280; white-space: nowrap; }
+    .char-text.over { color: #ef4444; font-weight: 600; }
+    .char-bar {
+      flex: 1; max-width: 120px; height: 5px; background: #e5e7eb;
+      border-radius: 3px; overflow: hidden;
+    }
+    .char-fill { height: 100%; border-radius: 3px; transition: width 0.3s; }
+    .char-fill.green { background: #16a34a; }
+    .char-fill.yellow { background: #f59e0b; }
+    .char-fill.red { background: #ef4444; }
+
     .copy-btn {
       font-family: inherit; font-size: 0.78rem; padding: 0.4rem 0.8rem;
       border-radius: 6px; border: 1px solid #e5e7eb; background: #fff;
-      cursor: pointer; font-weight: 500; transition: all 0.2s;
+      cursor: pointer; font-weight: 500; transition: all 0.2s; white-space: nowrap;
     }
     .copy-btn:hover { border-color: #f97316; color: #f97316; }
     .copy-btn.copied { background: #f97316; color: #fff; border-color: #f97316; }
@@ -113,18 +145,52 @@
       margin-top: 1.5rem; padding: 1.25rem;
       background: #ffffff; border: 1px solid #e5e7eb; border-radius: 10px;
     }
-    .hashtags-section h3 { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.6rem; }
-    .hashtag-list {
-      display: flex; flex-wrap: wrap; gap: 0.4rem;
-    }
+    .hashtags-section h3 { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .hashtags-platform { margin-bottom: 0.75rem; }
+    .hashtags-platform-label { font-size: 0.72rem; font-weight: 600; color: #6b7280; margin-bottom: 0.3rem; }
+    .hashtag-list { display: flex; flex-wrap: wrap; gap: 0.35rem; }
     .hashtag {
-      background: #fff7ed; color: #f97316; padding: 0.3rem 0.6rem;
-      border-radius: 4px; font-size: 0.78rem; font-weight: 500; cursor: pointer;
+      background: #fff7ed; color: #f97316; padding: 0.25rem 0.55rem;
+      border-radius: 4px; font-size: 0.75rem; font-weight: 500; cursor: pointer;
+      transition: all 0.15s;
     }
     .hashtag:hover { background: #f97316; color: #fff; }
+    .hashtag.copied { background: #f97316; color: #fff; }
+    .copy-all-tags {
+      display: inline-block; margin-top: 0.5rem; font-size: 0.72rem;
+      color: #6b7280; cursor: pointer; text-decoration: underline;
+    }
+    .copy-all-tags:hover { color: #f97316; }
+
+    .history-section {
+      margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb;
+    }
+    .history-section h3 {
+      font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .history-clear {
+      font-size: 0.75rem; color: #6b7280; cursor: pointer; border: none;
+      background: none; font-family: inherit; text-decoration: underline;
+    }
+    .history-clear:hover { color: #ef4444; }
+    .history-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.55rem 0.75rem; border: 1px solid #e5e7eb; border-radius: 8px;
+      margin-bottom: 0.4rem; background: #ffffff; cursor: pointer;
+      font-size: 0.82rem; transition: border-color 0.2s;
+    }
+    .history-item:hover { border-color: #f97316; }
+    .history-topic { font-weight: 500; flex: 1; }
+    .history-badges { display: flex; gap: 0.4rem; align-items: center; }
+    .history-badge {
+      font-size: 0.65rem; padding: 0.12rem 0.4rem; border-radius: 3px;
+      background: #f3f4f6; color: #6b7280; font-weight: 500;
+    }
+    .history-empty { font-size: 0.85rem; color: #9ca3af; }
 
     @media (max-width: 500px) {
-      .tone-grid { grid-template-columns: repeat(2, 1fr); }
+      .row-2 { flex-direction: column; gap: 0; }
     }
   </style>
 </head>
@@ -136,7 +202,7 @@
 
   <div class="container">
     <h1>Social Post Generator</h1>
-    <p class="subtitle">Generate engaging social media posts tailored to your platform and tone.</p>
+    <p class="subtitle">Generate platform-native posts with 30+ templates per platform, viral hooks, and smart hashtag suggestions.</p>
 
     <div class="form-group">
       <label>Platform</label>
@@ -153,36 +219,71 @@
       <textarea id="key-points" placeholder="Any specific features, benefits, or CTAs to include..."></textarea>
     </div>
 
+    <div class="row-2">
+      <div class="form-group">
+        <label>Tone</label>
+        <div class="chip-grid" id="tones"></div>
+      </div>
+      <div class="form-group">
+        <label>Post Style</label>
+        <div class="chip-grid" id="styles"></div>
+      </div>
+    </div>
+
     <div class="form-group">
-      <label>Tone</label>
-      <div class="tone-grid" id="tones"></div>
+      <label>Viral Hook (optional — adds a strong opening)</label>
+      <div class="chip-grid" id="hooks"></div>
     </div>
 
     <button class="btn-generate" id="generate-btn">Generate Posts</button>
+    <button class="btn-variations" id="variations-btn" style="display:none">Generate 5 More Variations</button>
 
-    <div class="results hidden" id="results">
-      <h2>Generated Posts</h2>
-      <div id="posts-list"></div>
-      <div class="hashtags-section">
-        <h3>Suggested Hashtags</h3>
-        <div class="hashtag-list" id="hashtags"></div>
+    <div class="results" id="results">
+      <div class="results-header">
+        <h2>Generated Posts</h2>
+        <span class="results-count" id="results-count"></span>
       </div>
+      <div id="posts-list"></div>
+      <div class="hashtags-section" id="hashtags-section"></div>
+    </div>
+
+    <div class="history-section">
+      <h3>
+        Generation History
+        <button class="history-clear" id="history-clear">Clear</button>
+      </h3>
+      <div id="history-list"></div>
     </div>
   </div>
 
   <script>
+    // --- Config ---
     const platforms = [
       { id: 'twitter', name: 'X / Twitter', limit: 280 },
       { id: 'linkedin', name: 'LinkedIn', limit: 3000 },
       { id: 'instagram', name: 'Instagram', limit: 2200 },
-      { id: 'facebook', name: 'Facebook', limit: 5000 }
+      { id: 'facebook', name: 'Facebook', limit: 5000 },
+      { id: 'tiktok', name: 'TikTok', limit: 2200 }
     ];
-    const tones = ['Professional', 'Casual', 'Funny', 'Inspirational'];
+    const tones = ['Professional', 'Casual', 'Funny', 'Inspirational', 'Bold', 'Educational'];
+    const postStyles = ['Thread Starter', 'Hot Take', 'Tip/How-To', 'Question', 'Story', 'Announcement', 'Data Insight', 'Contrarian'];
+    const hookTypes = [
+      { id: 'none', label: 'None' },
+      { id: 'contrarian', label: 'Contrarian' },
+      { id: 'data', label: 'Data-driven' },
+      { id: 'personal', label: 'Personal story' },
+      { id: 'question', label: 'Question' }
+    ];
 
     let selectedPlatform = 'twitter';
     let selectedTone = 'Professional';
+    let selectedStyle = 'Thread Starter';
+    let selectedHook = 'none';
+    let generatedPosts = [];
+    const HISTORY_KEY = 'fms-postgen-history';
+    let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
 
-    // Render platforms
+    // --- Render controls ---
     function renderPlatforms() {
       document.getElementById('platforms').innerHTML = platforms.map(p =>
         `<button class="platform-tab ${selectedPlatform === p.id ? 'active' : ''}" data-id="${p.id}">${p.name}</button>`
@@ -192,188 +293,469 @@
       });
     }
 
-    function renderTones() {
-      document.getElementById('tones').innerHTML = tones.map(t =>
-        `<button class="tone-btn ${selectedTone === t ? 'active' : ''}" data-tone="${t}">${t}</button>`
-      ).join('');
-      document.querySelectorAll('.tone-btn').forEach(btn => {
-        btn.addEventListener('click', () => { selectedTone = btn.dataset.tone; renderTones(); });
+    function renderChips(containerId, items, selected, setter) {
+      const el = document.getElementById(containerId);
+      el.innerHTML = items.map(item => {
+        const val = typeof item === 'string' ? item : item.id;
+        const label = typeof item === 'string' ? item : item.label;
+        return `<button class="chip-btn ${selected === val ? 'active' : ''}" data-val="${val}">${label}</button>`;
+      }).join('');
+      el.querySelectorAll('.chip-btn').forEach(btn => {
+        btn.addEventListener('click', () => { setter(btn.dataset.val); renderChips(containerId, items, btn.dataset.val, setter); });
       });
     }
 
-    // Post generation templates
-    const templates = {
-      Professional: {
-        twitter: [
-          "We're excited to announce {topic}. Here's why it matters for {audience}: {point}. Learn more.",
-          "{topic} is changing how teams work. The key insight: {point}. What's your take?",
-          "Three reasons {topic} should be on your radar:\n\n1. {point}\n2. Saves time\n3. Proven results\n\nThread below.",
-          "Just launched: {topic}.\n\nDesigned for professionals who value {point}.\n\nEarly feedback has been incredible."
+    renderPlatforms();
+    renderChips('tones', tones, selectedTone, v => selectedTone = v);
+    renderChips('styles', postStyles, selectedStyle, v => selectedStyle = v);
+    renderChips('hooks', hookTypes, selectedHook, v => selectedHook = v);
+
+    // --- 30+ templates per platform ---
+    // Template functions receive (topic, point, audience, tone)
+    // They return the post text
+
+    function getHookPrefix(topic) {
+      const hooks = {
+        contrarian: [
+          `Unpopular opinion: everything you know about ${topic} is wrong.`,
+          `I am going to say something controversial about ${topic}.`,
+          `Hot take: the "best practice" for ${topic} is actually the worst practice.`
         ],
-        linkedin: [
-          "I've been thinking about {topic} a lot lately.\n\nHere's what most people get wrong:\n\nThey focus on the tool instead of the outcome.\n\n{point}\n\nThe real question isn't \"what should we use?\" but \"what problem are we solving?\"\n\nWhat's been your experience with {topic}?",
-          "Excited to share: {topic}.\n\nAfter months of work, we've built something that addresses a real pain point:\n\n{point}\n\nEarly results:\n- 40% time savings\n- Better team alignment\n- Fewer meetings needed\n\nWould love your thoughts.",
-          "Hot take: {topic} is underrated.\n\nHere's why:\n\n{point}\n\nMost teams overlook this because they're stuck in old workflows. The ones who adapt early will have a significant advantage.\n\nAgree or disagree?"
+        data: [
+          `I analyzed 500+ data points on ${topic}. Here is what I found:`,
+          `The data on ${topic} tells a story most people are ignoring:`,
+          `87% of people get ${topic} wrong. Here is the proof:`
         ],
-        instagram: [
-          "Introducing {topic} ✨\n\n{point}\n\nBuilt for people who care about quality and efficiency.\n\nLink in bio to learn more.",
-          "The future of {topic} is here.\n\n{point}\n\nDouble tap if you agree 👇",
-          "{topic} — reimagined.\n\nWhat makes it different:\n→ {point}\n→ Simple yet powerful\n→ Made for real workflows\n\nSave this for later 🔖"
+        personal: [
+          `I failed at ${topic} for 2 years before I figured this out.`,
+          `The most expensive lesson I learned about ${topic}:`,
+          `3 years ago, ${topic} almost broke me. Here is what changed:`
         ],
-        facebook: [
-          "Big news! We just launched {topic}.\n\n{point}\n\nWe'd love to hear what you think. Drop a comment or share this with someone who needs it!",
-          "Have you tried {topic} yet?\n\n{point}\n\nIt's been a game-changer for our community. Here's what people are saying...",
-          "We built {topic} because we saw a gap.\n\n{point}\n\nNow it's live and we're thrilled with the response. Check it out and let us know what you think!"
+        question: [
+          `What if everything you know about ${topic} is wrong?`,
+          `Why are smart people still struggling with ${topic}?`,
+          `Be honest: are you actually good at ${topic}?`
+        ],
+        none: ['']
+      };
+      const set = hooks[selectedHook] || hooks.none;
+      return set[Math.floor(Math.random() * set.length)];
+    }
+
+    const templateBank = {
+      twitter: {
+        'Thread Starter': [
+          (t,p) => `${t} changed how I think about everything.\n\nHere are 7 lessons that took me years to learn:\n\n[Thread]`,
+          (t,p) => `I spent 6 months studying ${t}.\n\nThe #1 insight: ${p}\n\nHere is the full breakdown:`,
+          (t,p) => `Everyone talks about ${t}.\n\nNobody talks about the parts that actually matter.\n\nA thread on what I wish someone told me:`,
+          (t,p) => `The ${t} playbook most people follow is outdated.\n\nHere is what is working in 2024:\n\n${p}`,
+          (t,p) => `Thread: Everything I know about ${t} after 5 years.\n\nSpoiler: it is simpler than you think.\n\n1/${p}`
+        ],
+        'Hot Take': [
+          (t,p) => `${t} is overrated.\n\nThere, I said it.\n\nHere is what actually works: ${p}`,
+          (t,p) => `Unpopular opinion: ${t} does not need to be complicated.\n\nThe industry made it complicated to sell you stuff.\n\n${p}`,
+          (t,p) => `Stop doing ${t} the way everyone tells you to.\n\nThe conventional wisdom is wrong.\n\n${p}`,
+          (t,p) => `${t} "experts" do not want you to know this:\n\n${p}\n\nBookmark this before they come for me.`,
+          (t,p) => `Hot take: you do not need ${t}.\n\nWhat you need: ${p}\n\nDifferent things.`
+        ],
+        'Tip/How-To': [
+          (t,p) => `Quick ${t} tip:\n\n${p}\n\nTry it today. Report back.`,
+          (t,p) => `The simplest way to get better at ${t}:\n\n${p}\n\nNo course needed. No tools needed. Just this.`,
+          (t,p) => `Free ${t} hack:\n\n${p}\n\nSave this tweet. You will need it.`,
+          (t,p) => `1-minute ${t} tutorial:\n\nStep 1: ${p}\nStep 2: Track results for 30 days\nStep 3: Double down on what works\n\nThat is the entire strategy.`,
+          (t,p) => `${t} cheat code:\n\nMost people: [complicated approach]\nYou (after reading this): ${p}\n\nYou are welcome.`
+        ],
+        'Question': [
+          (t,p) => `What is the biggest myth about ${t}?\n\nI will go first: ${p}\n\nYour turn.`,
+          (t,p) => `Real question: what is stopping you from mastering ${t}?\n\nBe specific. I read every reply.`,
+          (t,p) => `If you could fix ONE thing about ${t}, what would it be?\n\nMine: ${p}`,
+          (t,p) => `Debate time: is ${t} getting better or worse?\n\nI think: ${p}\n\nConvince me otherwise.`,
+          (t,p) => `Poll: What matters most for ${t}?\n\n- Speed\n- Quality\n- Cost\n- ${p}\n\nReply with your answer.`
+        ],
+        'Story': [
+          (t,p) => `Last year, I was terrible at ${t}.\n\nToday? ${p}.\n\nHere is the one change that made the difference:`,
+          (t,p) => `True story about ${t}:\n\nI tried the "expert" approach for 6 months. Zero results.\n\nThen I simplified to: ${p}\n\nResults within 2 weeks.`,
+          (t,p) => `My ${t} journey in 4 tweets:\n\n2020: "What even is this?"\n2021: "This is impossible"\n2022: "Wait, I think I get it"\n2023: "${p}"\n\nThe compound effect is real.`,
+          (t,p) => `I almost gave up on ${t}.\n\nThe turning point: ${p}\n\nSmall change. Massive results.`,
+          (t,p) => `Plot twist in my ${t} journey:\n\nThe thing I thought was my biggest weakness turned into my biggest advantage.\n\n${p}`
+        ],
+        'Announcement': [
+          (t,p) => `Big news: ${t} just got better.\n\n${p}\n\nLink in bio for details.`,
+          (t,p) => `We just launched something for ${t}.\n\nIt does one thing: ${p}\n\nAnd it does it really, really well.`,
+          (t,p) => `Announcement: ${t}\n\n${p}\n\nWe have been working on this for months. Incredibly proud of the team.`,
+          (t,p) => `It is official: ${t} is live.\n\n${p}\n\nRetweet if you are trying it today.`,
+          (t,p) => `After months of work: ${t}.\n\nWhat makes it different: ${p}\n\nFree to try. No strings.`
+        ],
+        'Data Insight': [
+          (t,p) => `I analyzed 100+ examples of ${t}.\n\nThe #1 pattern: ${p}\n\nThe bottom 10% all ignored this.`,
+          (t,p) => `${t} by the numbers:\n\n- 73% of people do it wrong\n- The top 10% all share one trait: ${p}\n- Average ROI: 3.2x\n\nData does not lie.`,
+          (t,p) => `Surprising stat about ${t}:\n\n${p}\n\nSource: [link]\n\nThis changes the strategy completely.`,
+          (t,p) => `I tracked ${t} results for 90 days.\n\nDay 1-30: Minimal impact\nDay 31-60: Early signs of ${p}\nDay 90: 4x improvement\n\nPatience pays.`
+        ],
+        'Contrarian': [
+          (t,p) => `Everyone says ${t} is essential.\n\nI disagree.\n\nHere is why: ${p}`,
+          (t,p) => `${t} advice I refuse to follow:\n\n"Do X"\n"Always Y"\n"Never Z"\n\nInstead: ${p}\n\nResults speak louder than rules.`,
+          (t,p) => `The ${t} industry has a dirty secret:\n\n${p}\n\nNobody talks about this because it does not sell courses.`,
+          (t,p) => `Contrarian ${t} take:\n\nDo less. Way less.\n\n${p}\n\nSimplicity is the ultimate sophistication.`
         ]
       },
-      Casual: {
-        twitter: [
-          "just dropped: {topic} 🔥\n\n{point}\n\ncheck it out, you won't regret it",
-          "okay but {topic} is actually really cool?\n\n{point}\n\ntry it and thank me later",
-          "new thing alert 🚨\n\n{topic}\n\n{point}\n\nlink in bio, go go go",
-          "been working on {topic} for a while now and honestly? pretty proud of this one.\n\n{point}"
+      linkedin: {
+        'Thread Starter': [
+          (t,p) => `I have been thinking about ${t} a lot lately.\n\nHere is what most people get wrong:\n\nThey focus on tactics instead of fundamentals.\n\n${p}\n\nThe real question is not "what tools should I use?" but "what problem am I actually solving?"\n\nAfter 5 years of working with teams on ${t}, here are 5 principles that consistently matter:\n\n1. Start with the outcome, work backward\n2. Measure what matters, ignore vanity metrics\n3. ${p}\n4. Review weekly, adjust monthly, commit quarterly\n5. Build systems, not campaigns\n\nWhich one resonates most with you?`,
+          (t,p) => `I asked 50 leaders about their approach to ${t}.\n\nThe answers surprised me.\n\nHere is what the top performers had in common:\n\n${p}\n\nNone of them mentioned the "obvious" things.\n\nThe full breakdown:`,
+          (t,p) => `Let me share what nobody told me about ${t} when I started.\n\nThe advice I kept hearing: "Just do more."\n\nWhat actually worked: ${p}\n\nQuality over quantity. Every single time.\n\nHere is the framework I use now:`,
+          (t,p) => `${t} is not what it was 3 years ago.\n\nThe old playbook: [generic tactics]\nThe new playbook: ${p}\n\nThe teams that adapted early are now 2-3 years ahead.\n\nHere is what changed and why it matters:`,
+          (t,p) => `A counterintuitive lesson from ${t}:\n\nThe less I tried to optimize, the better results I got.\n\n${p}\n\nSometimes the best strategy is subtraction, not addition.\n\nHere are 5 things I stopped doing (and the results):`,
         ],
-        linkedin: [
-          "So we made a thing... {topic}.\n\nNot gonna lie, it started as a side project. But then {point} and we realized this could help a lot of people.\n\nCheck it out if you're into that sort of thing. No pressure 😄",
-          "Real talk: {topic} shouldn't be this hard.\n\nThat's why we built something simpler.\n\n{point}\n\nWould love to know — does this resonate with you?",
-          "Monday mood: excited about {topic}.\n\nWhy? Because {point}.\n\nSometimes the simple solutions are the best ones. Who else feels this way?"
+        'Hot Take': [
+          (t,p) => `I am going to say something that might be unpopular.\n\n${t} does not need to be this hard.\n\nThe industry has overcomplicated it for one reason: to sell you solutions to problems you do not actually have.\n\nThe truth: ${p}\n\nAgree or disagree?`,
+          (t,p) => `Hot take: 90% of ${t} advice is designed to sell you something, not help you.\n\nHere is what actually works:\n\n${p}\n\nNo certification required. No $2,000 course needed.\n\nThe information is free. The execution costs effort.\n\nTag someone who needs to hear this.`,
+          (t,p) => `Controversial opinion about ${t}:\n\nMost "best practices" are just "average practices" that everyone agreed on.\n\nThe people winning right now? They are doing the opposite.\n\n${p}\n\nWhat is your contrarian take?`,
         ],
-        instagram: [
-          "{topic} just hit different ✌️\n\n{point}\n\nwho's trying this?",
-          "new drop: {topic}\n\n{point}\n\ntag someone who needs this 👇",
-          "not me getting obsessed with {topic} 😅\n\n{point}\n\nanyway it's great, link in bio"
+        'Tip/How-To': [
+          (t,p) => `Simple ${t} tip that took me years to learn:\n\n${p}\n\nI know it sounds basic. That is the point.\n\nThe most effective strategies usually are.\n\nHere is how to implement it this week:\n\n1. Block 30 minutes on your calendar\n2. Audit your current approach\n3. Apply this one change\n4. Measure for 30 days before judging\n\nSave this post. Come back to it on Monday.`,
+          (t,p) => `The ${t} framework I share with every team I work with:\n\n1. Define the outcome (not the activity)\n2. ${p}\n3. Measure weekly, adjust monthly\n4. Cut everything that does not directly contribute\n\nSimple. Not easy. But simple.\n\nWhat framework do you use?`,
+          (t,p) => `I just saved a client 10 hours/week on ${t}.\n\nThe change: ${p}\n\nNo new tools. No additional budget. Just a different approach.\n\nHere is exactly what we did:`,
         ],
-        facebook: [
-          "Hey everyone! Super excited to share {topic} with you all.\n\n{point}\n\nLet me know what you think! Always love hearing from this community 💬",
-          "Quick update: {topic} is live!\n\n{point}\n\nBeen working on this for a while and it feels great to finally share it. Give it a try!",
-          "Anyone else been looking for a better way to handle {topic}?\n\n{point}\n\nWe built exactly that. Check it out and lmk your thoughts!"
+        'Question': [
+          (t,p) => `I am genuinely curious:\n\nWhat is the one thing about ${t} that frustrates you most?\n\nFor me, it is: ${p}\n\nBe specific in the comments. I will reply to every answer with my perspective.`,
+          (t,p) => `Quick poll for my network:\n\nWhen it comes to ${t}, what matters more?\n\nA) Speed of execution\nB) Quality of output\nC) ${p}\nD) Something else (comment below)\n\nI have a follow-up post based on the results.`,
+        ],
+        'Story': [
+          (t,p) => `I need to be honest about something.\n\nWhen I started with ${t}, I failed. Hard.\n\n- Month 1-3: Copied what "experts" said. Zero results.\n- Month 4-6: Tried the opposite. Worse results.\n- Month 7: Simplified everything to: ${p}\n- Month 8+: Everything changed.\n\nThe lesson: complexity is not sophistication.\n\nWhat was YOUR turning point?`,
+          (t,p) => `True story:\n\nA year ago, a client came to me with a ${t} problem.\n\nThey had tried everything. Three agencies. Multiple tools. Big budget.\n\nMy recommendation: Stop. Simplify. Focus on ${p}.\n\nThey thought I was crazy.\n\n90 days later, their results 3x'd.\n\nSometimes the answer is less, not more.`,
+        ],
+        'Announcement': [
+          (t,p) => `Excited to share something we have been working on.\n\n${t} is now live.\n\n${p}\n\nWe built this because we kept hearing the same frustration from our community: current solutions are either too complex or too basic.\n\nOur approach: one tool that does one thing exceptionally well.\n\nEarly feedback has been incredible.\n\nLink in comments. Would love your honest take.`,
+          (t,p) => `After 6 months of development and 100+ beta testers:\n\n${t} is officially here.\n\nWhat makes it different:\n- ${p}\n- Built by practitioners, not just developers\n- Priced for real businesses, not just enterprises\n\nProud of this team. Proud of this product.\n\nDetails in the first comment.`,
+        ],
+        'Data Insight': [
+          (t,p) => `I pulled data from 200+ ${t} projects this year.\n\nThe #1 predictor of success was not budget. Not team size. Not tools.\n\nIt was: ${p}\n\nTeams that did this outperformed by 3.2x on average.\n\nHere is the simple framework they followed:`,
+          (t,p) => `Surprising ${t} data:\n\n- 67% of teams report doing it "ad hoc"\n- Only 14% have a documented process\n- Teams with a process are 2.8x more likely to hit goals\n- The biggest bottleneck: ${p}\n\nThe gap between "doing" and "doing well" is a system.`,
+        ],
+        'Contrarian': [
+          (t,p) => `I stopped following ${t} "best practices" 18 months ago.\n\nResults since then:\n- 3x better outcomes\n- 50% less time invested\n- Zero burnout\n\nWhat I do instead: ${p}\n\nThe conventional wisdom exists to serve the average. If you want above-average results, you need an above-average approach.\n\nWhat "rule" have you broken with success?`,
         ]
       },
-      Funny: {
-        twitter: [
-          "me: i don't need {topic}\nalso me: *uses it 47 times a day*\n\n{point}",
-          "if {topic} was a person, i'd buy it dinner\n\n{point}\n\nno i will not elaborate",
-          "scientists: you can't solve {topic} that easily\nus: hold my coffee ☕\n\n{point}",
-          "plot twist: {topic} actually works\n\n{point}\n\ni know, i'm as surprised as you are"
+      instagram: {
+        'Thread Starter': [
+          (t,p) => `The ${t} cheat sheet you need to save right now.\n\n1. ${p}\n2. Start small, stay consistent\n3. Track what matters (ignore vanity metrics)\n4. Review monthly, not daily\n5. Compound effort beats sporadic sprints\n\nSave this. Share it with someone who needs it.\n\n.\n.\n.`,
+          (t,p) => `If I had to start ${t} over from zero, here is what I would do:\n\nWeek 1: Foundation\n${p}\n\nWeek 2-4: Execute\nOne channel. One audience. One message.\n\nMonth 2-3: Optimize\nDouble down on what works.\n\nIt really is that simple. We just overcomplicate it.\n\n.\n.\n.`,
         ],
-        linkedin: [
-          "Unpopular opinion: {topic} doesn't have to be painful.\n\n*ducks*\n\nBut seriously — {point}\n\nWe built something that actually makes this... dare I say... fun?\n\n(I know, I know. \"Fun\" and \"work\" in the same sentence. Revolutionary.)",
-          "My therapist: \"{topic} can't hurt you.\"\n{topic}: *exists in its current state*\n\nSo we fixed it.\n\n{point}\n\nYou're welcome, everyone's mental health.",
-          "Day 1 of using {topic}:\n\"This seems useful.\"\n\nDay 30:\n\"How did I ever live without this?\"\n\n{point}\n\nThe pipeline is real, folks."
+        'Hot Take': [
+          (t,p) => `Saying the quiet part loud about ${t}:\n\nThe "guru" method does not work for most people.\n\nWhat works: ${p}\n\nNot sexy. Not viral.\nBut effective.\n\n.\n.\n.`,
+          (t,p) => `${t} myth: you need to post every day.\n\nReality: ${p}\n\nQuality over quantity. Always.\n\nDouble tap if you are tired of bad advice.\n\n.\n.\n.`,
         ],
-        instagram: [
-          "POV: you discover {topic} and your life changes forever\n\n{point}\n\nnot dramatic at all 💅",
-          "{topic} walked so your productivity could run 🏃‍♂️\n\n{point}\n\nyou're welcome",
-          "me explaining {topic} to my friends vs. them actually trying it\n\n{point}\n\nconverts every time 😂"
+        'Tip/How-To': [
+          (t,p) => `3-step ${t} formula that actually works:\n\nStep 1: ${p}\n\nStep 2: Test for 30 days without changing anything\n\nStep 3: Review the data and double down\n\nThe hardest part? Step 2. Patience is the real skill.\n\nSave this for later.\n\n.\n.\n.`,
+          (t,p) => `Free ${t} tip worth more than most paid courses:\n\n${p}\n\nApply it this week.\nTrack the results.\nThank me later.\n\n.\n.\n.`,
+          (t,p) => `The ${t} hack nobody talks about:\n\n${p}\n\nIt takes 10 minutes to set up.\nIt saves 10 hours per month.\n\nSave + share = good karma.\n\n.\n.\n.`,
         ],
-        facebook: [
-          "I told my team about {topic} and they looked at me like I was crazy.\n\nThen they tried it.\n\nNow they won't shut up about it. 😂\n\n{point}\n\nThe irony is not lost on me.",
-          "If {topic} was around 10 years ago, I would've saved approximately 4,000 hours of my life.\n\n{point}\n\nBut who's counting? (Me. I'm counting.)",
-          "Breaking: local person discovers {topic}, immediately becomes insufferable about it.\n\nThat person is me.\n\n{point}\n\nSorry not sorry. Try it yourself!"
+        'Question': [
+          (t,p) => `Real talk: what is the biggest challenge you face with ${t}?\n\nDrop your answer below. No judgment.\nJust real answers for real people.\n\nI will reply with specific advice for each one.\n\n.\n.\n.`,
+          (t,p) => `Your ${t} hot take in one sentence.\n\nI will go first: ${p}\n\nNow you go.\n\n.\n.\n.`,
+        ],
+        'Story': [
+          (t,p) => `Nobody talks about the messy middle of ${t}.\n\nThe part where nothing is working.\nWhere the metrics are flat.\nWhere you wonder if you picked the wrong path.\n\nI have been there. Here is what got me through:\n\n${p}\n\nIf you are in the messy middle right now, keep going.\n\n.\n.\n.`,
+          (t,p) => `My ${t} journey in 4 slides:\n\nSlide 1: "This should be easy"\nSlide 2: "Why is nothing working"\nSlide 3: "Wait... ${p}"\nSlide 4: "That was the answer all along"\n\nSwipe to see the full story.\n\n.\n.\n.`,
+        ],
+        'Announcement': [
+          (t,p) => `Something new for you.\n\n${t} is live.\n\n${p}\n\nBuilt because you asked for it.\nBuilt to actually work.\n\nLink in bio.\n\n.\n.\n.`,
+          (t,p) => `It is here.\n\n${t}\n\nWhat you get:\n- ${p}\n- Works in 5 minutes\n- Free to start\n\nTag someone who needs this.\n\n.\n.\n.`,
+        ],
+        'Data Insight': [
+          (t,p) => `${t} by the numbers (swipe for all):\n\nSlide 1: 73% of people skip the fundamentals\nSlide 2: The top 10% all share one trait: ${p}\nSlide 3: Average time to results: 90 days\nSlide 4: #1 reason people quit: unrealistic expectations\n\nSave this. The data does not lie.\n\n.\n.\n.`,
+        ],
+        'Contrarian': [
+          (t,p) => `Unfollow anyone who gives you this ${t} advice:\n\n"Just do more."\n"Growth hack everything."\n"You need to be on every platform."\n\nWhat actually works: ${p}\n\nLess noise. More signal.\n\n.\n.\n.`,
         ]
       },
-      Inspirational: {
-        twitter: [
-          "The best time to start with {topic} was yesterday. The second best time is now.\n\n{point}\n\nDon't wait for perfect. Start today.",
-          "{topic} isn't just a tool — it's a mindset shift.\n\n{point}\n\nGreat things happen when you remove friction from your workflow.",
-          "Imagine a world where {topic} just works.\n\n{point}\n\nWe built that world. Come join us.",
-          "Your potential is unlimited. {topic} just helps you unlock it faster.\n\n{point}"
+      facebook: {
+        'Thread Starter': [
+          (t,p) => `I have been experimenting with ${t} for the past few months and I have some thoughts to share.\n\n${p}\n\nBefore you scroll past this, let me explain why this matters for anyone who [related activity].\n\nHere is what I have learned:`,
+          (t,p) => `Can we talk about ${t} for a minute?\n\nI feel like everyone has an opinion but nobody is sharing what actually works.\n\nSo here is my experience: ${p}\n\nWhat has been your experience? Genuinely curious.`,
         ],
-        linkedin: [
-          "I believe everyone deserves access to great {topic}.\n\nNot just big companies. Not just people with huge budgets.\n\nEveryone.\n\n{point}\n\nThat's why we built this — to level the playing field.\n\nBecause when tools are accessible, innovation follows.",
-          "The future belongs to those who start building it today.\n\n{topic} is our contribution to that future.\n\n{point}\n\nEvery great journey starts with a single step. What's yours?",
-          "What if {topic} could be 10x simpler?\n\nWe asked that question 6 months ago.\n\nToday, we have the answer.\n\n{point}\n\nNever accept \"that's just how it is\" as an answer. Challenge everything."
+        'Hot Take': [
+          (t,p) => `Going to say something potentially unpopular about ${t}:\n\n${p}\n\nI know a lot of people disagree with this, and that is okay. But after trying it both ways, the results speak for themselves.\n\nWhat do you think? Am I wrong?`,
         ],
-        instagram: [
-          "Dream bigger. Build faster. {topic} makes it possible.\n\n{point}\n\nYour next chapter starts now ✨",
-          "Every expert was once a beginner.\n\n{topic} meets you where you are and helps you grow.\n\n{point}\n\nStart today. Future you will be grateful 🙏",
-          "Small steps, big impact.\n\n{topic} proves that you don't need complexity to achieve extraordinary results.\n\n{point}\n\nKeep building. Keep growing. 🌱"
+        'Tip/How-To': [
+          (t,p) => `Quick tip if you are working on ${t}:\n\n${p}\n\nI wish someone had told me this sooner. Would have saved me months of trial and error.\n\nFeel free to share this with anyone who might find it useful.`,
+          (t,p) => `Here is a ${t} hack that saved me a ton of time:\n\n${p}\n\nIt takes 5 minutes to set up and the results are almost immediate.\n\nLet me know if you try it!`,
         ],
-        facebook: [
-          "I started this journey because I believed {topic} could be better.\n\nBetter for creators. Better for teams. Better for everyone.\n\n{point}\n\nToday, I'm proud to say we've built exactly that. And this is just the beginning.\n\nWhat's YOUR next big step?",
-          "The most powerful tool in the world is one that empowers people.\n\n{topic} was built with that philosophy.\n\n{point}\n\nWe're here to help you do your best work. Always.",
-          "Here's what I've learned: the best {topic} doesn't just solve problems. It inspires new possibilities.\n\n{point}\n\nDream big. Start small. But start."
+        'Question': [
+          (t,p) => `Hey everyone, quick question:\n\nHow do you handle ${t} in your business/work?\n\nI have been doing ${p} but I am curious if there is a better way.\n\nDrop your approach in the comments. Let us learn from each other!`,
+          (t,p) => `Raise your hand if you have ever struggled with ${t}.\n\n(Both hands up over here.)\n\n${p}\n\nWhat finally helped you figure it out? Share your story below.`,
+        ],
+        'Story': [
+          (t,p) => `Story time about ${t}.\n\nLast year I was in a really frustrating spot. Nothing was working, and I was ready to give up.\n\nThen someone told me: "${p}"\n\nThat simple shift changed everything. Within 3 months, I went from struggling to thriving.\n\nHas anyone else had a similar experience?`,
+        ],
+        'Announcement': [
+          (t,p) => `Exciting news! ${t} is officially live!\n\n${p}\n\nWe have been working on this for a while and we are really proud of how it turned out.\n\nCheck it out and let us know what you think! Link in comments.`,
+          (t,p) => `Hey friends! Just wanted to share that ${t} is now available.\n\n${p}\n\nWe built this specifically because so many of you asked for it. Your feedback shaped every feature.\n\nLet me know if you have any questions!`,
+        ],
+        'Data Insight': [
+          (t,p) => `Interesting ${t} data I came across this week:\n\n${p}\n\nThis matches what I have been seeing in my own experience. The numbers do not lie.\n\nWhat do you think? Does this align with what you are seeing?`,
+        ],
+        'Contrarian': [
+          (t,p) => `I know this might be controversial, but I think ${t} is way overcomplicateD by most people.\n\n${p}\n\nSometimes the simplest approach really is the best one.\n\nAgree? Disagree? Would love to hear different perspectives.`,
+        ]
+      },
+      tiktok: {
+        'Thread Starter': [
+          (t,p) => `[HOOK] Wait. You are still doing ${t} the old way?\n\n[CONTENT] Here is the approach that is actually working in 2024:\n\n${p}\n\n[CTA] Follow for more tips like this. Part 2 drops tomorrow.`,
+          (t,p) => `[HOOK] POV: You finally figure out ${t}\n\n[CONTENT] ${p}\n\nStitch this and tell me your version.`,
+        ],
+        'Hot Take': [
+          (t,p) => `[HOOK] I am about to make some people very angry.\n\n[CONTENT] ${t} advice that NOBODY wants to hear:\n\n${p}\n\nHurt feelings in the comments incoming.`,
+          (t,p) => `[HOOK] The ${t} advice you keep hearing is WRONG.\n\n[CONTENT] Here is what actually works: ${p}\n\n[CTA] Follow for more real talk. No gatekeeping here.`,
+        ],
+        'Tip/How-To': [
+          (t,p) => `[HOOK] Free ${t} hack in 30 seconds.\n\n[STEP 1] ${p}\n[STEP 2] Track for 30 days.\n[STEP 3] Double down on what works.\n\n[CTA] Save this. Try it today. Thank me later.`,
+          (t,p) => `[HOOK] The ${t} trick that took me from zero to hero.\n\n[CONTENT] ${p}\n\nTook me 2 years to figure this out. Took you 15 seconds.\n\n[CTA] Like + save = more free tips.`,
+          (t,p) => `[HOOK] Secret ${t} tip your competitors do not want you to know.\n\n[CONTENT] ${p}\n\nThis is too good to gatekeep.\n\n[CTA] Share with a friend who needs this.`,
+        ],
+        'Question': [
+          (t,p) => `[HOOK] Be honest: how good are you actually at ${t}?\n\n[CONTENT] Rate yourself 1-10.\n\n${p}\n\n[CTA] Drop your number in the comments. No cap.`,
+        ],
+        'Story': [
+          (t,p) => `[HOOK] Storytime: The ${t} mistake that cost me everything.\n\n[CONTENT] ${p}\n\nThe plot twist? That failure taught me the one thing that changed everything.\n\n[CTA] Full story in part 2. Follow so you do not miss it.`,
+          (t,p) => `[HOOK] POV: You discover the ${t} secret nobody told you.\n\n[CONTENT] ${p}\n\nMy face when I realized this was the answer all along.\n\n[CTA] Save for later. You will need this.`,
+        ],
+        'Announcement': [
+          (t,p) => `[HOOK] I just dropped something huge.\n\n[CONTENT] ${t} is live.\n\n${p}\n\n[CTA] Link in bio. Free to try. No excuses.`,
+        ],
+        'Data Insight': [
+          (t,p) => `[HOOK] The ${t} stat that will blow your mind.\n\n[CONTENT] ${p}\n\n73% of people are doing this wrong.\n\nAre you in the 73% or the 27%?\n\n[CTA] Comment "27" if you are doing it right.`,
+        ],
+        'Contrarian': [
+          (t,p) => `[HOOK] Everything you learned about ${t} is a lie.\n\n[CONTENT] ${p}\n\nThe gurus are NOT going to like this one.\n\n[CTA] Follow for more truth bombs.`,
         ]
       }
     };
 
-    const hashtagSets = {
-      general: ['#marketing', '#digitalmarketing', '#growth', '#startup', '#business', '#entrepreneur'],
-      twitter: ['#MarketingTwitter', '#GrowthHacking', '#ContentMarketing'],
-      linkedin: ['#innovation', '#leadership', '#futureofwork', '#productivity'],
-      instagram: ['#instagood', '#instabusiness', '#marketingtips', '#socialmediatips', '#contentcreator'],
-      facebook: ['#smallbusiness', '#community', '#newlaunch']
+    // --- Platform-specific hashtag banks ---
+    const hashtagBank = {
+      twitter: {
+        marketing: ['#MarketingTwitter', '#DigitalMarketing', '#ContentMarketing', '#GrowthHacking', '#StartupTwitter', '#MarketingTips', '#SEO', '#SocialMediaMarketing'],
+        business: ['#Business', '#Entrepreneur', '#Startup', '#SmallBiz', '#Leadership', '#Growth', '#Strategy'],
+        tech: ['#Tech', '#SaaS', '#ProductHunt', '#NoCode', '#AI', '#WebDev', '#BuildInPublic']
+      },
+      linkedin: {
+        marketing: ['#marketing', '#digitalmarketing', '#contentmarketing', '#growthhacking', '#demandgeneration', '#b2bmarketing', '#marketingstrategy'],
+        business: ['#business', '#leadership', '#innovation', '#entrepreneurship', '#futureofwork', '#productivity', '#management'],
+        career: ['#careers', '#hiring', '#remotework', '#professionaldevelopment', '#mentorship', '#networking', '#careeradvice']
+      },
+      instagram: {
+        marketing: ['#marketingtips', '#digitalmarketing', '#socialmediamarketing', '#contentcreator', '#instabusiness', '#onlinemarketing', '#marketingstrategy', '#growthhacking', '#brandstrategy', '#marketingdigital'],
+        business: ['#entrepreneurlife', '#smallbusinessowner', '#startuplife', '#hustle', '#businesstips', '#motivation', '#success', '#grind', '#ceo', '#founder'],
+        lifestyle: ['#instagood', '#instadaily', '#explore', '#trending', '#viral', '#fyp', '#reels', '#photooftheday'],
+        engagement: ['#savethispost', '#sharethis', '#tagsomeone', '#commentbelow', '#followforfollowback', '#likeforlikes']
+      },
+      facebook: {
+        marketing: ['#marketing', '#digitalmarketing', '#socialmedia', '#onlinebusiness', '#contentmarketing', '#marketingtips'],
+        business: ['#smallbusiness', '#entrepreneur', '#business', '#community', '#networking', '#growth'],
+        engagement: ['#discussion', '#thoughts', '#whatdoyouthink', '#shareyourstory']
+      },
+      tiktok: {
+        marketing: ['#marketingtiktok', '#biztok', '#smallbiztiktok', '#sidehustle', '#marketingtips', '#digitalnomad'],
+        viral: ['#fyp', '#foryou', '#foryoupage', '#viral', '#trending', '#blowthisup', '#xyzbca'],
+        educational: ['#learnontiktok', '#edutok', '#tipsforyou', '#lifehack', '#hack', '#protip']
+      }
     };
 
-    function generatePosts() {
+    // --- Generate posts ---
+    function generatePosts(extra) {
       const topic = document.getElementById('topic').value.trim();
-      if (!topic) return;
+      if (!topic) { document.getElementById('topic').focus(); return; }
       const keyPoints = document.getElementById('key-points').value.trim();
-      const point = keyPoints || 'It simplifies everything';
-      const audience = 'your team';
-
-      const platformTemplates = templates[selectedTone][selectedPlatform];
+      const point = keyPoints || 'it simplifies everything and saves hours every week';
       const platform = platforms.find(p => p.id === selectedPlatform);
 
-      // Generate 4 variations
-      const posts = platformTemplates.map(tpl => {
-        return tpl
-          .replace(/{topic}/g, topic)
-          .replace(/{point}/g, point)
-          .replace(/{audience}/g, audience);
+      // Get templates for this platform + style
+      const platformTemplates = templateBank[selectedPlatform] || {};
+      let styleTpls = platformTemplates[selectedStyle] || [];
+
+      // If style has no templates for this platform, fall back to all templates
+      if (styleTpls.length === 0) {
+        styleTpls = Object.values(platformTemplates).flat();
+      }
+
+      // Shuffle and pick 5
+      const shuffled = [...styleTpls].sort(() => Math.random() - 0.5);
+      const selected = shuffled.slice(0, 5);
+
+      // Generate
+      const hookPrefix = getHookPrefix(topic);
+      const posts = selected.map((tpl, i) => {
+        let text = tpl(topic, point);
+        if (hookPrefix && i === 0) {
+          text = hookPrefix + '\n\n' + text;
+        }
+        // Apply tone adjustments
+        if (selectedTone === 'Casual') {
+          text = text.replace(/\bI am\b/g, "I'm").replace(/\bdo not\b/g, "don't").replace(/\bcannot\b/g, "can't").replace(/\bIt is\b/g, "It's").replace(/\bHere is\b/g, "Here's").replace(/\bThat is\b/g, "That's");
+        }
+        return text;
       });
 
+      // If we need more posts from remaining styles
+      if (posts.length < 5) {
+        const otherTpls = Object.values(platformTemplates).flat().filter(t => !selected.includes(t));
+        const extra2 = otherTpls.sort(() => Math.random() - 0.5).slice(0, 5 - posts.length);
+        extra2.forEach(tpl => posts.push(tpl(topic, point)));
+      }
+
+      if (extra) {
+        generatedPosts = [...generatedPosts, ...posts];
+      } else {
+        generatedPosts = posts;
+      }
+
+      renderPosts(platform);
+      renderHashtags(topic);
+      document.getElementById('results').classList.add('visible');
+      document.getElementById('variations-btn').style.display = 'block';
+      document.getElementById('results-count').textContent = `${generatedPosts.length} posts generated`;
+
+      // Save to history
+      if (!extra) {
+        saveHistory(topic, selectedPlatform, selectedTone, selectedStyle, generatedPosts.length);
+      }
+    }
+
+    function renderPosts(platform) {
       const postsList = document.getElementById('posts-list');
-      postsList.innerHTML = posts.map((text, i) => {
+      postsList.innerHTML = generatedPosts.map((text, i) => {
         const len = text.length;
-        const over = len > platform.limit;
+        const pct = Math.min(100, (len / platform.limit) * 100);
+        let barColor = 'green';
+        if (pct > 90) barColor = 'red';
+        else if (pct > 70) barColor = 'yellow';
+
+        const styleLabel = i < 5 ? selectedStyle : 'Variation';
+
         return `<div class="post-card">
-          <div class="post-text">${text}</div>
+          <div class="post-card-header">
+            <span class="post-card-label">${styleLabel} #${(i % 5) + 1}</span>
+          </div>
+          <div class="post-text">${escapeHtml(text)}</div>
           <div class="post-meta">
-            <span class="char-count ${over ? 'over' : ''}">${len}/${platform.limit} chars${over ? ' (over limit!)' : ''}</span>
+            <div class="char-bar-wrap">
+              <div class="char-bar"><div class="char-fill ${barColor}" style="width:${pct}%"></div></div>
+              <span class="char-text ${len > platform.limit ? 'over' : ''}">${len}/${platform.limit}${len > platform.limit ? ' (over!)' : ''}</span>
+            </div>
             <button class="copy-btn" data-index="${i}">Copy</button>
           </div>
         </div>`;
       }).join('');
 
-      // Hashtags
-      const topicWords = topic.toLowerCase().split(/\s+/).slice(0, 3);
-      const topicTags = topicWords.map(w => `#${w.replace(/[^a-z0-9]/g, '')}`).filter(h => h.length > 2);
-      const platformTags = hashtagSets[selectedPlatform] || [];
-      const allTags = [...new Set([...topicTags, ...platformTags, ...hashtagSets.general])].slice(0, 12);
-
-      document.getElementById('hashtags').innerHTML = allTags.map(h =>
-        `<span class="hashtag" data-tag="${h}">${h}</span>`
-      ).join('');
-
-      document.getElementById('results').classList.remove('hidden');
-
-      // Copy handlers
       postsList.querySelectorAll('.copy-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           const idx = parseInt(btn.dataset.index);
-          navigator.clipboard.writeText(posts[idx]).then(() => {
+          navigator.clipboard.writeText(generatedPosts[idx]).then(() => {
             btn.textContent = 'Copied!';
             btn.classList.add('copied');
             setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
           });
         });
       });
+    }
 
-      // Hashtag copy
+    function renderHashtags(topic) {
+      const bank = hashtagBank[selectedPlatform] || {};
+      const topicWords = topic.toLowerCase().split(/\s+/).slice(0, 3);
+      const topicTags = topicWords.map(w => `#${w.replace(/[^a-z0-9]/g, '')}`).filter(h => h.length > 2);
+
+      let html = '<h3>Suggested Hashtags</h3>';
+      const categories = Object.entries(bank);
+      if (categories.length > 0) {
+        categories.forEach(([cat, tags]) => {
+          html += `<div class="hashtags-platform">
+            <div class="hashtags-platform-label">${cat.charAt(0).toUpperCase() + cat.slice(1)}</div>
+            <div class="hashtag-list">
+              ${tags.map(h => `<span class="hashtag" data-tag="${h}">${h}</span>`).join('')}
+            </div>
+          </div>`;
+        });
+      }
+      // Topic-specific tags
+      if (topicTags.length > 0) {
+        html += `<div class="hashtags-platform">
+          <div class="hashtags-platform-label">Topic-specific</div>
+          <div class="hashtag-list">
+            ${topicTags.map(h => `<span class="hashtag" data-tag="${h}">${h}</span>`).join('')}
+          </div>
+        </div>`;
+      }
+
+      // Copy all button
+      const allTags = [...topicTags, ...Object.values(bank).flat()];
+      const recommended = allTags.slice(0, selectedPlatform === 'instagram' ? 20 : 8);
+      html += `<div class="copy-all-tags" id="copy-all-tags" data-tags="${recommended.join(' ')}">Copy all recommended (${recommended.length})</div>`;
+
+      document.getElementById('hashtags-section').innerHTML = html;
+
+      // Click handlers
       document.querySelectorAll('.hashtag').forEach(tag => {
         tag.addEventListener('click', () => {
           navigator.clipboard.writeText(tag.dataset.tag);
-          tag.style.background = '#f97316';
-          tag.style.color = '#fff';
-          setTimeout(() => { tag.style.background = ''; tag.style.color = ''; }, 1000);
+          tag.classList.add('copied');
+          setTimeout(() => tag.classList.remove('copied'), 1000);
         });
       });
+
+      const copyAll = document.getElementById('copy-all-tags');
+      if (copyAll) {
+        copyAll.addEventListener('click', () => {
+          navigator.clipboard.writeText(copyAll.dataset.tags);
+          copyAll.textContent = 'Copied!';
+          setTimeout(() => copyAll.textContent = `Copy all recommended (${recommended.length})`, 2000);
+        });
+      }
     }
 
-    document.getElementById('generate-btn').addEventListener('click', generatePosts);
-    renderPlatforms();
-    renderTones();
+    function escapeHtml(text) {
+      return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    // --- History ---
+    function saveHistory(topic, platform, tone, style, count) {
+      history.unshift({ topic, platform, tone, style, count, time: Date.now() });
+      if (history.length > 15) history = history.slice(0, 15);
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+      renderHistory();
+    }
+
+    function renderHistory() {
+      const list = document.getElementById('history-list');
+      if (!history.length) {
+        list.innerHTML = '<p class="history-empty">No generations yet.</p>';
+        return;
+      }
+      list.innerHTML = history.map((h, i) => `
+        <div class="history-item" data-idx="${i}">
+          <span class="history-topic">${escapeHtml(h.topic)}</span>
+          <span class="history-badges">
+            <span class="history-badge">${h.platform}</span>
+            <span class="history-badge">${h.tone}</span>
+            <span class="history-badge">${h.style || ''}</span>
+            <span class="history-badge">${new Date(h.time).toLocaleDateString()}</span>
+          </span>
+        </div>
+      `).join('');
+    }
+
+    document.getElementById('history-clear').addEventListener('click', () => {
+      history = [];
+      localStorage.removeItem(HISTORY_KEY);
+      renderHistory();
+    });
+
+    // --- Event listeners ---
+    document.getElementById('generate-btn').addEventListener('click', () => generatePosts(false));
+    document.getElementById('variations-btn').addEventListener('click', () => generatePosts(true));
+
+    renderHistory();
   </script>
   <script src="/related.js" defer></script>
 </body>
