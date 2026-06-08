@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Campaign Planner — FreeMarketingStore</title>
+  <meta name="description" content="Step-by-step wizard to build a full marketing campaign brief from goal to tactics.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Manrope', system-ui, sans-serif;
+      background: #fafafa;
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-decoration: none;
+      color: #1a1a1a;
+    }
+    .nav-brand img { width: 24px; height: 24px; }
+    .nav-back { font-size: 0.85rem; color: #6b7280; text-decoration: none; }
+    .nav-back:hover { color: #f97316; }
+
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+    h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .subtitle { color: #6b7280; font-size: 0.95rem; margin-bottom: 2rem; }
+
+    /* Steps indicator */
+    .steps-bar {
+      display: flex;
+      gap: 0.25rem;
+      margin-bottom: 2rem;
+    }
+    .step-dot {
+      flex: 1;
+      height: 4px;
+      border-radius: 2px;
+      background: #e5e7eb;
+      transition: background 0.3s;
+    }
+    .step-dot.active { background: #f97316; }
+    .step-dot.done { background: #f97316; opacity: 0.5; }
+
+    .step-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 1.25rem;
+    }
+
+    /* Form elements */
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #6b7280;
+      margin-bottom: 0.4rem;
+    }
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      background: #ffffff;
+    }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+      outline: none;
+      border-color: #f97316;
+    }
+
+    .option-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 0.75rem;
+    }
+    .option-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 1rem;
+      text-align: center;
+      cursor: pointer;
+      background: #ffffff;
+      transition: all 0.2s;
+    }
+    .option-card:hover { border-color: #f97316; }
+    .option-card.selected { border-color: #f97316; background: #fff7ed; }
+    .option-card .icon { font-size: 1.5rem; margin-bottom: 0.4rem; }
+    .option-card .label { font-size: 0.82rem; font-weight: 600; }
+
+    .checkbox-group { display: flex; flex-direction: column; gap: 0.6rem; }
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.7rem 1rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #ffffff;
+      transition: all 0.2s;
+    }
+    .checkbox-item:hover { border-color: #f97316; }
+    .checkbox-item.checked { border-color: #f97316; background: #fff7ed; }
+    .checkbox-item input { display: none; }
+    .checkbox-item .check-box {
+      width: 18px;
+      height: 18px;
+      border: 2px solid #e5e7eb;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .checkbox-item.checked .check-box { border-color: #f97316; background: #f97316; }
+    .checkbox-item.checked .check-box::after { content: '\2713'; color: #fff; font-size: 0.7rem; }
+    .checkbox-item .check-label { font-size: 0.88rem; font-weight: 500; }
+
+    /* Navigation buttons */
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #e5e7eb;
+    }
+    .btn {
+      font-family: inherit;
+      font-size: 0.88rem;
+      padding: 0.7rem 1.4rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .btn-secondary { background: #f3f4f6; color: #6b7280; }
+    .btn-secondary:hover { background: #e5e7eb; }
+    .btn-primary { background: #f97316; color: #fff; }
+    .btn-primary:hover { background: #ea580c; }
+
+    /* Templates */
+    .template-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .template-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 1.25rem;
+      cursor: pointer;
+      background: #ffffff;
+      transition: all 0.2s;
+    }
+    .template-card:hover { border-color: #f97316; }
+    .template-card.selected { border-color: #f97316; background: #fff7ed; }
+    .template-card .t-name { font-weight: 600; font-size: 0.9rem; margin-bottom: 0.3rem; }
+    .template-card .t-desc { font-size: 0.78rem; color: #6b7280; line-height: 1.4; }
+
+    /* Brief output */
+    .brief {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 2rem;
+    }
+    .brief h2 { font-size: 1.3rem; margin-bottom: 1.25rem; }
+    .brief section { margin-bottom: 1.25rem; }
+    .brief section h3 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #f97316;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.4rem;
+    }
+    .brief section p, .brief section ul {
+      font-size: 0.9rem;
+      color: #374151;
+      line-height: 1.6;
+    }
+    .brief section ul { padding-left: 1.2rem; }
+    .download-btns {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+    .download-btns button {
+      font-family: inherit;
+      font-size: 0.82rem;
+      padding: 0.6rem 1.1rem;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .download-btns button:hover { border-color: #f97316; color: #f97316; }
+
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="nav-brand">
+      <img src="/favicon.svg" alt="FMS">
+      <span>FreeMarketingStore</span>
+    </a>
+    <a href="/" class="nav-back">&larr; All tools</a>
+  </nav>
+
+  <div class="container">
+    <h1>Campaign Planner</h1>
+    <p class="subtitle">Build a full marketing campaign brief in 5 steps. Use a template or start from scratch.</p>
+
+    <div class="steps-bar" id="steps-bar"></div>
+
+    <!-- Step 0: Template -->
+    <div class="step" id="step-0">
+      <div class="step-title">Choose a Template (optional)</div>
+      <div class="template-grid" id="template-grid"></div>
+      <p style="font-size:0.82rem;color:#6b7280;">Or skip to start from scratch.</p>
+    </div>
+
+    <!-- Step 1: Goal -->
+    <div class="step hidden" id="step-1">
+      <div class="step-title">1. Campaign Goal</div>
+      <div class="form-group">
+        <label>Campaign Name</label>
+        <input type="text" id="campaign-name" placeholder="e.g., Summer Product Launch">
+      </div>
+      <div class="form-group">
+        <label>Primary Goal</label>
+        <div class="option-grid" id="goals-grid"></div>
+      </div>
+      <div class="form-group">
+        <label>Success Metric</label>
+        <input type="text" id="success-metric" placeholder="e.g., 500 signups, 10K impressions">
+      </div>
+    </div>
+
+    <!-- Step 2: Audience -->
+    <div class="step hidden" id="step-2">
+      <div class="step-title">2. Target Audience</div>
+      <div class="form-group">
+        <label>Who is this for?</label>
+        <textarea id="audience-desc" placeholder="Describe your target audience: demographics, interests, pain points..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Audience Size Estimate</label>
+        <select id="audience-size">
+          <option value="small">Small (< 1K)</option>
+          <option value="medium" selected>Medium (1K - 50K)</option>
+          <option value="large">Large (50K - 500K)</option>
+          <option value="mass">Mass (500K+)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Step 3: Channels -->
+    <div class="step hidden" id="step-3">
+      <div class="step-title">3. Channels</div>
+      <div class="form-group">
+        <label>Select channels for this campaign</label>
+        <div class="checkbox-group" id="channels-group"></div>
+      </div>
+    </div>
+
+    <!-- Step 4: Timeline -->
+    <div class="step hidden" id="step-4">
+      <div class="step-title">4. Timeline</div>
+      <div class="form-group">
+        <label>Start Date</label>
+        <input type="date" id="start-date">
+      </div>
+      <div class="form-group">
+        <label>End Date</label>
+        <input type="date" id="end-date">
+      </div>
+      <div class="form-group">
+        <label>Key Milestones</label>
+        <textarea id="milestones" placeholder="List key dates or milestones, one per line..."></textarea>
+      </div>
+    </div>
+
+    <!-- Step 5: Tactics -->
+    <div class="step hidden" id="step-5">
+      <div class="step-title">5. Tactics & Messaging</div>
+      <div class="form-group">
+        <label>Key Message</label>
+        <textarea id="key-message" placeholder="The one thing you want people to remember..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Tactics (content types you'll create)</label>
+        <div class="checkbox-group" id="tactics-group"></div>
+      </div>
+      <div class="form-group">
+        <label>Budget (optional)</label>
+        <input type="text" id="budget" placeholder="e.g., $500 or No budget">
+      </div>
+    </div>
+
+    <!-- Brief output -->
+    <div class="step hidden" id="step-brief">
+      <div class="brief" id="brief-output"></div>
+      <div class="download-btns">
+        <button id="download-md">Download Markdown</button>
+        <button id="download-html">Download HTML</button>
+        <button id="start-over">Start Over</button>
+      </div>
+    </div>
+
+    <div class="nav-buttons" id="nav-buttons">
+      <button class="btn btn-secondary" id="prev-btn">Back</button>
+      <button class="btn btn-primary" id="next-btn">Next</button>
+    </div>
+  </div>
+
+  <script>
+    const STEPS = 6; // 0=template, 1-5=wizard steps
+    let currentStep = 0;
+    let selectedTemplate = null;
+    let selectedGoal = '';
+    let selectedChannels = [];
+    let selectedTactics = [];
+
+    const templates = [
+      { id: 'product-launch', name: 'Product Launch', desc: 'Announce a new product with teaser, launch, and follow-up phases.' },
+      { id: 'event', name: 'Event Promotion', desc: 'Drive registrations and attendance for an online or in-person event.' },
+      { id: 'seasonal', name: 'Seasonal Campaign', desc: 'Capitalize on holidays or seasonal trends for sales/awareness.' },
+      { id: 'awareness', name: 'Brand Awareness', desc: 'Build recognition and reach for a new or existing brand.' }
+    ];
+
+    const goals = [
+      { id: 'awareness', label: 'Awareness', icon: '📢' },
+      { id: 'leads', label: 'Lead Gen', icon: '🎯' },
+      { id: 'sales', label: 'Sales', icon: '💰' },
+      { id: 'engagement', label: 'Engagement', icon: '💬' },
+      { id: 'retention', label: 'Retention', icon: '🔄' },
+      { id: 'traffic', label: 'Traffic', icon: '📈' }
+    ];
+
+    const channels = [
+      'X / Twitter', 'Instagram', 'LinkedIn', 'Facebook',
+      'Email', 'Blog / SEO', 'YouTube', 'TikTok',
+      'Paid Ads', 'PR / Press', 'Influencers', 'Podcast'
+    ];
+
+    const tactics = [
+      'Social posts', 'Blog articles', 'Email sequence', 'Landing page',
+      'Video content', 'Infographics', 'Webinar', 'Case studies',
+      'User testimonials', 'Paid ads creative', 'Press release', 'Partnerships'
+    ];
+
+    function renderStepsBar() {
+      const bar = document.getElementById('steps-bar');
+      bar.innerHTML = '';
+      for (let i = 0; i <= 5; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'step-dot' + (i === currentStep ? ' active' : i < currentStep ? ' done' : '');
+        bar.appendChild(dot);
+      }
+    }
+
+    function renderTemplates() {
+      document.getElementById('template-grid').innerHTML = templates.map(t =>
+        `<div class="template-card ${selectedTemplate === t.id ? 'selected' : ''}" data-id="${t.id}">
+          <div class="t-name">${t.name}</div>
+          <div class="t-desc">${t.desc}</div>
+        </div>`
+      ).join('');
+      document.querySelectorAll('.template-card').forEach(c => {
+        c.addEventListener('click', () => {
+          selectedTemplate = c.dataset.id;
+          applyTemplate(selectedTemplate);
+          renderTemplates();
+        });
+      });
+    }
+
+    function applyTemplate(id) {
+      const t = templates.find(x => x.id === id);
+      if (id === 'product-launch') {
+        document.getElementById('campaign-name').value = 'Product Launch Campaign';
+        selectedGoal = 'awareness';
+        document.getElementById('success-metric').value = '10,000 impressions, 500 clicks';
+        document.getElementById('audience-desc').value = 'Existing customers and prospects interested in our category';
+        selectedChannels = ['X / Twitter', 'Instagram', 'Email', 'Blog / SEO'];
+        document.getElementById('key-message').value = 'Introducing the next evolution of [product] — built for [audience].';
+        selectedTactics = ['Social posts', 'Email sequence', 'Landing page', 'Blog articles'];
+      } else if (id === 'event') {
+        document.getElementById('campaign-name').value = 'Event Promotion Campaign';
+        selectedGoal = 'leads';
+        document.getElementById('success-metric').value = '200 registrations';
+        document.getElementById('audience-desc').value = 'Industry professionals and potential customers';
+        selectedChannels = ['Email', 'LinkedIn', 'Paid Ads'];
+        document.getElementById('key-message').value = 'Don\'t miss [event] — your chance to [benefit].';
+        selectedTactics = ['Email sequence', 'Social posts', 'Landing page', 'Paid ads creative'];
+      } else if (id === 'seasonal') {
+        document.getElementById('campaign-name').value = 'Seasonal Sales Campaign';
+        selectedGoal = 'sales';
+        document.getElementById('success-metric').value = '2x revenue vs. average week';
+        document.getElementById('audience-desc').value = 'Price-sensitive shoppers and loyal customers';
+        selectedChannels = ['Email', 'Instagram', 'Paid Ads', 'Facebook'];
+        document.getElementById('key-message').value = 'Limited time offer — save [X]% this [season].';
+        selectedTactics = ['Social posts', 'Email sequence', 'Paid ads creative', 'Landing page'];
+      } else if (id === 'awareness') {
+        document.getElementById('campaign-name').value = 'Brand Awareness Campaign';
+        selectedGoal = 'awareness';
+        document.getElementById('success-metric').value = '50,000 impressions, 5,000 new followers';
+        document.getElementById('audience-desc').value = 'Broad audience in our target demographic who don\'t know us yet';
+        selectedChannels = ['Instagram', 'TikTok', 'YouTube', 'Influencers'];
+        document.getElementById('key-message').value = 'Meet [brand] — we help you [core value proposition].';
+        selectedTactics = ['Video content', 'Social posts', 'Infographics', 'Partnerships'];
+      }
+    }
+
+    function renderGoals() {
+      document.getElementById('goals-grid').innerHTML = goals.map(g =>
+        `<div class="option-card ${selectedGoal === g.id ? 'selected' : ''}" data-id="${g.id}">
+          <div class="icon">${g.icon}</div>
+          <div class="label">${g.label}</div>
+        </div>`
+      ).join('');
+      document.querySelectorAll('#goals-grid .option-card').forEach(c => {
+        c.addEventListener('click', () => {
+          selectedGoal = c.dataset.id;
+          renderGoals();
+        });
+      });
+    }
+
+    function renderChannels() {
+      document.getElementById('channels-group').innerHTML = channels.map(ch =>
+        `<div class="checkbox-item ${selectedChannels.includes(ch) ? 'checked' : ''}" data-val="${ch}">
+          <div class="check-box"></div>
+          <span class="check-label">${ch}</span>
+        </div>`
+      ).join('');
+      document.querySelectorAll('#channels-group .checkbox-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const val = item.dataset.val;
+          if (selectedChannels.includes(val)) {
+            selectedChannels = selectedChannels.filter(c => c !== val);
+          } else {
+            selectedChannels.push(val);
+          }
+          renderChannels();
+        });
+      });
+    }
+
+    function renderTactics() {
+      document.getElementById('tactics-group').innerHTML = tactics.map(t =>
+        `<div class="checkbox-item ${selectedTactics.includes(t) ? 'checked' : ''}" data-val="${t}">
+          <div class="check-box"></div>
+          <span class="check-label">${t}</span>
+        </div>`
+      ).join('');
+      document.querySelectorAll('#tactics-group .checkbox-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const val = item.dataset.val;
+          if (selectedTactics.includes(val)) {
+            selectedTactics = selectedTactics.filter(t => t !== val);
+          } else {
+            selectedTactics.push(val);
+          }
+          renderTactics();
+        });
+      });
+    }
+
+    function showStep(n) {
+      document.querySelectorAll('.step').forEach(s => s.classList.add('hidden'));
+      const stepEl = document.getElementById(n === 6 ? 'step-brief' : `step-${n}`);
+      stepEl.classList.remove('hidden');
+      currentStep = n;
+      renderStepsBar();
+
+      const navBtns = document.getElementById('nav-buttons');
+      navBtns.style.display = n === 6 ? 'none' : 'flex';
+      document.getElementById('prev-btn').style.visibility = n === 0 ? 'hidden' : 'visible';
+      document.getElementById('next-btn').textContent = n === 5 ? 'Generate Brief' : 'Next';
+
+      if (n === 1) renderGoals();
+      if (n === 3) renderChannels();
+      if (n === 5) renderTactics();
+    }
+
+    function generateBrief() {
+      const name = document.getElementById('campaign-name').value || 'Untitled Campaign';
+      const goal = goals.find(g => g.id === selectedGoal)?.label || 'Not set';
+      const metric = document.getElementById('success-metric').value || 'Not defined';
+      const audience = document.getElementById('audience-desc').value || 'Not defined';
+      const audienceSize = document.getElementById('audience-size').value;
+      const startDate = document.getElementById('start-date').value || 'TBD';
+      const endDate = document.getElementById('end-date').value || 'TBD';
+      const milestones = document.getElementById('milestones').value;
+      const message = document.getElementById('key-message').value || 'Not defined';
+      const budget = document.getElementById('budget').value || 'Not specified';
+
+      const html = `
+        <h2>${name}</h2>
+        <section><h3>Goal</h3><p><strong>${goal}</strong> — ${metric}</p></section>
+        <section><h3>Target Audience</h3><p>${audience}</p><p><em>Size: ${audienceSize}</em></p></section>
+        <section><h3>Channels</h3><ul>${selectedChannels.map(c => `<li>${c}</li>`).join('')}</ul></section>
+        <section><h3>Timeline</h3><p>${startDate} to ${endDate}</p>${milestones ? `<p><strong>Milestones:</strong></p><ul>${milestones.split('\n').filter(Boolean).map(m => `<li>${m}</li>`).join('')}</ul>` : ''}</section>
+        <section><h3>Key Message</h3><p>${message}</p></section>
+        <section><h3>Tactics</h3><ul>${selectedTactics.map(t => `<li>${t}</li>`).join('')}</ul></section>
+        <section><h3>Budget</h3><p>${budget}</p></section>
+      `;
+      document.getElementById('brief-output').innerHTML = html;
+    }
+
+    document.getElementById('next-btn').addEventListener('click', () => {
+      if (currentStep === 5) {
+        generateBrief();
+        showStep(6);
+      } else {
+        showStep(currentStep + 1);
+      }
+    });
+
+    document.getElementById('prev-btn').addEventListener('click', () => {
+      if (currentStep > 0) showStep(currentStep - 1);
+    });
+
+    document.getElementById('start-over').addEventListener('click', () => {
+      selectedTemplate = null;
+      selectedGoal = '';
+      selectedChannels = [];
+      selectedTactics = [];
+      document.querySelectorAll('input, textarea').forEach(el => el.value = '');
+      showStep(0);
+    });
+
+    document.getElementById('download-md').addEventListener('click', () => {
+      const name = document.getElementById('campaign-name').value || 'Campaign';
+      const goal = goals.find(g => g.id === selectedGoal)?.label || '';
+      const metric = document.getElementById('success-metric').value || '';
+      const audience = document.getElementById('audience-desc').value || '';
+      const startDate = document.getElementById('start-date').value || 'TBD';
+      const endDate = document.getElementById('end-date').value || 'TBD';
+      const milestones = document.getElementById('milestones').value || '';
+      const message = document.getElementById('key-message').value || '';
+      const budget = document.getElementById('budget').value || '';
+
+      const md = `# ${name}\n\n## Goal\n${goal} — ${metric}\n\n## Target Audience\n${audience}\n\n## Channels\n${selectedChannels.map(c => `- ${c}`).join('\n')}\n\n## Timeline\n${startDate} to ${endDate}\n${milestones ? '\n### Milestones\n' + milestones.split('\n').filter(Boolean).map(m => `- ${m}`).join('\n') : ''}\n\n## Key Message\n${message}\n\n## Tactics\n${selectedTactics.map(t => `- ${t}`).join('\n')}\n\n## Budget\n${budget}\n`;
+      const blob = new Blob([md], { type: 'text/markdown' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = `${name.toLowerCase().replace(/\s+/g, '-')}-brief.md`; a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('download-html').addEventListener('click', () => {
+      const content = document.getElementById('brief-output').innerHTML;
+      const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Campaign Brief</title><style>body{font-family:system-ui;max-width:700px;margin:2rem auto;padding:0 1.5rem;line-height:1.6}h2{color:#f97316}h3{color:#6b7280;text-transform:uppercase;font-size:0.85rem;letter-spacing:0.04em}</style></head><body>${content}</body></html>`;
+      const blob = new Blob([html], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'campaign-brief.html'; a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    renderTemplates();
+    renderStepsBar();
+    showStep(0);
+  </script>
+  <script src="/related.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Content Calendar — FreeMarketingStore</title>
+  <meta name="description" content="Visual weekly/monthly calendar to plan and schedule social media posts across platforms.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Manrope', system-ui, sans-serif;
+      background: #fafafa;
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-decoration: none;
+      color: #1a1a1a;
+    }
+    .nav-brand img { width: 24px; height: 24px; }
+    .nav-back {
+      font-size: 0.85rem;
+      color: #6b7280;
+      text-decoration: none;
+    }
+    .nav-back:hover { color: #f97316; }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+    h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .subtitle {
+      color: #6b7280;
+      font-size: 0.95rem;
+      margin-bottom: 2rem;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .toolbar button, .toolbar select {
+      font-family: inherit;
+      font-size: 0.85rem;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      background: #ffffff;
+      cursor: pointer;
+      font-weight: 500;
+      transition: border-color 0.2s;
+    }
+    .toolbar button:hover, .toolbar select:hover { border-color: #f97316; }
+    .toolbar .btn-primary {
+      background: #f97316;
+      color: #fff;
+      border-color: #f97316;
+    }
+    .toolbar .btn-primary:hover { background: #ea580c; }
+    .month-nav { display: flex; align-items: center; gap: 0.75rem; }
+    .month-nav .month-label { font-weight: 600; font-size: 1rem; min-width: 160px; text-align: center; }
+
+    .legend {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.78rem;
+      color: #6b7280;
+    }
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+    .day-header {
+      padding: 0.75rem 0.5rem;
+      text-align: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #6b7280;
+      background: #f9fafb;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .day-cell {
+      min-height: 110px;
+      padding: 0.5rem;
+      border-right: 1px solid #e5e7eb;
+      border-bottom: 1px solid #e5e7eb;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .day-cell:nth-child(7n) { border-right: none; }
+    .day-cell:hover { background: #fff7ed; }
+    .day-cell.other-month { opacity: 0.3; }
+    .day-cell.today { background: #fff7ed; }
+    .day-num {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #6b7280;
+      margin-bottom: 0.3rem;
+    }
+    .day-cell.today .day-num { color: #f97316; }
+    .post-pill {
+      font-size: 0.68rem;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      margin-bottom: 0.2rem;
+      color: #fff;
+      font-weight: 500;
+      cursor: grab;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .post-pill.twitter { background: #1d9bf0; }
+    .post-pill.instagram { background: #e1306c; }
+    .post-pill.linkedin { background: #0a66c2; }
+    .post-pill.email { background: #16a34a; }
+    .post-pill.dragging { opacity: 0.5; }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 2rem;
+      width: 90%;
+      max-width: 440px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    }
+    .modal h2 {
+      font-size: 1.2rem;
+      margin-bottom: 1.25rem;
+    }
+    .modal label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+      color: #6b7280;
+    }
+    .modal input, .modal select, .modal textarea {
+      width: 100%;
+      padding: 0.6rem 0.8rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.88rem;
+      margin-bottom: 1rem;
+      background: #fafafa;
+    }
+    .modal textarea { resize: vertical; min-height: 70px; }
+    .modal input:focus, .modal select:focus, .modal textarea:focus {
+      outline: none;
+      border-color: #f97316;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+    }
+    .modal-actions button {
+      font-family: inherit;
+      font-size: 0.85rem;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .btn-cancel { background: #f3f4f6; color: #6b7280; }
+    .btn-cancel:hover { background: #e5e7eb; }
+    .btn-save { background: #f97316; color: #fff; }
+    .btn-save:hover { background: #ea580c; }
+    .btn-delete { background: #ef4444; color: #fff; }
+    .btn-delete:hover { background: #dc2626; }
+
+    .export-section {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #e5e7eb;
+    }
+    .export-section h3 {
+      font-size: 1rem;
+      margin-bottom: 0.75rem;
+    }
+    .export-btns { display: flex; gap: 0.75rem; }
+    .export-btns button {
+      font-family: inherit;
+      font-size: 0.82rem;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .export-btns button:hover { border-color: #f97316; color: #f97316; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="nav-brand">
+      <img src="/favicon.svg" alt="FMS">
+      <span>FreeMarketingStore</span>
+    </a>
+    <a href="/" class="nav-back">&larr; All tools</a>
+  </nav>
+
+  <div class="container">
+    <h1>Content Calendar</h1>
+    <p class="subtitle">Plan and schedule social media posts across platforms. Drag posts between days to reschedule.</p>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#1d9bf0"></div>X / Twitter</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#e1306c"></div>Instagram</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#0a66c2"></div>LinkedIn</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#16a34a"></div>Email</div>
+    </div>
+
+    <div class="toolbar">
+      <div class="month-nav">
+        <button id="prev-month">&larr;</button>
+        <span class="month-label" id="month-label"></span>
+        <button id="next-month">&rarr;</button>
+      </div>
+      <button id="today-btn">Today</button>
+      <button class="btn-primary" id="add-post-btn">+ Add Post</button>
+    </div>
+
+    <div class="calendar" id="calendar"></div>
+
+    <div class="export-section">
+      <h3>Export Calendar</h3>
+      <div class="export-btns">
+        <button id="export-json">Export JSON</button>
+        <button id="export-csv">Export CSV</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Modal -->
+  <div class="modal-overlay" id="modal">
+    <div class="modal">
+      <h2 id="modal-title">Add Post</h2>
+      <label for="post-platform">Platform</label>
+      <select id="post-platform">
+        <option value="twitter">X / Twitter</option>
+        <option value="instagram">Instagram</option>
+        <option value="linkedin">LinkedIn</option>
+        <option value="email">Email</option>
+      </select>
+      <label for="post-date">Date</label>
+      <input type="date" id="post-date">
+      <label for="post-title">Title</label>
+      <input type="text" id="post-title" placeholder="Post title or topic">
+      <label for="post-content">Content</label>
+      <textarea id="post-content" placeholder="Post content or notes..."></textarea>
+      <div class="modal-actions">
+        <button class="btn-delete" id="delete-btn" style="display:none">Delete</button>
+        <button class="btn-cancel" id="cancel-btn">Cancel</button>
+        <button class="btn-save" id="save-btn">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'fms-content-calendar';
+    let posts = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    let currentDate = new Date();
+    let editingId = null;
+    let dragPostId = null;
+
+    const calendarEl = document.getElementById('calendar');
+    const monthLabel = document.getElementById('month-label');
+    const modal = document.getElementById('modal');
+    const modalTitle = document.getElementById('modal-title');
+    const postPlatform = document.getElementById('post-platform');
+    const postDate = document.getElementById('post-date');
+    const postTitle = document.getElementById('post-title');
+    const postContent = document.getElementById('post-content');
+    const deleteBtn = document.getElementById('delete-btn');
+
+    function save() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+    }
+
+    function formatDate(d) {
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    }
+
+    function renderCalendar() {
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      monthLabel.textContent = `${monthNames[month]} ${year}`;
+
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const daysInPrev = new Date(year, month, 0).getDate();
+      const today = formatDate(new Date());
+
+      let html = '';
+      const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      days.forEach(d => html += `<div class="day-header">${d}</div>`);
+
+      const totalCells = Math.ceil((firstDay + daysInMonth) / 7) * 7;
+
+      for (let i = 0; i < totalCells; i++) {
+        let dayNum, dateStr, isOther = false;
+        if (i < firstDay) {
+          dayNum = daysInPrev - firstDay + i + 1;
+          dateStr = formatDate(new Date(year, month - 1, dayNum));
+          isOther = true;
+        } else if (i >= firstDay + daysInMonth) {
+          dayNum = i - firstDay - daysInMonth + 1;
+          dateStr = formatDate(new Date(year, month + 1, dayNum));
+          isOther = true;
+        } else {
+          dayNum = i - firstDay + 1;
+          dateStr = formatDate(new Date(year, month, dayNum));
+        }
+
+        const isToday = dateStr === today;
+        const dayPosts = posts.filter(p => p.date === dateStr);
+
+        html += `<div class="day-cell ${isOther ? 'other-month' : ''} ${isToday ? 'today' : ''}" data-date="${dateStr}"
+                      ondragover="event.preventDefault();this.style.background='#fff7ed'"
+                      ondragleave="this.style.background=''"
+                      ondrop="handleDrop(event, '${dateStr}')">
+          <div class="day-num">${dayNum}</div>
+          ${dayPosts.map(p => `<div class="post-pill ${p.platform}" draggable="true"
+            ondragstart="startDrag(event, '${p.id}')"
+            onclick="event.stopPropagation();editPost('${p.id}')"
+            title="${p.title}">${p.title}</div>`).join('')}
+        </div>`;
+      }
+
+      calendarEl.innerHTML = html;
+
+      // Click on day to add post
+      calendarEl.querySelectorAll('.day-cell').forEach(cell => {
+        cell.addEventListener('click', () => {
+          openModal(cell.dataset.date);
+        });
+      });
+    }
+
+    window.startDrag = function(e, id) {
+      dragPostId = id;
+      e.target.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    };
+
+    window.handleDrop = function(e, date) {
+      e.preventDefault();
+      e.currentTarget.style.background = '';
+      if (!dragPostId) return;
+      const post = posts.find(p => p.id === dragPostId);
+      if (post) {
+        post.date = date;
+        save();
+        renderCalendar();
+      }
+      dragPostId = null;
+    };
+
+    function openModal(date, id) {
+      editingId = id || null;
+      if (id) {
+        const post = posts.find(p => p.id === id);
+        modalTitle.textContent = 'Edit Post';
+        postPlatform.value = post.platform;
+        postDate.value = post.date;
+        postTitle.value = post.title;
+        postContent.value = post.content || '';
+        deleteBtn.style.display = 'inline-block';
+      } else {
+        modalTitle.textContent = 'Add Post';
+        postPlatform.value = 'twitter';
+        postDate.value = date || formatDate(new Date());
+        postTitle.value = '';
+        postContent.value = '';
+        deleteBtn.style.display = 'none';
+      }
+      modal.classList.add('active');
+    }
+
+    window.editPost = function(id) {
+      openModal(null, id);
+    };
+
+    function closeModal() {
+      modal.classList.remove('active');
+      editingId = null;
+    }
+
+    document.getElementById('cancel-btn').addEventListener('click', closeModal);
+    modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+
+    document.getElementById('save-btn').addEventListener('click', () => {
+      const title = postTitle.value.trim();
+      if (!title) return;
+      if (editingId) {
+        const post = posts.find(p => p.id === editingId);
+        post.platform = postPlatform.value;
+        post.date = postDate.value;
+        post.title = title;
+        post.content = postContent.value;
+      } else {
+        posts.push({
+          id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+          platform: postPlatform.value,
+          date: postDate.value,
+          title: title,
+          content: postContent.value
+        });
+      }
+      save();
+      renderCalendar();
+      closeModal();
+    });
+
+    deleteBtn.addEventListener('click', () => {
+      if (editingId) {
+        posts = posts.filter(p => p.id !== editingId);
+        save();
+        renderCalendar();
+        closeModal();
+      }
+    });
+
+    document.getElementById('add-post-btn').addEventListener('click', () => openModal(formatDate(new Date())));
+    document.getElementById('prev-month').addEventListener('click', () => {
+      currentDate.setMonth(currentDate.getMonth() - 1);
+      renderCalendar();
+    });
+    document.getElementById('next-month').addEventListener('click', () => {
+      currentDate.setMonth(currentDate.getMonth() + 1);
+      renderCalendar();
+    });
+    document.getElementById('today-btn').addEventListener('click', () => {
+      currentDate = new Date();
+      renderCalendar();
+    });
+
+    // Export
+    document.getElementById('export-json').addEventListener('click', () => {
+      const blob = new Blob([JSON.stringify(posts, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'content-calendar.json'; a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('export-csv').addEventListener('click', () => {
+      const header = 'Date,Platform,Title,Content\n';
+      const rows = posts.map(p => `"${p.date}","${p.platform}","${p.title.replace(/"/g,'""')}","${(p.content||'').replace(/"/g,'""')}"`).join('\n');
+      const blob = new Blob([header + rows], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'content-calendar.csv'; a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    renderCalendar();
+  </script>
+  <script src="/related.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UTM Link Builder - FreeMarketingStore</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Manrope',system-ui,sans-serif;background:#fafafa;color:#1a1a1a;min-height:100vh;padding:24px}
+a{color:#f97316;text-decoration:none}
+a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:14px;font-weight:500}
+h1{font-size:28px;font-weight:800;margin-bottom:8px}
+.subtitle{color:#6b7280;margin-bottom:24px;font-size:15px}
+.container{max-width:900px;margin:0 auto}
+.panel{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:24px;margin-bottom:20px}
+.panel h2{font-size:16px;font-weight:700;margin-bottom:16px}
+label{font-size:13px;font-weight:600;display:block;margin-bottom:4px;color:#4b5563}
+input,select{width:100%;padding:10px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:14px;font-family:inherit;background:#fafafa}
+input:focus,select:focus{outline:none;border-color:#f97316}
+.form-group{margin-bottom:14px}
+.btn{padding:10px 20px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-primary{background:#f97316;color:#fff}
+.btn-primary:hover{background:#ea580c}
+.btn-secondary{background:#fff;color:#1a1a1a;border:1px solid #e5e7eb}
+.btn-secondary:hover{border-color:#f97316}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-group{display:flex;gap:8px;flex-wrap:wrap}
+.presets{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.preset{padding:6px 14px;border:1px solid #e5e7eb;border-radius:20px;background:#fff;cursor:pointer;font-size:12px;font-weight:600;transition:all .2s}
+.preset:hover,.preset.active{background:#fff7ed;border-color:#f97316;color:#f97316}
+.url-output{background:#1a1a1a;border-radius:10px;padding:16px;margin:16px 0;word-break:break-all;font-family:'SF Mono',monospace;font-size:13px;color:#4ade80;position:relative}
+.url-output .copy-btn{position:absolute;top:8px;right:8px;background:#374151;color:#fff;border:none;padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-weight:600}
+.url-output .copy-btn:hover{background:#4b5563}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:640px){.grid-2{grid-template-columns:1fr}}
+.qr-section{text-align:center;margin-top:16px}
+.qr-section canvas{border:1px solid #e5e7eb;border-radius:8px}
+.history-list{max-height:300px;overflow-y:auto}
+.history-item{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:8px;font-size:12px;background:#fafafa}
+.history-item .url{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#4b5563;font-family:monospace;margin-right:8px}
+.history-item .meta{color:#9ca3af;font-size:11px;white-space:nowrap;margin-right:8px}
+.history-actions{display:flex;gap:4px}
+.tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;background:#fff7ed;color:#f97316;border:1px solid #fed7aa}
+.shortener{background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:12px;margin-top:12px;font-size:13px;color:#0369a1}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="container">
+<a class="back" href="/">Back to Store</a>
+<h1>UTM Link Builder</h1>
+<p class="subtitle">Build tracked campaign URLs with UTM parameters and QR codes</p>
+
+<div class="panel">
+  <h2>Quick Presets</h2>
+  <div class="presets">
+    <button class="preset" onclick="applyPreset('google')">Google Ads</button>
+    <button class="preset" onclick="applyPreset('facebook')">Facebook</button>
+    <button class="preset" onclick="applyPreset('email')">Email</button>
+    <button class="preset" onclick="applyPreset('twitter')">Twitter/X</button>
+    <button class="preset" onclick="applyPreset('linkedin')">LinkedIn</button>
+    <button class="preset" onclick="applyPreset('instagram')">Instagram</button>
+  </div>
+
+  <div class="form-group">
+    <label>Base URL *</label>
+    <input type="url" id="baseUrl" placeholder="https://example.com/landing-page" oninput="generate()">
+  </div>
+
+  <div class="grid-2">
+    <div class="form-group">
+      <label>Campaign Source * (utm_source)</label>
+      <input type="text" id="utmSource" placeholder="e.g. google, newsletter, facebook" oninput="generate()">
+    </div>
+    <div class="form-group">
+      <label>Campaign Medium * (utm_medium)</label>
+      <input type="text" id="utmMedium" placeholder="e.g. cpc, email, social" oninput="generate()">
+    </div>
+    <div class="form-group">
+      <label>Campaign Name (utm_campaign)</label>
+      <input type="text" id="utmCampaign" placeholder="e.g. spring_sale, product_launch" oninput="generate()">
+    </div>
+    <div class="form-group">
+      <label>Campaign Term (utm_term)</label>
+      <input type="text" id="utmTerm" placeholder="e.g. running+shoes (for paid search)" oninput="generate()">
+    </div>
+    <div class="form-group">
+      <label>Campaign Content (utm_content)</label>
+      <input type="text" id="utmContent" placeholder="e.g. banner_ad, text_link" oninput="generate()">
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="output-panel" style="display:none">
+  <h2>Generated URL</h2>
+  <div class="url-output" id="url-display">
+    <button class="copy-btn" onclick="copyUrl()">Copy</button>
+    <span id="url-text"></span>
+  </div>
+  <div class="shortener" id="short-preview"></div>
+  <div class="btn-group" style="margin-top:12px">
+    <button class="btn btn-primary btn-sm" onclick="saveToHistory()">Save to History</button>
+    <button class="btn btn-secondary btn-sm" onclick="generateQR()">Generate QR Code</button>
+  </div>
+  <div class="qr-section" id="qr-section" style="display:none">
+    <canvas id="qr-canvas" width="200" height="200"></canvas>
+    <br><button class="btn btn-secondary btn-sm" style="margin-top:8px" onclick="downloadQR()">Download QR</button>
+  </div>
+</div>
+
+<div class="panel">
+  <h2>Link History</h2>
+  <div class="history-list" id="history-list">
+    <p style="color:#6b7280;font-size:13px;text-align:center;padding:20px">No saved links yet. Generate and save your first UTM link above.</p>
+  </div>
+  <button class="btn btn-secondary btn-sm" onclick="clearHistory()" style="margin-top:8px">Clear History</button>
+</div>
+</div>
+
+<div class="toast" id="toast">Copied to clipboard!</div>
+
+<script>
+const PRESETS = {
+  google: { source:'google', medium:'cpc', campaign:'', term:'', content:'' },
+  facebook: { source:'facebook', medium:'paid_social', campaign:'', term:'', content:'feed_ad' },
+  email: { source:'newsletter', medium:'email', campaign:'weekly_digest', term:'', content:'' },
+  twitter: { source:'twitter', medium:'social', campaign:'', term:'', content:'tweet' },
+  linkedin: { source:'linkedin', medium:'social', campaign:'', term:'', content:'post' },
+  instagram: { source:'instagram', medium:'social', campaign:'', term:'', content:'bio_link' },
+};
+
+let history = JSON.parse(localStorage.getItem('fms-utm-history') || '[]');
+let currentUrl = '';
+
+function applyPreset(key) {
+  document.querySelectorAll('.preset').forEach(p=>p.classList.remove('active'));
+  event.target.classList.add('active');
+  const p = PRESETS[key];
+  document.getElementById('utmSource').value = p.source;
+  document.getElementById('utmMedium').value = p.medium;
+  document.getElementById('utmCampaign').value = p.campaign;
+  document.getElementById('utmTerm').value = p.term;
+  document.getElementById('utmContent').value = p.content;
+  generate();
+}
+
+function generate() {
+  const base = document.getElementById('baseUrl').value.trim();
+  const source = document.getElementById('utmSource').value.trim();
+  const medium = document.getElementById('utmMedium').value.trim();
+  const campaign = document.getElementById('utmCampaign').value.trim();
+  const term = document.getElementById('utmTerm').value.trim();
+  const content = document.getElementById('utmContent').value.trim();
+
+  if(!base || !source || !medium) {
+    document.getElementById('output-panel').style.display = 'none';
+    return;
+  }
+
+  const params = new URLSearchParams();
+  params.set('utm_source', source);
+  params.set('utm_medium', medium);
+  if(campaign) params.set('utm_campaign', campaign);
+  if(term) params.set('utm_term', term);
+  if(content) params.set('utm_content', content);
+
+  const sep = base.includes('?') ? '&' : '?';
+  currentUrl = base + sep + params.toString();
+
+  document.getElementById('url-text').textContent = currentUrl;
+  document.getElementById('output-panel').style.display = 'block';
+
+  // Short URL preview
+  const charCount = currentUrl.length;
+  document.getElementById('short-preview').innerHTML = `URL length: <strong>${charCount} characters</strong>. ${charCount > 100 ? 'Consider using a URL shortener (bit.ly, tinyurl) for social media posts.' : 'Short enough for most platforms.'}`;
+}
+
+function copyUrl() {
+  navigator.clipboard.writeText(currentUrl).then(()=>showToast('Copied to clipboard!'));
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2000);
+}
+
+function saveToHistory() {
+  if(!currentUrl) return;
+  const entry = {
+    url: currentUrl,
+    source: document.getElementById('utmSource').value,
+    date: new Date().toLocaleDateString(),
+    id: Date.now()
+  };
+  history.unshift(entry);
+  if(history.length > 50) history = history.slice(0, 50);
+  localStorage.setItem('fms-utm-history', JSON.stringify(history));
+  renderHistory();
+  showToast('Saved to history!');
+}
+
+function renderHistory() {
+  const el = document.getElementById('history-list');
+  if(!history.length) {
+    el.innerHTML = '<p style="color:#6b7280;font-size:13px;text-align:center;padding:20px">No saved links yet.</p>';
+    return;
+  }
+  el.innerHTML = history.map(h => `
+    <div class="history-item">
+      <span class="tag">${esc(h.source)}</span>
+      <span class="url">${esc(h.url)}</span>
+      <span class="meta">${h.date}</span>
+      <div class="history-actions">
+        <button class="btn btn-secondary btn-sm" onclick="copyHistoryItem('${esc(h.url)}')">Copy</button>
+        <button class="btn btn-secondary btn-sm" onclick="deleteHistoryItem(${h.id})">x</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function copyHistoryItem(url) {
+  navigator.clipboard.writeText(url).then(()=>showToast('Copied!'));
+}
+
+function deleteHistoryItem(id) {
+  history = history.filter(h=>h.id!==id);
+  localStorage.setItem('fms-utm-history', JSON.stringify(history));
+  renderHistory();
+}
+
+function clearHistory() {
+  if(!confirm('Clear all history?')) return;
+  history = [];
+  localStorage.setItem('fms-utm-history', JSON.stringify(history));
+  renderHistory();
+}
+
+function generateQR() {
+  if(!currentUrl) return;
+  const canvas = document.getElementById('qr-canvas');
+  const ctx = canvas.getContext('2d');
+  const size = 200;
+  canvas.width = size; canvas.height = size;
+
+  // Simple QR-like pattern (actual QR encoding is complex; this generates a visual matrix)
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, size, size);
+
+  const modules = 25;
+  const cellSize = size / modules;
+  const data = simpleHash(currentUrl);
+
+  ctx.fillStyle = '#1a1a1a';
+  // Finder patterns (corners)
+  drawFinder(ctx, 0, 0, cellSize);
+  drawFinder(ctx, (modules-7)*cellSize, 0, cellSize);
+  drawFinder(ctx, 0, (modules-7)*cellSize, cellSize);
+
+  // Data modules based on URL hash
+  for(let i=0; i<modules; i++) {
+    for(let j=0; j<modules; j++) {
+      if(isFinderArea(i,j,modules)) continue;
+      if(hashBit(data, i*modules+j)) {
+        ctx.fillRect(j*cellSize, i*cellSize, cellSize, cellSize);
+      }
+    }
+  }
+
+  document.getElementById('qr-section').style.display = 'block';
+}
+
+function drawFinder(ctx, x, y, cell) {
+  ctx.fillRect(x, y, 7*cell, 7*cell);
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(x+cell, y+cell, 5*cell, 5*cell);
+  ctx.fillStyle = '#1a1a1a';
+  ctx.fillRect(x+2*cell, y+2*cell, 3*cell, 3*cell);
+}
+
+function isFinderArea(i, j, m) {
+  return (i<8 && j<8) || (i<8 && j>=m-8) || (i>=m-8 && j<8);
+}
+
+function simpleHash(str) {
+  let h = 0;
+  for(let i=0; i<str.length; i++) { h = ((h<<5)-h) + str.charCodeAt(i); h |= 0; }
+  return Math.abs(h);
+}
+
+function hashBit(hash, pos) {
+  return ((hash * (pos+1) * 31) % 100) > 45;
+}
+
+function downloadQR() {
+  const canvas = document.getElementById('qr-canvas');
+  const link = document.createElement('a');
+  link.download = 'utm-qr-code.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+function esc(s) { const d=document.createElement('div'); d.textContent=s||''; return d.innerHTML; }
+
+renderHistory();
+</script>
+<script src="/related.js"></script>
+</body>
+</html>

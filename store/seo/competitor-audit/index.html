@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Competitor Quick Audit - FreeMarketingStore</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Manrope',system-ui,sans-serif;background:#fafafa;color:#1a1a1a;min-height:100vh;padding:24px}
+a{color:#f97316;text-decoration:none}
+a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:14px;font-weight:500}
+h1{font-size:28px;font-weight:800;margin-bottom:8px}
+.subtitle{color:#6b7280;margin-bottom:24px;font-size:15px}
+.container{max-width:1000px;margin:0 auto}
+.panel{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:24px;margin-bottom:20px}
+.panel h2{font-size:16px;font-weight:700;margin-bottom:16px}
+label{font-size:13px;font-weight:600;display:block;margin-bottom:4px;color:#4b5563}
+input{width:100%;padding:10px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:14px;font-family:inherit;background:#fafafa}
+input:focus{outline:none;border-color:#f97316}
+.form-group{margin-bottom:14px}
+.btn{padding:10px 20px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-primary{background:#f97316;color:#fff}
+.btn-primary:hover{background:#ea580c}
+.btn-secondary{background:#fff;color:#1a1a1a;border:1px solid #e5e7eb}
+.btn-secondary:hover{border-color:#f97316}
+.btn-group{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-top:16px}
+@media(max-width:768px){.grid-4{grid-template-columns:1fr}}
+.audit-header{background:#fafafa;padding:10px;font-size:12px;font-weight:700;text-align:center;border-radius:6px}
+.audit-cell{padding:8px;text-align:center;border-bottom:1px solid #f3f4f6}
+.audit-category{font-size:11px;font-weight:700;text-transform:uppercase;color:#f97316;padding:12px 8px 6px;grid-column:1/-1;background:#fff7ed;border-radius:6px;margin-top:8px}
+.check-item{display:flex;align-items:center;gap:6px;padding:6px 8px;font-size:13px;cursor:pointer;border-radius:4px}
+.check-item:hover{background:#fafafa}
+.check-item input[type="checkbox"]{width:16px;height:16px;accent-color:#f97316}
+.score-badge{display:inline-block;padding:4px 10px;border-radius:12px;font-size:13px;font-weight:700}
+.score-high{background:#ecfdf5;color:#059669}
+.score-mid{background:#fef3c7;color:#d97706}
+.score-low{background:#fee2e2;color:#dc2626}
+.radar-container{display:flex;justify-content:center;margin:20px 0}
+.radar-container canvas{max-width:100%}
+.legend{display:flex;gap:16px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600}
+.legend-dot{width:12px;height:12px;border-radius:50%}
+.action-items{margin-top:16px}
+.action-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:8px;font-size:13px;background:#fafafa}
+.action-icon{width:24px;height:24px;border-radius:50%;background:#fff7ed;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px}
+.action-text strong{color:#f97316}
+.scores-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:20px}
+.score-card{background:#fafafa;border:1px solid #e5e7eb;border-radius:10px;padding:16px;text-align:center}
+.score-card .name{font-size:13px;font-weight:700;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.score-card .total{font-size:28px;font-weight:800;color:#f97316}
+.score-card .breakdown{font-size:11px;color:#6b7280;margin-top:4px}
+.url-inputs{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:640px){.url-inputs{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+<a class="back" href="/">Back to Store</a>
+<h1>Competitor Quick Audit</h1>
+<p class="subtitle">Compare your online presence against competitors across SEO, Content, Social, and UX</p>
+
+<div class="panel">
+  <h2>Setup Comparison</h2>
+  <div class="url-inputs">
+    <div class="form-group">
+      <label>Your Site</label>
+      <input type="text" id="site-you" placeholder="yoursite.com" value="">
+    </div>
+    <div class="form-group">
+      <label>Competitor 1</label>
+      <input type="text" id="site-c1" placeholder="competitor1.com">
+    </div>
+    <div class="form-group">
+      <label>Competitor 2 (optional)</label>
+      <input type="text" id="site-c2" placeholder="competitor2.com">
+    </div>
+    <div class="form-group">
+      <label>Competitor 3 (optional)</label>
+      <input type="text" id="site-c3" placeholder="competitor3.com">
+    </div>
+  </div>
+  <button class="btn btn-primary" onclick="setupAudit()">Start Audit</button>
+</div>
+
+<div id="audit-section" style="display:none">
+  <div class="panel">
+    <h2>Audit Checklist</h2>
+    <p style="font-size:13px;color:#6b7280;margin-bottom:12px">Check each item that applies to each site. Be honest about your own site too.</p>
+    <div id="checklist-grid"></div>
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="calculateResults()">Calculate Scores</button>
+    </div>
+  </div>
+</div>
+
+<div id="results-section" style="display:none">
+  <div class="panel">
+    <h2>Overall Scores</h2>
+    <div class="scores-summary" id="scores-summary"></div>
+    <div class="radar-container"><canvas id="radar" width="400" height="400"></canvas></div>
+    <div class="legend" id="legend"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Action Items</h2>
+    <p style="font-size:13px;color:#6b7280;margin-bottom:12px">Based on what competitors have that you don't:</p>
+    <div class="action-items" id="action-items"></div>
+  </div>
+</div>
+</div>
+
+<script>
+const CATEGORIES = {
+  seo: {
+    name: 'SEO',
+    items: [
+      'Has meta title & description on all pages',
+      'Uses structured data / schema markup',
+      'Has XML sitemap',
+      'Fast page load (under 3s)',
+      'Mobile-responsive design',
+      'Has SSL certificate (HTTPS)',
+      'Clean URL structure',
+      'Has canonical tags'
+    ]
+  },
+  content: {
+    name: 'Content',
+    items: [
+      'Active blog (updated in last 30 days)',
+      'Has email newsletter signup',
+      'Offers lead magnets (ebooks, guides)',
+      'Has case studies or testimonials',
+      'Video content on site',
+      'FAQ / Help center',
+      'Content is well-organized with clear CTAs',
+      'Has a resources / tools section'
+    ]
+  },
+  social: {
+    name: 'Social',
+    items: [
+      'Active on Twitter/X',
+      'Active on LinkedIn',
+      'Active on Instagram',
+      'Active on YouTube',
+      'Has social sharing buttons',
+      'Displays social proof (follower counts)',
+      'Community / forum presence',
+      'Regular posting schedule (3+/week)'
+    ]
+  },
+  ux: {
+    name: 'UX',
+    items: [
+      'Clear value proposition above the fold',
+      'Simple navigation (max 7 items)',
+      'Has live chat or chatbot',
+      'Clear pricing page',
+      'Has free trial or freemium',
+      'Trust signals (logos, badges, reviews)',
+      'Fast & frictionless signup flow',
+      'Accessible (good contrast, alt text)'
+    ]
+  }
+};
+
+const COLORS = ['#f97316','#3b82f6','#10b981','#8b5cf6'];
+let sites = [];
+
+function setupAudit() {
+  const you = document.getElementById('site-you').value.trim();
+  const c1 = document.getElementById('site-c1').value.trim();
+  const c2 = document.getElementById('site-c2').value.trim();
+  const c3 = document.getElementById('site-c3').value.trim();
+
+  if(!you || !c1){ alert('Enter at least your site and one competitor'); return; }
+  sites = [you, c1];
+  if(c2) sites.push(c2);
+  if(c3) sites.push(c3);
+
+  renderChecklist();
+  document.getElementById('audit-section').style.display = 'block';
+  document.getElementById('results-section').style.display = 'none';
+}
+
+function renderChecklist() {
+  const grid = document.getElementById('checklist-grid');
+  let html = '<div class="grid-4" style="grid-template-columns:200px repeat('+sites.length+',1fr)">';
+
+  // Header row
+  html += '<div class="audit-header">Criteria</div>';
+  sites.forEach((s,i) => html += `<div class="audit-header" style="color:${COLORS[i]}">${esc(s)}</div>`);
+
+  Object.entries(CATEGORIES).forEach(([catKey, cat]) => {
+    html += `<div class="audit-category" style="grid-column:1/-1">${cat.name}</div>`;
+    cat.items.forEach((item, idx) => {
+      html += `<div class="check-item" style="text-align:left;font-size:12px">${esc(item)}</div>`;
+      sites.forEach((s, si) => {
+        html += `<div class="audit-cell"><input type="checkbox" data-cat="${catKey}" data-item="${idx}" data-site="${si}"></div>`;
+      });
+    });
+  });
+
+  html += '</div>';
+  grid.innerHTML = html;
+}
+
+function calculateResults() {
+  const scores = sites.map(() => ({ seo:0, content:0, social:0, ux:0 }));
+  const maxPerCat = {};
+  Object.keys(CATEGORIES).forEach(k => maxPerCat[k] = CATEGORIES[k].items.length);
+
+  document.querySelectorAll('#checklist-grid input[type="checkbox"]').forEach(cb => {
+    if(cb.checked) {
+      const si = parseInt(cb.dataset.site);
+      const cat = cb.dataset.cat;
+      scores[si][cat]++;
+    }
+  });
+
+  // Render scores summary
+  const summary = document.getElementById('scores-summary');
+  summary.innerHTML = sites.map((s, i) => {
+    const total = Object.values(scores[i]).reduce((a,b)=>a+b, 0);
+    const max = Object.values(maxPerCat).reduce((a,b)=>a+b, 0);
+    const pct = Math.round((total/max)*100);
+    const cls = pct>=70?'score-high':pct>=40?'score-mid':'score-low';
+    return `<div class="score-card">
+      <div class="name" style="color:${COLORS[i]}">${esc(s)}</div>
+      <div class="total">${pct}<span style="font-size:14px;color:#6b7280">%</span></div>
+      <div class="breakdown">SEO ${scores[i].seo}/${maxPerCat.seo} | Content ${scores[i].content}/${maxPerCat.content} | Social ${scores[i].social}/${maxPerCat.social} | UX ${scores[i].ux}/${maxPerCat.ux}</div>
+    </div>`;
+  }).join('');
+
+  // Draw radar
+  drawRadar(scores, maxPerCat);
+
+  // Legend
+  document.getElementById('legend').innerHTML = sites.map((s,i) => `<div class="legend-item"><div class="legend-dot" style="background:${COLORS[i]}"></div>${esc(s)}</div>`).join('');
+
+  // Action items
+  generateActions(scores, maxPerCat);
+
+  document.getElementById('results-section').style.display = 'block';
+  document.getElementById('results-section').scrollIntoView({behavior:'smooth'});
+}
+
+function drawRadar(scores, maxPerCat) {
+  const canvas = document.getElementById('radar');
+  const ctx = canvas.getContext('2d');
+  const W = 400, H = 400;
+  canvas.width = W; canvas.height = H;
+  ctx.clearRect(0,0,W,H);
+
+  const cx = W/2, cy = H/2, r = 150;
+  const cats = Object.keys(CATEGORIES);
+  const n = cats.length;
+  const angleStep = (Math.PI*2) / n;
+
+  // Draw grid
+  for(let level=1; level<=4; level++) {
+    ctx.beginPath();
+    const lr = (level/4)*r;
+    for(let i=0; i<=n; i++) {
+      const a = -Math.PI/2 + i*angleStep;
+      const x = cx + lr*Math.cos(a);
+      const y = cy + lr*Math.sin(a);
+      i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    }
+    ctx.strokeStyle = '#e5e7eb';
+    ctx.stroke();
+  }
+
+  // Draw axes & labels
+  ctx.fillStyle = '#6b7280'; ctx.font = '12px Manrope,sans-serif'; ctx.textAlign = 'center';
+  for(let i=0; i<n; i++) {
+    const a = -Math.PI/2 + i*angleStep;
+    const x1 = cx + r*Math.cos(a);
+    const y1 = cy + r*Math.sin(a);
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(x1,y1);
+    ctx.strokeStyle = '#e5e7eb'; ctx.stroke();
+    const lx = cx + (r+20)*Math.cos(a);
+    const ly = cy + (r+20)*Math.sin(a);
+    ctx.fillText(CATEGORIES[cats[i]].name, lx, ly+4);
+  }
+
+  // Draw data polygons
+  sites.forEach((s, si) => {
+    ctx.beginPath();
+    for(let i=0; i<=n; i++) {
+      const idx = i % n;
+      const a = -Math.PI/2 + idx*angleStep;
+      const val = scores[si][cats[idx]] / maxPerCat[cats[idx]];
+      const x = cx + val*r*Math.cos(a);
+      const y = cy + val*r*Math.sin(a);
+      i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = COLORS[si];
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.fillStyle = COLORS[si] + '20';
+    ctx.fill();
+  });
+}
+
+function generateActions(scores, maxPerCat) {
+  const el = document.getElementById('action-items');
+  const yourScores = scores[0];
+  const actions = [];
+
+  Object.entries(CATEGORIES).forEach(([catKey, cat]) => {
+    cat.items.forEach((item, idx) => {
+      // Check if you don't have it but any competitor does
+      const youHave = document.querySelector(`input[data-cat="${catKey}"][data-item="${idx}"][data-site="0"]`).checked;
+      if(youHave) return;
+      const competitorHas = sites.slice(1).some((s,i) => {
+        return document.querySelector(`input[data-cat="${catKey}"][data-item="${idx}"][data-site="${i+1}"]`).checked;
+      });
+      if(competitorHas) {
+        const whoHas = sites.slice(1).filter((s,i) => document.querySelector(`input[data-cat="${catKey}"][data-item="${idx}"][data-site="${i+1}"]`).checked);
+        actions.push({ category: cat.name, item, competitors: whoHas });
+      }
+    });
+  });
+
+  if(!actions.length) {
+    el.innerHTML = '<p style="color:#059669;font-size:14px;font-weight:600">Great job! Your competitors don\'t have anything you\'re missing.</p>';
+    return;
+  }
+
+  el.innerHTML = actions.map(a => `
+    <div class="action-item">
+      <div class="action-icon">!</div>
+      <div class="action-text"><strong>[${a.category}]</strong> ${esc(a.item)} — ${a.competitors.map(c=>esc(c)).join(', ')} ${a.competitors.length>1?'have':'has'} this, you don't. Consider adding it.</div>
+    </div>
+  `).join('');
+}
+
+function esc(s){ const d=document.createElement('div'); d.textContent=s||''; return d.innerHTML; }
+</script>
+<script src="/related.js"></script>
+</body>
+</html>

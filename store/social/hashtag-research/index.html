@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hashtag Research Tool — FreeMarketingStore</title>
+  <meta name="description" content="Find and categorize hashtags by reach and relevance with platform-specific limits.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Manrope', system-ui, sans-serif;
+      background: #fafafa;
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      max-width: 900px; margin: 0 auto; padding: 1rem 1.5rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .nav-brand {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-weight: 700; font-size: 0.95rem; text-decoration: none; color: #1a1a1a;
+    }
+    .nav-brand img { width: 24px; height: 24px; }
+    .nav-back { font-size: 0.85rem; color: #6b7280; text-decoration: none; }
+    .nav-back:hover { color: #f97316; }
+
+    .container { max-width: 700px; margin: 0 auto; padding: 2rem 1.5rem; }
+    h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .subtitle { color: #6b7280; font-size: 0.95rem; margin-bottom: 2rem; }
+
+    .input-row {
+      display: flex; gap: 0.75rem; margin-bottom: 1.5rem;
+    }
+    .input-row input {
+      flex: 1; padding: 0.75rem 1rem; border: 1px solid #e5e7eb;
+      border-radius: 8px; font-family: inherit; font-size: 0.9rem; background: #ffffff;
+    }
+    .input-row input:focus { outline: none; border-color: #f97316; }
+    .input-row button {
+      padding: 0.75rem 1.5rem; border-radius: 8px; border: none;
+      background: #f97316; color: #fff; font-family: inherit;
+      font-size: 0.88rem; font-weight: 600; cursor: pointer;
+    }
+    .input-row button:hover { background: #ea580c; }
+
+    .platform-select {
+      display: flex; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap;
+    }
+    .plat-btn {
+      padding: 0.45rem 0.9rem; border-radius: 20px;
+      border: 1px solid #e5e7eb; background: #ffffff;
+      font-size: 0.8rem; font-weight: 500; cursor: pointer;
+      font-family: inherit; color: #6b7280; transition: all 0.2s;
+    }
+    .plat-btn:hover { border-color: #f97316; color: #f97316; }
+    .plat-btn.active { background: #f97316; color: #fff; border-color: #f97316; }
+
+    .results { display: none; }
+    .results.visible { display: block; }
+
+    .category-section { margin-bottom: 2rem; }
+    .category-header {
+      display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;
+    }
+    .category-header h3 { font-size: 1rem; font-weight: 600; }
+    .category-badge {
+      font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 10px;
+      font-weight: 600;
+    }
+    .badge-broad { background: #dbeafe; color: #1d4ed8; }
+    .badge-niche { background: #dcfce7; color: #16a34a; }
+    .badge-branded { background: #fef3c7; color: #d97706; }
+
+    .category-desc {
+      font-size: 0.8rem; color: #6b7280; margin-bottom: 0.75rem;
+    }
+
+    .tag-grid {
+      display: flex; flex-wrap: wrap; gap: 0.4rem;
+    }
+    .tag {
+      padding: 0.4rem 0.75rem; border-radius: 6px;
+      font-size: 0.82rem; font-weight: 500; cursor: pointer;
+      border: 1px solid #e5e7eb; background: #ffffff;
+      transition: all 0.2s;
+    }
+    .tag:hover { border-color: #f97316; color: #f97316; }
+    .tag.selected { background: #f97316; color: #fff; border-color: #f97316; }
+
+    .optimal-mix {
+      background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px;
+      padding: 1.5rem; margin-top: 2rem;
+    }
+    .optimal-mix h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .mix-info { font-size: 0.82rem; color: #6b7280; margin-bottom: 1rem; }
+    .mix-tags {
+      display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem;
+    }
+    .mix-tag {
+      padding: 0.35rem 0.65rem; border-radius: 5px;
+      font-size: 0.8rem; font-weight: 500; color: #fff;
+    }
+    .mix-tag.broad { background: #3b82f6; }
+    .mix-tag.niche { background: #16a34a; }
+    .mix-tag.branded { background: #d97706; }
+
+    .copy-set-btn {
+      font-family: inherit; font-size: 0.82rem; padding: 0.5rem 1rem;
+      border-radius: 8px; border: 1px solid #e5e7eb; background: #fff;
+      cursor: pointer; font-weight: 500; transition: all 0.2s;
+    }
+    .copy-set-btn:hover { border-color: #f97316; color: #f97316; }
+    .copy-set-btn.copied { background: #f97316; color: #fff; border-color: #f97316; }
+
+    .limit-note {
+      margin-top: 1rem; padding: 0.75rem 1rem;
+      background: #fff7ed; border-radius: 8px;
+      font-size: 0.8rem; color: #9a3412;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="nav-brand"><img src="/favicon.svg" alt="FMS"><span>FreeMarketingStore</span></a>
+    <a href="/" class="nav-back">&larr; All tools</a>
+  </nav>
+
+  <div class="container">
+    <h1>Hashtag Research Tool</h1>
+    <p class="subtitle">Find the right mix of hashtags for maximum reach and engagement.</p>
+
+    <div class="platform-select" id="platform-select"></div>
+
+    <div class="input-row">
+      <input type="text" id="topic-input" placeholder="Enter a topic (e.g., content marketing, fitness, SaaS)">
+      <button id="research-btn">Research</button>
+    </div>
+
+    <div class="results" id="results">
+      <div class="category-section" id="broad-section">
+        <div class="category-header">
+          <h3>Broad (High Volume)</h3>
+          <span class="category-badge badge-broad">High reach</span>
+        </div>
+        <p class="category-desc">Popular hashtags with high competition. Good for visibility but harder to stand out.</p>
+        <div class="tag-grid" id="broad-tags"></div>
+      </div>
+
+      <div class="category-section" id="niche-section">
+        <div class="category-header">
+          <h3>Niche (Targeted)</h3>
+          <span class="category-badge badge-niche">High engagement</span>
+        </div>
+        <p class="category-desc">More specific hashtags. Lower volume but better engagement and discoverability.</p>
+        <div class="tag-grid" id="niche-tags"></div>
+      </div>
+
+      <div class="category-section" id="branded-section">
+        <div class="category-header">
+          <h3>Branded</h3>
+          <span class="category-badge badge-branded">Community</span>
+        </div>
+        <p class="category-desc">Create ownership. Use consistently to build a recognizable community tag.</p>
+        <div class="tag-grid" id="branded-tags"></div>
+      </div>
+
+      <div class="optimal-mix" id="optimal-mix">
+        <h3>Suggested Optimal Mix</h3>
+        <p class="mix-info" id="mix-info"></p>
+        <div class="mix-tags" id="mix-tags"></div>
+        <button class="copy-set-btn" id="copy-set">Copy All Hashtags</button>
+        <div class="limit-note" id="limit-note"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const platformConfigs = [
+      { id: 'instagram', name: 'Instagram', limit: 30, recommended: '20-25' },
+      { id: 'twitter', name: 'X / Twitter', limit: 5, recommended: '2-3' },
+      { id: 'linkedin', name: 'LinkedIn', limit: 5, recommended: '3-5' },
+      { id: 'tiktok', name: 'TikTok', limit: 8, recommended: '4-6' }
+    ];
+
+    let selectedPlatform = 'instagram';
+
+    const broadDB = {
+      marketing: ['#marketing', '#digitalmarketing', '#socialmedia', '#business', '#branding', '#entrepreneur', '#contentmarketing', '#marketingstrategy'],
+      fitness: ['#fitness', '#workout', '#gym', '#health', '#motivation', '#fitnessmotivation', '#bodybuilding', '#training'],
+      tech: ['#technology', '#tech', '#innovation', '#ai', '#software', '#coding', '#startup', '#digital'],
+      food: ['#food', '#foodie', '#cooking', '#recipe', '#healthyfood', '#homecooking', '#instafood', '#chef'],
+      travel: ['#travel', '#wanderlust', '#adventure', '#explore', '#vacation', '#tourism', '#travelphotography', '#instatravel'],
+      fashion: ['#fashion', '#style', '#ootd', '#beauty', '#clothing', '#fashionista', '#streetstyle', '#outfit'],
+      saas: ['#saas', '#startup', '#tech', '#software', '#business', '#cloud', '#b2b', '#innovation'],
+      default: ['#instagood', '#photooftheday', '#love', '#beautiful', '#trending', '#viral', '#explore', '#popular']
+    };
+
+    const nicheDB = {
+      marketing: ['#contentcreator', '#emailmarketing', '#seoexpert', '#growthmarketing', '#marketingtips', '#inboundmarketing', '#affiliatemarketing', '#copywritingtips', '#funnelbuilding', '#conversionrate'],
+      fitness: ['#homeworkout', '#strengthtraining', '#fitover40', '#yogalife', '#runningcommunity', '#mealprep', '#weightlossjourney', '#fitnesstips', '#functionalfitness', '#hiitworkout'],
+      tech: ['#webdev', '#machinelearning', '#devlife', '#opensource', '#reactjs', '#cloudcomputing', '#cybersecurity', '#datascience', '#uxdesign', '#techstartup'],
+      food: ['#mealprep', '#veganrecipes', '#glutenfree', '#sourdough', '#foodphotography', '#plantbased', '#comfortfood', '#weeknightdinners', '#bakingfromscratch', '#spicyfood'],
+      travel: ['#solotravel', '#budgettravel', '#vanlife', '#digitalnomad', '#sustainabletravel', '#hiddengems', '#roadtrip', '#backpacking', '#luxurytravel', '#travelcouple'],
+      fashion: ['#sustainablefashion', '#thriftfinds', '#capsulewardrobe', '#minimalstyle', '#vintagefashion', '#slowfashion', '#mensstyle', '#plussizefashion', '#fashionover40', '#workwear'],
+      saas: ['#productled', '#saasmarketing', '#startuphacks', '#remotework', '#nocode', '#devtools', '#microSaaS', '#bootstrapped', '#founderlife', '#plg'],
+      default: ['#smallbusiness', '#onlinebusiness', '#passionproject', '#sidehustle', '#creativeentrepreneur', '#solopreneur', '#communityover competition', '#growthmindset', '#dailyinspiration', '#buildingpublic']
+    };
+
+    function findCategory(topic) {
+      const t = topic.toLowerCase();
+      for (const key of Object.keys(broadDB)) {
+        if (key === 'default') continue;
+        if (t.includes(key) || key.includes(t.split(' ')[0])) return key;
+      }
+      return 'default';
+    }
+
+    function generateBranded(topic) {
+      const clean = topic.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/);
+      const base = clean.join('');
+      return [
+        `#${base}`,
+        `#${base}tips`,
+        `#${base}community`,
+        `#my${base}`,
+        `#${clean[0]}life`
+      ].filter(h => h.length > 3 && h.length < 30);
+    }
+
+    function renderPlatforms() {
+      document.getElementById('platform-select').innerHTML = platformConfigs.map(p =>
+        `<button class="plat-btn ${selectedPlatform === p.id ? 'active' : ''}" data-id="${p.id}">${p.name}</button>`
+      ).join('');
+      document.querySelectorAll('.plat-btn').forEach(btn => {
+        btn.addEventListener('click', () => { selectedPlatform = btn.dataset.id; renderPlatforms(); doResearch(); });
+      });
+    }
+
+    function doResearch() {
+      const topic = document.getElementById('topic-input').value.trim();
+      if (!topic) return;
+
+      const category = findCategory(topic);
+      const broad = broadDB[category] || broadDB.default;
+      const niche = nicheDB[category] || nicheDB.default;
+      const branded = generateBranded(topic);
+      const platform = platformConfigs.find(p => p.id === selectedPlatform);
+
+      // Render categories
+      renderTags('broad-tags', broad);
+      renderTags('niche-tags', niche);
+      renderTags('branded-tags', branded);
+
+      // Optimal mix: 3 broad + 5 niche + 2 branded
+      const mixBroad = broad.slice(0, 3);
+      const mixNiche = niche.slice(0, 5);
+      const mixBranded = branded.slice(0, 2);
+      const mixAll = [...mixBroad, ...mixNiche, ...mixBranded];
+
+      document.getElementById('mix-info').textContent =
+        `Recommended: ${platform.recommended} hashtags for ${platform.name}. Mix below uses 3 broad + 5 niche + 2 branded = 10 total.`;
+
+      document.getElementById('mix-tags').innerHTML =
+        mixBroad.map(t => `<span class="mix-tag broad">${t}</span>`).join('') +
+        mixNiche.map(t => `<span class="mix-tag niche">${t}</span>`).join('') +
+        mixBranded.map(t => `<span class="mix-tag branded">${t}</span>`).join('');
+
+      document.getElementById('limit-note').textContent =
+        `${platform.name} limit: ${platform.limit} hashtags per post. Recommended: ${platform.recommended} for best engagement.`;
+
+      document.getElementById('results').classList.add('visible');
+
+      // Copy all
+      const copyBtn = document.getElementById('copy-set');
+      copyBtn.onclick = () => {
+        navigator.clipboard.writeText(mixAll.join(' ')).then(() => {
+          copyBtn.textContent = 'Copied!';
+          copyBtn.classList.add('copied');
+          setTimeout(() => { copyBtn.textContent = 'Copy All Hashtags'; copyBtn.classList.remove('copied'); }, 2000);
+        });
+      };
+    }
+
+    function renderTags(containerId, tags) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = tags.map(t =>
+        `<span class="tag" data-tag="${t}">${t}</span>`
+      ).join('');
+      container.querySelectorAll('.tag').forEach(tag => {
+        tag.addEventListener('click', () => {
+          tag.classList.toggle('selected');
+          navigator.clipboard.writeText(tag.dataset.tag);
+        });
+      });
+    }
+
+    document.getElementById('research-btn').addEventListener('click', doResearch);
+    document.getElementById('topic-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') doResearch();
+    });
+
+    renderPlatforms();
+  </script>
+  <script src="/related.js" defer></script>
+</body>
+</html>

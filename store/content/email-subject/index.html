@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Subject Line Generator — FreeMarketingStore</title>
+  <meta name="description" content="Generate and score email subject lines in multiple styles with open-rate prediction.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Manrope', system-ui, sans-serif;
+      background: #fafafa;
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      max-width: 900px; margin: 0 auto; padding: 1rem 1.5rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .nav-brand {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-weight: 700; font-size: 0.95rem; text-decoration: none; color: #1a1a1a;
+    }
+    .nav-brand img { width: 24px; height: 24px; }
+    .nav-back { font-size: 0.85rem; color: #6b7280; text-decoration: none; }
+    .nav-back:hover { color: #f97316; }
+
+    .container { max-width: 700px; margin: 0 auto; padding: 2rem 1.5rem; }
+    h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .subtitle { color: #6b7280; font-size: 0.95rem; margin-bottom: 2rem; }
+
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label {
+      display: block; font-size: 0.82rem; font-weight: 600;
+      color: #6b7280; margin-bottom: 0.4rem;
+    }
+    .form-group input, .form-group select {
+      width: 100%; padding: 0.7rem 1rem; border: 1px solid #e5e7eb;
+      border-radius: 8px; font-family: inherit; font-size: 0.9rem; background: #ffffff;
+    }
+    .form-group input:focus, .form-group select:focus { outline: none; border-color: #f97316; }
+
+    .btn-generate {
+      width: 100%; padding: 0.8rem; border-radius: 8px; border: none;
+      background: #f97316; color: #fff; font-family: inherit;
+      font-size: 0.9rem; font-weight: 600; cursor: pointer; margin-bottom: 2rem;
+    }
+    .btn-generate:hover { background: #ea580c; }
+
+    .results { display: none; }
+    .results.visible { display: block; }
+    .results h2 { font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; }
+
+    .subject-card {
+      background: #ffffff; border: 1px solid #e5e7eb; border-radius: 10px;
+      padding: 1.1rem 1.25rem; margin-bottom: 0.75rem;
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      transition: border-color 0.2s;
+    }
+    .subject-card:hover { border-color: #f97316; }
+    .subject-left { flex: 1; }
+    .subject-text { font-size: 0.92rem; font-weight: 500; margin-bottom: 0.3rem; }
+    .subject-meta {
+      display: flex; gap: 0.75rem; align-items: center;
+    }
+    .style-badge {
+      font-size: 0.68rem; font-weight: 600; padding: 0.2rem 0.5rem;
+      border-radius: 10px; text-transform: uppercase; letter-spacing: 0.03em;
+    }
+    .style-urgency { background: #fee2e2; color: #dc2626; }
+    .style-curiosity { background: #e0e7ff; color: #4338ca; }
+    .style-benefit { background: #dcfce7; color: #16a34a; }
+    .style-social { background: #fef3c7; color: #d97706; }
+    .style-question { background: #f3e8ff; color: #7c3aed; }
+
+    .open-rate {
+      font-size: 0.78rem; color: #6b7280;
+    }
+    .open-rate strong { color: #f97316; }
+
+    .subject-right { display: flex; gap: 0.5rem; align-items: center; }
+    .copy-btn {
+      font-family: inherit; font-size: 0.75rem; padding: 0.35rem 0.7rem;
+      border-radius: 6px; border: 1px solid #e5e7eb; background: #fff;
+      cursor: pointer; font-weight: 500; transition: all 0.2s;
+    }
+    .copy-btn:hover { border-color: #f97316; color: #f97316; }
+    .copy-btn.copied { background: #f97316; color: #fff; border-color: #f97316; }
+
+    .ab-section {
+      background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px;
+      padding: 1.5rem; margin-top: 2rem;
+    }
+    .ab-section h3 { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; }
+    .ab-inputs {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;
+    }
+    .ab-inputs input {
+      width: 100%; padding: 0.6rem 0.8rem; border: 1px solid #e5e7eb;
+      border-radius: 8px; font-family: inherit; font-size: 0.85rem; background: #fafafa;
+    }
+    .ab-inputs input:focus { outline: none; border-color: #f97316; }
+    .ab-result {
+      display: none; padding: 1rem; background: #fff7ed; border-radius: 8px;
+      font-size: 0.88rem;
+    }
+    .ab-result.visible { display: block; }
+    .ab-result .winner-text { font-weight: 600; color: #f97316; }
+    .btn-ab {
+      padding: 0.6rem 1.2rem; border-radius: 8px; border: none;
+      background: #f97316; color: #fff; font-family: inherit;
+      font-size: 0.85rem; font-weight: 600; cursor: pointer;
+    }
+    .btn-ab:hover { background: #ea580c; }
+
+    .char-info { font-size: 0.75rem; color: #6b7280; }
+
+    @media (max-width: 600px) {
+      .ab-inputs { grid-template-columns: 1fr; }
+      .subject-card { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="nav-brand"><img src="/favicon.svg" alt="FMS"><span>FreeMarketingStore</span></a>
+    <a href="/" class="nav-back">&larr; All tools</a>
+  </nav>
+
+  <div class="container">
+    <h1>Email Subject Line Generator</h1>
+    <p class="subtitle">Generate 10 subject lines in different styles with predicted open rates. A/B test your favorites.</p>
+
+    <div class="form-group">
+      <label>Product or Topic</label>
+      <input type="text" id="topic" placeholder="e.g., New project management tool, Summer sale, Newsletter">
+    </div>
+
+    <div class="form-group">
+      <label>Target Audience (optional)</label>
+      <input type="text" id="audience" placeholder="e.g., SaaS founders, fitness enthusiasts, working parents">
+    </div>
+
+    <button class="btn-generate" id="generate-btn">Generate Subject Lines</button>
+
+    <div class="results" id="results">
+      <h2>Generated Subject Lines</h2>
+      <div id="subjects-list"></div>
+
+      <div class="ab-section">
+        <h3>A/B Test Two Subject Lines</h3>
+        <div class="ab-inputs">
+          <input type="text" id="ab-a" placeholder="Subject Line A">
+          <input type="text" id="ab-b" placeholder="Subject Line B">
+        </div>
+        <button class="btn-ab" id="ab-btn">Compare</button>
+        <div class="ab-result" id="ab-result"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const templates = {
+      urgency: [
+        "Last chance: {topic} ends tonight",
+        "Only 24 hours left to get {topic}",
+        "{topic} — don't miss out (closing soon)",
+        "Final reminder: {topic} expires today",
+        "Hurry — {topic} won't last"
+      ],
+      curiosity: [
+        "The {topic} mistake everyone makes",
+        "We tried {topic} for 30 days. Here's what happened.",
+        "The surprising truth about {topic}",
+        "What nobody tells you about {topic}",
+        "I was wrong about {topic}"
+      ],
+      benefit: [
+        "How {topic} saves you 5 hours every week",
+        "Get better results with {topic} (no extra effort)",
+        "{topic}: the easiest way to {benefit}",
+        "Finally: {topic} that actually works",
+        "Unlock {benefit} with {topic} today"
+      ],
+      social: [
+        "10,000+ people already use {topic}",
+        "Why top teams switched to {topic}",
+        "See what {audience} are saying about {topic}",
+        "Join {audience} who already love {topic}",
+        "{topic}: rated #1 by {audience}"
+      ],
+      question: [
+        "Ready to transform your {topic}?",
+        "What if {topic} was this easy?",
+        "Struggling with {topic}?",
+        "Want to know the secret to {topic}?",
+        "Is {topic} holding you back?"
+      ]
+    };
+
+    function scoreSubject(text) {
+      let score = 50; // base
+      const len = text.length;
+
+      // Length bonus (ideal: 30-50 chars)
+      if (len >= 30 && len <= 50) score += 15;
+      else if (len >= 20 && len <= 60) score += 8;
+      else score -= 5;
+
+      // Personalization / specificity
+      if (/\d/.test(text)) score += 8;
+      if (text.includes('you') || text.includes('your')) score += 6;
+
+      // Urgency words
+      if (/last|final|hurry|expire|tonight|today|now/i.test(text)) score += 10;
+
+      // Question mark
+      if (text.endsWith('?')) score += 7;
+
+      // Power words
+      if (/free|secret|proven|exclusive|new|easy|instant/i.test(text)) score += 8;
+
+      // Emoji (slight boost)
+      if (/[\u{1F300}-\u{1F9FF}]/u.test(text)) score += 3;
+
+      // Too many caps (penalty)
+      const caps = text.replace(/[^A-Z]/g, '').length;
+      if (caps > text.length * 0.4) score -= 10;
+
+      // Spam words (penalty)
+      if (/buy now|click here|act now|limited time|!!!|FREE/i.test(text)) score -= 8;
+
+      return Math.max(10, Math.min(95, score));
+    }
+
+    function generate() {
+      const topic = document.getElementById('topic').value.trim();
+      if (!topic) return;
+      const audience = document.getElementById('audience').value.trim() || 'professionals';
+      const benefit = 'grow faster';
+
+      const subjects = [];
+      const styles = Object.keys(templates);
+
+      styles.forEach(style => {
+        const pool = templates[style];
+        // Pick 2 from each style
+        const shuffled = pool.sort(() => Math.random() - 0.5);
+        shuffled.slice(0, 2).forEach(tpl => {
+          const text = tpl
+            .replace(/{topic}/g, topic)
+            .replace(/{audience}/g, audience)
+            .replace(/{benefit}/g, benefit);
+          subjects.push({ text, style, score: scoreSubject(text) });
+        });
+      });
+
+      // Sort by score descending, take top 10
+      subjects.sort((a, b) => b.score - a.score);
+      const top10 = subjects.slice(0, 10);
+
+      const list = document.getElementById('subjects-list');
+      list.innerHTML = top10.map((s, i) => `
+        <div class="subject-card">
+          <div class="subject-left">
+            <div class="subject-text">${s.text}</div>
+            <div class="subject-meta">
+              <span class="style-badge style-${s.style}">${s.style}</span>
+              <span class="open-rate">Predicted open rate: <strong>${s.score}%</strong></span>
+              <span class="char-info">${s.text.length} chars</span>
+            </div>
+          </div>
+          <div class="subject-right">
+            <button class="copy-btn" data-text="${s.text.replace(/"/g, '&quot;')}">Copy</button>
+          </div>
+        </div>
+      `).join('');
+
+      document.getElementById('results').classList.add('visible');
+
+      // Pre-fill A/B with top 2
+      if (top10.length >= 2) {
+        document.getElementById('ab-a').value = top10[0].text;
+        document.getElementById('ab-b').value = top10[1].text;
+      }
+
+      // Copy handlers
+      list.querySelectorAll('.copy-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          navigator.clipboard.writeText(btn.dataset.text).then(() => {
+            btn.textContent = 'Copied!';
+            btn.classList.add('copied');
+            setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+          });
+        });
+      });
+    }
+
+    function abTest() {
+      const a = document.getElementById('ab-a').value.trim();
+      const b = document.getElementById('ab-b').value.trim();
+      if (!a || !b) return;
+
+      const scoreA = scoreSubject(a);
+      const scoreB = scoreSubject(b);
+      const winner = scoreA >= scoreB ? 'A' : 'B';
+      const winnerText = winner === 'A' ? a : b;
+      const diff = Math.abs(scoreA - scoreB);
+
+      const result = document.getElementById('ab-result');
+      result.innerHTML = `
+        <span class="winner-text">Winner: Subject Line ${winner}</span> (${Math.max(scoreA, scoreB)}% predicted open rate vs. ${Math.min(scoreA, scoreB)}%)<br>
+        <span style="margin-top:0.5rem;display:inline-block;font-size:0.82rem;color:#6b7280;">
+          "${winnerText}" wins by ${diff} points. ${diff < 5 ? 'Very close — either could work. Consider testing both.' : 'Clear winner — go with this one.'}
+        </span>
+      `;
+      result.classList.add('visible');
+    }
+
+    document.getElementById('generate-btn').addEventListener('click', generate);
+    document.getElementById('ab-btn').addEventListener('click', abTest);
+    document.getElementById('topic').addEventListener('keydown', e => { if (e.key === 'Enter') generate(); });
+  </script>
+  <script src="/related.js" defer></script>
+</body>
+</html>

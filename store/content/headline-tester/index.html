@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Headline A/B Tester — FreeMarketingStore</title>
+  <meta name="description" content="Score and compare headlines on emotion, power words, clarity, and predicted CTR.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Manrope', system-ui, sans-serif;
+      background: #fafafa;
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      max-width: 900px; margin: 0 auto; padding: 1rem 1.5rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .nav-brand {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-weight: 700; font-size: 0.95rem; text-decoration: none; color: #1a1a1a;
+    }
+    .nav-brand img { width: 24px; height: 24px; }
+    .nav-back { font-size: 0.85rem; color: #6b7280; text-decoration: none; }
+    .nav-back:hover { color: #f97316; }
+
+    .container { max-width: 700px; margin: 0 auto; padding: 2rem 1.5rem; }
+    h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .subtitle { color: #6b7280; font-size: 0.95rem; margin-bottom: 2rem; }
+
+    .input-section {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;
+    }
+    .input-group label {
+      display: block; font-size: 0.82rem; font-weight: 600;
+      color: #6b7280; margin-bottom: 0.4rem;
+    }
+    .input-group input {
+      width: 100%; padding: 0.75rem 1rem; border: 1px solid #e5e7eb;
+      border-radius: 8px; font-family: inherit; font-size: 0.9rem; background: #ffffff;
+    }
+    .input-group input:focus { outline: none; border-color: #f97316; }
+
+    .btn-test {
+      width: 100%; padding: 0.8rem; border-radius: 8px; border: none;
+      background: #f97316; color: #fff; font-family: inherit;
+      font-size: 0.9rem; font-weight: 600; cursor: pointer; margin-bottom: 2rem;
+    }
+    .btn-test:hover { background: #ea580c; }
+
+    .results { display: none; }
+    .results.visible { display: block; }
+
+    .comparison {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;
+    }
+    .result-card {
+      background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px;
+      padding: 1.5rem; position: relative;
+    }
+    .result-card.winner { border-color: #f97316; box-shadow: 0 4px 16px rgba(249,115,22,0.1); }
+    .winner-badge {
+      position: absolute; top: -10px; right: 12px;
+      background: #f97316; color: #fff; font-size: 0.7rem;
+      font-weight: 600; padding: 0.25rem 0.6rem; border-radius: 10px;
+    }
+    .result-card h3 {
+      font-size: 0.78rem; color: #6b7280; text-transform: uppercase;
+      letter-spacing: 0.04em; margin-bottom: 0.5rem;
+    }
+    .headline-text {
+      font-size: 1rem; font-weight: 600; margin-bottom: 1rem;
+      line-height: 1.4;
+    }
+    .score-big {
+      font-size: 2rem; font-weight: 700; color: #f97316; margin-bottom: 0.75rem;
+    }
+    .score-label { font-size: 0.75rem; color: #6b7280; }
+
+    .criteria-list { margin-top: 1rem; }
+    .criteria-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;
+    }
+    .criteria-item:last-child { border-bottom: none; }
+    .criteria-name { font-size: 0.82rem; font-weight: 500; }
+    .criteria-bar {
+      width: 80px; height: 6px; background: #e5e7eb; border-radius: 3px; overflow: hidden;
+    }
+    .criteria-fill { height: 100%; border-radius: 3px; background: #f97316; }
+    .criteria-score { font-size: 0.75rem; color: #6b7280; width: 30px; text-align: right; }
+
+    .suggestions {
+      background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px;
+      padding: 1.5rem; margin-bottom: 2rem;
+    }
+    .suggestions h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; }
+    .suggestion-item {
+      display: flex; align-items: flex-start; gap: 0.5rem;
+      padding: 0.5rem 0; font-size: 0.88rem; color: #374151;
+    }
+    .suggestion-item::before {
+      content: '\2022'; color: #f97316; font-weight: 700; flex-shrink: 0;
+    }
+
+    .history {
+      background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.5rem;
+    }
+    .history h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; }
+    .history-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.6rem 0; border-bottom: 1px solid #f3f4f6;
+      font-size: 0.85rem;
+    }
+    .history-item:last-child { border-bottom: none; }
+    .history-headline { flex: 1; }
+    .history-score { font-weight: 600; color: #f97316; margin-left: 1rem; }
+    .history-empty { font-size: 0.85rem; color: #6b7280; }
+
+    @media (max-width: 600px) {
+      .input-section, .comparison { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="nav-brand"><img src="/favicon.svg" alt="FMS"><span>FreeMarketingStore</span></a>
+    <a href="/" class="nav-back">&larr; All tools</a>
+  </nav>
+
+  <div class="container">
+    <h1>Headline A/B Tester</h1>
+    <p class="subtitle">Enter two headlines to score and compare them. Find out which one will get more clicks.</p>
+
+    <div class="input-section">
+      <div class="input-group">
+        <label>Headline A</label>
+        <input type="text" id="headline-a" placeholder="e.g., 10 Ways to Double Your Traffic">
+      </div>
+      <div class="input-group">
+        <label>Headline B</label>
+        <input type="text" id="headline-b" placeholder="e.g., How I Grew My Blog to 100K Visitors">
+      </div>
+    </div>
+
+    <button class="btn-test" id="test-btn">Compare Headlines</button>
+
+    <div class="results" id="results">
+      <div class="comparison" id="comparison"></div>
+      <div class="suggestions" id="suggestions"></div>
+    </div>
+
+    <div class="history">
+      <h3>Test History</h3>
+      <div id="history-list"></div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'fms-headline-history';
+    let history = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+
+    const powerWords = ['free','new','secret','proven','instant','guaranteed','exclusive','limited','ultimate','essential','incredible','powerful','shocking','amazing','discover','unlock','transform','boost','skyrocket','explosive','urgent','breakthrough','revolutionary','masterclass','effortless'];
+    const emotionalWords = ['love','hate','fear','joy','surprising','heartbreaking','devastating','thrilling','terrifying','hilarious','stunning','unforgettable','outrageous','brilliant','cruel','beautiful','painful','magical','impossible','obsessed'];
+    const numberPattern = /\b\d+\b/;
+    const questionPattern = /\?$/;
+    const howToPattern = /^how\s+(to|i|we)/i;
+    const listPattern = /^\d+\s/;
+
+    function scoreHeadline(headline) {
+      const words = headline.toLowerCase().split(/\s+/);
+      const wordCount = words.length;
+      let scores = {};
+
+      // Emotion (0-100)
+      const emotionCount = words.filter(w => emotionalWords.includes(w.replace(/[^a-z]/g, ''))).length;
+      scores.emotion = Math.min(100, emotionCount * 35 + (questionPattern.test(headline) ? 20 : 0));
+
+      // Power words (0-100)
+      const powerCount = words.filter(w => powerWords.includes(w.replace(/[^a-z]/g, ''))).length;
+      scores.power = Math.min(100, powerCount * 30);
+
+      // Length (ideal 6-12 words, 50-65 chars)
+      const charLen = headline.length;
+      if (charLen >= 50 && charLen <= 65) scores.length = 100;
+      else if (charLen >= 40 && charLen <= 75) scores.length = 75;
+      else if (charLen >= 30 && charLen <= 85) scores.length = 50;
+      else scores.length = 25;
+
+      // Clarity (penalize jargon, reward simplicity)
+      const avgWordLen = words.reduce((sum, w) => sum + w.length, 0) / wordCount;
+      scores.clarity = avgWordLen <= 5 ? 90 : avgWordLen <= 6 ? 70 : avgWordLen <= 7 ? 50 : 30;
+      if (wordCount >= 5 && wordCount <= 12) scores.clarity = Math.min(100, scores.clarity + 15);
+
+      // Curiosity (numbers, questions, how-to, specific)
+      scores.curiosity = 0;
+      if (numberPattern.test(headline)) scores.curiosity += 30;
+      if (questionPattern.test(headline)) scores.curiosity += 25;
+      if (howToPattern.test(headline)) scores.curiosity += 25;
+      if (listPattern.test(headline)) scores.curiosity += 20;
+      if (headline.includes(':') || headline.includes('—')) scores.curiosity += 10;
+      scores.curiosity = Math.min(100, scores.curiosity);
+
+      // Overall CTR prediction (weighted average)
+      const overall = Math.round(
+        scores.emotion * 0.2 +
+        scores.power * 0.2 +
+        scores.length * 0.15 +
+        scores.clarity * 0.2 +
+        scores.curiosity * 0.25
+      );
+
+      return { scores, overall };
+    }
+
+    function getSuggestions(headline, scores) {
+      const suggestions = [];
+      if (scores.emotion < 40) suggestions.push('Add emotional trigger words like "surprising," "stunning," or "powerful" to create a stronger reaction.');
+      if (scores.power < 40) suggestions.push('Include power words like "proven," "instant," "exclusive," or "secret" to increase urgency.');
+      if (scores.length < 60) suggestions.push('Aim for 50-65 characters (6-12 words) for optimal display in search and social.');
+      if (scores.clarity < 60) suggestions.push('Simplify your language. Use shorter, more common words for better readability.');
+      if (scores.curiosity < 40) suggestions.push('Add a number, ask a question, or use "How to..." format to spark curiosity.');
+      if (!numberPattern.test(headline)) suggestions.push('Consider adding a specific number (e.g., "7 ways..." or "in 30 days") — numbers boost CTR by 20-36%.');
+      if (suggestions.length === 0) suggestions.push('Strong headline! Consider A/B testing minor variations of wording or structure.');
+      return suggestions;
+    }
+
+    function runTest() {
+      const a = document.getElementById('headline-a').value.trim();
+      const b = document.getElementById('headline-b').value.trim();
+      if (!a || !b) return;
+
+      const scoreA = scoreHeadline(a);
+      const scoreB = scoreHeadline(b);
+      const winnerIs = scoreA.overall >= scoreB.overall ? 'A' : 'B';
+
+      const compEl = document.getElementById('comparison');
+      compEl.innerHTML = [
+        { label: 'Headline A', text: a, data: scoreA, isWinner: winnerIs === 'A' },
+        { label: 'Headline B', text: b, data: scoreB, isWinner: winnerIs === 'B' }
+      ].map(h => `
+        <div class="result-card ${h.isWinner ? 'winner' : ''}">
+          ${h.isWinner ? '<span class="winner-badge">WINNER</span>' : ''}
+          <h3>${h.label}</h3>
+          <div class="headline-text">${h.text}</div>
+          <div class="score-big">${h.data.overall}</div>
+          <div class="score-label">Predicted CTR Score</div>
+          <div class="criteria-list">
+            ${['emotion','power','length','clarity','curiosity'].map(key => `
+              <div class="criteria-item">
+                <span class="criteria-name">${key.charAt(0).toUpperCase() + key.slice(1)}</span>
+                <div class="criteria-bar"><div class="criteria-fill" style="width:${h.data.scores[key]}%"></div></div>
+                <span class="criteria-score">${h.data.scores[key]}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+
+      // Suggestions for the loser
+      const loser = winnerIs === 'A' ? { text: b, scores: scoreB.scores } : { text: a, scores: scoreA.scores };
+      const suggestions = getSuggestions(loser.text, loser.scores);
+      document.getElementById('suggestions').innerHTML = `
+        <h3>Suggestions to Improve ${winnerIs === 'A' ? 'Headline B' : 'Headline A'}</h3>
+        ${suggestions.map(s => `<div class="suggestion-item">${s}</div>`).join('')}
+      `;
+
+      document.getElementById('results').classList.add('visible');
+
+      // Save to history
+      history.unshift({ a, b, scoreA: scoreA.overall, scoreB: scoreB.overall, winner: winnerIs, time: Date.now() });
+      if (history.length > 20) history = history.slice(0, 20);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+      renderHistory();
+    }
+
+    function renderHistory() {
+      const list = document.getElementById('history-list');
+      if (!history.length) {
+        list.innerHTML = '<p class="history-empty">No tests yet. Compare your first pair of headlines above.</p>';
+        return;
+      }
+      list.innerHTML = history.slice(0, 10).map(h => `
+        <div class="history-item">
+          <span class="history-headline">${h.winner === 'A' ? h.a : h.b}</span>
+          <span class="history-score">${Math.max(h.scoreA, h.scoreB)}</span>
+        </div>
+      `).join('');
+    }
+
+    document.getElementById('test-btn').addEventListener('click', runTest);
+    document.querySelectorAll('#headline-a, #headline-b').forEach(el => {
+      el.addEventListener('keydown', e => { if (e.key === 'Enter') runTest(); });
+    });
+
+    renderHistory();
+  </script>
+  <script src="/related.js" defer></script>
+</body>
+</html>

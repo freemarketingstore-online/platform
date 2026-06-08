@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Keyword Planner — FreeMarketingStore</title>
+  <meta name="description" content="Generate related keywords categorized by intent with content type suggestions.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Manrope', system-ui, sans-serif;
+      background: #fafafa;
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      max-width: 1000px; margin: 0 auto; padding: 1rem 1.5rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .nav-brand {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-weight: 700; font-size: 0.95rem; text-decoration: none; color: #1a1a1a;
+    }
+    .nav-brand img { width: 24px; height: 24px; }
+    .nav-back { font-size: 0.85rem; color: #6b7280; text-decoration: none; }
+    .nav-back:hover { color: #f97316; }
+
+    .container { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
+    h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .subtitle { color: #6b7280; font-size: 0.95rem; margin-bottom: 2rem; }
+
+    .input-row {
+      display: flex; gap: 0.75rem; margin-bottom: 2rem;
+    }
+    .input-row input {
+      flex: 1; padding: 0.75rem 1rem; border: 1px solid #e5e7eb;
+      border-radius: 8px; font-family: inherit; font-size: 0.9rem; background: #ffffff;
+    }
+    .input-row input:focus { outline: none; border-color: #f97316; }
+    .input-row button {
+      padding: 0.75rem 1.5rem; border-radius: 8px; border: none;
+      background: #f97316; color: #fff; font-family: inherit;
+      font-size: 0.88rem; font-weight: 600; cursor: pointer;
+    }
+    .input-row button:hover { background: #ea580c; }
+
+    .results { display: none; }
+    .results.visible { display: block; }
+
+    .intent-tabs {
+      display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap;
+    }
+    .intent-tab {
+      padding: 0.5rem 1rem; border-radius: 20px;
+      border: 1px solid #e5e7eb; background: #ffffff;
+      font-size: 0.82rem; font-weight: 500; cursor: pointer;
+      font-family: inherit; color: #6b7280; transition: all 0.2s;
+    }
+    .intent-tab:hover { border-color: #f97316; color: #f97316; }
+    .intent-tab.active { background: #f97316; color: #fff; border-color: #f97316; }
+
+    .keywords-table {
+      width: 100%; border-collapse: collapse;
+      background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px;
+      overflow: hidden;
+    }
+    .keywords-table th {
+      text-align: left; padding: 0.75rem 1rem;
+      font-size: 0.75rem; font-weight: 600; color: #6b7280;
+      text-transform: uppercase; letter-spacing: 0.04em;
+      background: #f9fafb; border-bottom: 1px solid #e5e7eb;
+    }
+    .keywords-table td {
+      padding: 0.75rem 1rem; font-size: 0.88rem;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    .keywords-table tr:last-child td { border-bottom: none; }
+    .keywords-table tr:hover td { background: #fff7ed; }
+
+    .intent-badge {
+      display: inline-block; font-size: 0.7rem; font-weight: 600;
+      padding: 0.2rem 0.5rem; border-radius: 10px;
+    }
+    .intent-informational { background: #dbeafe; color: #1d4ed8; }
+    .intent-navigational { background: #e0e7ff; color: #4338ca; }
+    .intent-transactional { background: #dcfce7; color: #16a34a; }
+
+    .content-type {
+      font-size: 0.78rem; color: #6b7280; font-style: italic;
+    }
+
+    .export-row {
+      display: flex; gap: 0.75rem; margin-top: 1.5rem;
+    }
+    .export-btn {
+      font-family: inherit; font-size: 0.82rem; padding: 0.5rem 1rem;
+      border-radius: 8px; border: 1px solid #e5e7eb; background: #fff;
+      cursor: pointer; font-weight: 500; transition: all 0.2s;
+    }
+    .export-btn:hover { border-color: #f97316; color: #f97316; }
+
+    .seed-info {
+      margin-bottom: 1.5rem; padding: 1rem;
+      background: #ffffff; border: 1px solid #e5e7eb; border-radius: 10px;
+    }
+    .seed-info .seed-label { font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem; }
+    .seed-info .seed-keyword { font-size: 1.1rem; font-weight: 600; color: #f97316; }
+    .seed-info .seed-count { font-size: 0.82rem; color: #6b7280; margin-top: 0.25rem; }
+
+    @media (max-width: 600px) {
+      .keywords-table { font-size: 0.8rem; }
+      .keywords-table th, .keywords-table td { padding: 0.6rem 0.6rem; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="nav-brand"><img src="/favicon.svg" alt="FMS"><span>FreeMarketingStore</span></a>
+    <a href="/" class="nav-back">&larr; All tools</a>
+  </nav>
+
+  <div class="container">
+    <h1>Keyword Planner</h1>
+    <p class="subtitle">Enter a seed keyword to discover related keywords categorized by search intent.</p>
+
+    <div class="input-row">
+      <input type="text" id="seed-input" placeholder="Enter seed keyword (e.g., email marketing, yoga, SaaS pricing)">
+      <button id="research-btn">Research</button>
+    </div>
+
+    <div class="results" id="results">
+      <div class="seed-info">
+        <div class="seed-label">Seed Keyword</div>
+        <div class="seed-keyword" id="seed-display"></div>
+        <div class="seed-count" id="seed-count"></div>
+      </div>
+
+      <div class="intent-tabs" id="intent-tabs"></div>
+
+      <table class="keywords-table">
+        <thead>
+          <tr>
+            <th>Keyword</th>
+            <th>Intent</th>
+            <th>Type</th>
+            <th>Suggested Content</th>
+          </tr>
+        </thead>
+        <tbody id="keywords-body"></tbody>
+      </table>
+
+      <div class="export-row">
+        <button class="export-btn" id="export-csv">Export CSV</button>
+        <button class="export-btn" id="export-json">Export JSON</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const longTailPrefixes = ['best', 'top', 'how to', 'what is', 'why', 'when to', 'where to find', 'guide to', 'tips for', 'examples of'];
+    const longTailSuffixes = ['for beginners', 'in 2024', 'tools', 'software', 'tips', 'strategies', 'examples', 'templates', 'alternatives', 'vs'];
+    const questionStarters = ['what is', 'how to', 'why is', 'when should I', 'where can I find', 'is it worth', 'can I', 'should I use', 'what are the best', 'how does'];
+    const comparisonWords = ['vs', 'alternatives', 'compared to', 'or', 'better than'];
+
+    const intentMap = {
+      'what is': 'informational',
+      'how to': 'informational',
+      'why': 'informational',
+      'guide': 'informational',
+      'tips': 'informational',
+      'examples': 'informational',
+      'tutorial': 'informational',
+      'what are': 'informational',
+      'best': 'transactional',
+      'top': 'transactional',
+      'buy': 'transactional',
+      'price': 'transactional',
+      'cost': 'transactional',
+      'tools': 'transactional',
+      'software': 'transactional',
+      'alternatives': 'transactional',
+      'vs': 'navigational',
+      'review': 'navigational',
+      'login': 'navigational',
+      'website': 'navigational',
+      'platform': 'navigational'
+    };
+
+    const contentTypeMap = {
+      informational: ['Blog post', 'Guide', 'FAQ page', 'Video tutorial', 'Infographic'],
+      transactional: ['Landing page', 'Comparison page', 'Product page', 'Review article', 'Listicle'],
+      navigational: ['Homepage', 'About page', 'Brand page', 'Comparison article', 'Directory listing']
+    };
+
+    let allKeywords = [];
+    let currentFilter = 'all';
+
+    function classifyIntent(keyword) {
+      const lower = keyword.toLowerCase();
+      for (const [pattern, intent] of Object.entries(intentMap)) {
+        if (lower.includes(pattern)) return intent;
+      }
+      return 'informational';
+    }
+
+    function suggestContentType(intent) {
+      const options = contentTypeMap[intent] || contentTypeMap.informational;
+      return options[Math.floor(Math.random() * options.length)];
+    }
+
+    function classifyType(keyword, seed) {
+      const lower = keyword.toLowerCase();
+      if (lower.includes('?') || questionStarters.some(q => lower.startsWith(q))) return 'Question';
+      if (comparisonWords.some(c => lower.includes(c))) return 'Comparison';
+      if (lower.split(/\s+/).length >= 4) return 'Long-tail';
+      return 'Related';
+    }
+
+    function generateKeywords(seed) {
+      const keywords = [];
+      const seedLower = seed.toLowerCase().trim();
+
+      // Long-tail variations
+      longTailPrefixes.forEach(prefix => {
+        keywords.push(`${prefix} ${seedLower}`);
+      });
+      longTailSuffixes.forEach(suffix => {
+        keywords.push(`${seedLower} ${suffix}`);
+      });
+
+      // Question keywords
+      questionStarters.forEach(q => {
+        keywords.push(`${q} ${seedLower}`);
+      });
+
+      // Comparison keywords
+      comparisonWords.forEach(c => {
+        keywords.push(`${seedLower} ${c}`);
+      });
+
+      // Additional modifiers
+      const modifiers = ['free', 'online', 'professional', 'easy', 'advanced', 'simple'];
+      modifiers.forEach(m => {
+        keywords.push(`${m} ${seedLower}`);
+      });
+
+      // Deduplicate and enrich
+      const unique = [...new Set(keywords)];
+      allKeywords = unique.map(kw => ({
+        keyword: kw,
+        intent: classifyIntent(kw),
+        type: classifyType(kw, seed),
+        content: suggestContentType(classifyIntent(kw))
+      }));
+
+      return allKeywords;
+    }
+
+    function renderTable(filter) {
+      const filtered = filter === 'all' ? allKeywords : allKeywords.filter(k => k.intent === filter);
+      const body = document.getElementById('keywords-body');
+      body.innerHTML = filtered.map(k => `
+        <tr>
+          <td>${k.keyword}</td>
+          <td><span class="intent-badge intent-${k.intent}">${k.intent}</span></td>
+          <td>${k.type}</td>
+          <td><span class="content-type">${k.content}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    function renderTabs() {
+      const intents = ['all', 'informational', 'navigational', 'transactional'];
+      const counts = {
+        all: allKeywords.length,
+        informational: allKeywords.filter(k => k.intent === 'informational').length,
+        navigational: allKeywords.filter(k => k.intent === 'navigational').length,
+        transactional: allKeywords.filter(k => k.intent === 'transactional').length
+      };
+
+      document.getElementById('intent-tabs').innerHTML = intents.map(i =>
+        `<button class="intent-tab ${currentFilter === i ? 'active' : ''}" data-intent="${i}">
+          ${i.charAt(0).toUpperCase() + i.slice(1)} (${counts[i]})
+        </button>`
+      ).join('');
+
+      document.querySelectorAll('.intent-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          currentFilter = tab.dataset.intent;
+          renderTabs();
+          renderTable(currentFilter);
+        });
+      });
+    }
+
+    function doResearch() {
+      const seed = document.getElementById('seed-input').value.trim();
+      if (!seed) return;
+
+      generateKeywords(seed);
+
+      document.getElementById('seed-display').textContent = seed;
+      document.getElementById('seed-count').textContent = `${allKeywords.length} related keywords found`;
+
+      currentFilter = 'all';
+      renderTabs();
+      renderTable('all');
+
+      document.getElementById('results').classList.add('visible');
+    }
+
+    document.getElementById('research-btn').addEventListener('click', doResearch);
+    document.getElementById('seed-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') doResearch();
+    });
+
+    document.getElementById('export-csv').addEventListener('click', () => {
+      const filtered = currentFilter === 'all' ? allKeywords : allKeywords.filter(k => k.intent === currentFilter);
+      const header = 'Keyword,Intent,Type,Suggested Content\n';
+      const rows = filtered.map(k => `"${k.keyword}","${k.intent}","${k.type}","${k.content}"`).join('\n');
+      const blob = new Blob([header + rows], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'keywords.csv'; a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('export-json').addEventListener('click', () => {
+      const filtered = currentFilter === 'all' ? allKeywords : allKeywords.filter(k => k.intent === currentFilter);
+      const blob = new Blob([JSON.stringify(filtered, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'keywords.json'; a.click();
+      URL.revokeObjectURL(url);
+    });
+  </script>
+  <script src="/related.js" defer></script>
+</body>
+</html>

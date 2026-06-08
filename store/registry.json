@@ -1,0 +1,58 @@
+[
+  {
+    "id": "content-calendar",
+    "name": "Content Calendar",
+    "description": "Visual weekly/monthly calendar to plan and schedule social media posts across platforms.",
+    "category": "Campaigns",
+    "path": "campaigns/content-calendar/index.html"
+  },
+  {
+    "id": "campaign-planner",
+    "name": "Campaign Planner",
+    "description": "Step-by-step wizard to build a full marketing campaign brief from goal to tactics.",
+    "category": "Campaigns",
+    "path": "campaigns/campaign-planner/index.html"
+  },
+  {
+    "id": "post-generator",
+    "name": "Social Post Generator",
+    "description": "Generate platform-specific social media posts with tone control and hashtag suggestions.",
+    "category": "Social",
+    "path": "social/post-generator/index.html"
+  },
+  {
+    "id": "hashtag-research",
+    "name": "Hashtag Research Tool",
+    "description": "Find and categorize hashtags by reach and relevance with platform-specific limits.",
+    "category": "Social",
+    "path": "social/hashtag-research/index.html"
+  },
+  {
+    "id": "headline-tester",
+    "name": "Headline A/B Tester",
+    "description": "Score and compare headlines on emotion, power words, clarity, and predicted CTR.",
+    "category": "Content",
+    "path": "content/headline-tester/index.html"
+  },
+  {
+    "id": "email-subject",
+    "name": "Email Subject Line Generator",
+    "description": "Generate and score email subject lines in multiple styles with open-rate prediction.",
+    "category": "Content",
+    "path": "content/email-subject/index.html"
+  },
+  {
+    "id": "meta-generator",
+    "name": "SEO Meta Tag Generator",
+    "description": "Generate title tags, meta descriptions, OG tags, and Twitter cards with live previews.",
+    "category": "SEO",
+    "path": "seo/meta-generator/index.html"
+  },
+  {
+    "id": "keyword-planner",
+    "name": "Keyword Planner",
+    "description": "Generate related keywords categorized by intent with content type suggestions.",
+    "category": "SEO",
+    "path": "seo/keyword-planner/index.html"
+  }
+]

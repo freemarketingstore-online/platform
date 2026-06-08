@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Social Post Generator — FreeMarketingStore</title>
+  <meta name="description" content="Generate platform-specific social media posts with tone control and hashtag suggestions.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Manrope', system-ui, sans-serif;
+      background: #fafafa;
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .nav-brand {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-weight: 700; font-size: 0.95rem; text-decoration: none; color: #1a1a1a;
+    }
+    .nav-brand img { width: 24px; height: 24px; }
+    .nav-back { font-size: 0.85rem; color: #6b7280; text-decoration: none; }
+    .nav-back:hover { color: #f97316; }
+
+    .container { max-width: 700px; margin: 0 auto; padding: 2rem 1.5rem; }
+    h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .subtitle { color: #6b7280; font-size: 0.95rem; margin-bottom: 2rem; }
+
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label {
+      display: block; font-size: 0.82rem; font-weight: 600;
+      color: #6b7280; margin-bottom: 0.4rem;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; padding: 0.7rem 1rem;
+      border: 1px solid #e5e7eb; border-radius: 8px;
+      font-family: inherit; font-size: 0.9rem; background: #ffffff;
+    }
+    .form-group textarea { resize: vertical; min-height: 70px; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      outline: none; border-color: #f97316;
+    }
+
+    .platform-tabs {
+      display: flex; gap: 0.5rem; margin-bottom: 1.25rem; flex-wrap: wrap;
+    }
+    .platform-tab {
+      padding: 0.5rem 1rem; border-radius: 20px;
+      border: 1px solid #e5e7eb; background: #ffffff;
+      font-size: 0.82rem; font-weight: 500; cursor: pointer;
+      font-family: inherit; transition: all 0.2s; color: #6b7280;
+    }
+    .platform-tab:hover { border-color: #f97316; color: #f97316; }
+    .platform-tab.active { background: #f97316; color: #fff; border-color: #f97316; }
+
+    .tone-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem;
+    }
+    .tone-btn {
+      padding: 0.6rem; border-radius: 8px; border: 1px solid #e5e7eb;
+      background: #ffffff; font-size: 0.82rem; font-weight: 500;
+      cursor: pointer; font-family: inherit; text-align: center;
+      transition: all 0.2s; color: #6b7280;
+    }
+    .tone-btn:hover { border-color: #f97316; color: #f97316; }
+    .tone-btn.active { background: #f97316; color: #fff; border-color: #f97316; }
+
+    .btn-generate {
+      width: 100%; padding: 0.8rem; border-radius: 8px; border: none;
+      background: #f97316; color: #fff; font-family: inherit;
+      font-size: 0.9rem; font-weight: 600; cursor: pointer;
+      margin-top: 1.5rem; transition: background 0.2s;
+    }
+    .btn-generate:hover { background: #ea580c; }
+
+    .results { margin-top: 2rem; }
+    .results h2 { font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; }
+    .post-card {
+      background: #ffffff; border: 1px solid #e5e7eb; border-radius: 10px;
+      padding: 1.25rem; margin-bottom: 1rem; position: relative;
+    }
+    .post-card .post-text {
+      font-size: 0.9rem; line-height: 1.6; margin-bottom: 0.75rem; white-space: pre-wrap;
+    }
+    .post-card .post-meta {
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .char-count {
+      font-size: 0.75rem; color: #6b7280;
+    }
+    .char-count.over { color: #ef4444; font-weight: 600; }
+    .copy-btn {
+      font-family: inherit; font-size: 0.78rem; padding: 0.4rem 0.8rem;
+      border-radius: 6px; border: 1px solid #e5e7eb; background: #fff;
+      cursor: pointer; font-weight: 500; transition: all 0.2s;
+    }
+    .copy-btn:hover { border-color: #f97316; color: #f97316; }
+    .copy-btn.copied { background: #f97316; color: #fff; border-color: #f97316; }
+
+    .hashtags-section {
+      margin-top: 1.5rem; padding: 1.25rem;
+      background: #ffffff; border: 1px solid #e5e7eb; border-radius: 10px;
+    }
+    .hashtags-section h3 { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.6rem; }
+    .hashtag-list {
+      display: flex; flex-wrap: wrap; gap: 0.4rem;
+    }
+    .hashtag {
+      background: #fff7ed; color: #f97316; padding: 0.3rem 0.6rem;
+      border-radius: 4px; font-size: 0.78rem; font-weight: 500; cursor: pointer;
+    }
+    .hashtag:hover { background: #f97316; color: #fff; }
+
+    @media (max-width: 500px) {
+      .tone-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="nav-brand"><img src="/favicon.svg" alt="FMS"><span>FreeMarketingStore</span></a>
+    <a href="/" class="nav-back">&larr; All tools</a>
+  </nav>
+
+  <div class="container">
+    <h1>Social Post Generator</h1>
+    <p class="subtitle">Generate engaging social media posts tailored to your platform and tone.</p>
+
+    <div class="form-group">
+      <label>Platform</label>
+      <div class="platform-tabs" id="platforms"></div>
+    </div>
+
+    <div class="form-group">
+      <label>Topic or Product</label>
+      <input type="text" id="topic" placeholder="e.g., New project management tool for remote teams">
+    </div>
+
+    <div class="form-group">
+      <label>Key Points (optional)</label>
+      <textarea id="key-points" placeholder="Any specific features, benefits, or CTAs to include..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Tone</label>
+      <div class="tone-grid" id="tones"></div>
+    </div>
+
+    <button class="btn-generate" id="generate-btn">Generate Posts</button>
+
+    <div class="results hidden" id="results">
+      <h2>Generated Posts</h2>
+      <div id="posts-list"></div>
+      <div class="hashtags-section">
+        <h3>Suggested Hashtags</h3>
+        <div class="hashtag-list" id="hashtags"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const platforms = [
+      { id: 'twitter', name: 'X / Twitter', limit: 280 },
+      { id: 'linkedin', name: 'LinkedIn', limit: 3000 },
+      { id: 'instagram', name: 'Instagram', limit: 2200 },
+      { id: 'facebook', name: 'Facebook', limit: 5000 }
+    ];
+    const tones = ['Professional', 'Casual', 'Funny', 'Inspirational'];
+
+    let selectedPlatform = 'twitter';
+    let selectedTone = 'Professional';
+
+    // Render platforms
+    function renderPlatforms() {
+      document.getElementById('platforms').innerHTML = platforms.map(p =>
+        `<button class="platform-tab ${selectedPlatform === p.id ? 'active' : ''}" data-id="${p.id}">${p.name}</button>`
+      ).join('');
+      document.querySelectorAll('.platform-tab').forEach(btn => {
+        btn.addEventListener('click', () => { selectedPlatform = btn.dataset.id; renderPlatforms(); });
+      });
+    }
+
+    function renderTones() {
+      document.getElementById('tones').innerHTML = tones.map(t =>
+        `<button class="tone-btn ${selectedTone === t ? 'active' : ''}" data-tone="${t}">${t}</button>`
+      ).join('');
+      document.querySelectorAll('.tone-btn').forEach(btn => {
+        btn.addEventListener('click', () => { selectedTone = btn.dataset.tone; renderTones(); });
+      });
+    }
+
+    // Post generation templates
+    const templates = {
+      Professional: {
+        twitter: [
+          "We're excited to announce {topic}. Here's why it matters for {audience}: {point}. Learn more.",
+          "{topic} is changing how teams work. The key insight: {point}. What's your take?",
+          "Three reasons {topic} should be on your radar:\n\n1. {point}\n2. Saves time\n3. Proven results\n\nThread below.",
+          "Just launched: {topic}.\n\nDesigned for professionals who value {point}.\n\nEarly feedback has been incredible."
+        ],
+        linkedin: [
+          "I've been thinking about {topic} a lot lately.\n\nHere's what most people get wrong:\n\nThey focus on the tool instead of the outcome.\n\n{point}\n\nThe real question isn't \"what should we use?\" but \"what problem are we solving?\"\n\nWhat's been your experience with {topic}?",
+          "Excited to share: {topic}.\n\nAfter months of work, we've built something that addresses a real pain point:\n\n{point}\n\nEarly results:\n- 40% time savings\n- Better team alignment\n- Fewer meetings needed\n\nWould love your thoughts.",
+          "Hot take: {topic} is underrated.\n\nHere's why:\n\n{point}\n\nMost teams overlook this because they're stuck in old workflows. The ones who adapt early will have a significant advantage.\n\nAgree or disagree?"
+        ],
+        instagram: [
+          "Introducing {topic} ✨\n\n{point}\n\nBuilt for people who care about quality and efficiency.\n\nLink in bio to learn more.",
+          "The future of {topic} is here.\n\n{point}\n\nDouble tap if you agree 👇",
+          "{topic} — reimagined.\n\nWhat makes it different:\n→ {point}\n→ Simple yet powerful\n→ Made for real workflows\n\nSave this for later 🔖"
+        ],
+        facebook: [
+          "Big news! We just launched {topic}.\n\n{point}\n\nWe'd love to hear what you think. Drop a comment or share this with someone who needs it!",
+          "Have you tried {topic} yet?\n\n{point}\n\nIt's been a game-changer for our community. Here's what people are saying...",
+          "We built {topic} because we saw a gap.\n\n{point}\n\nNow it's live and we're thrilled with the response. Check it out and let us know what you think!"
+        ]
+      },
+      Casual: {
+        twitter: [
+          "just dropped: {topic} 🔥\n\n{point}\n\ncheck it out, you won't regret it",
+          "okay but {topic} is actually really cool?\n\n{point}\n\ntry it and thank me later",
+          "new thing alert 🚨\n\n{topic}\n\n{point}\n\nlink in bio, go go go",
+          "been working on {topic} for a while now and honestly? pretty proud of this one.\n\n{point}"
+        ],
+        linkedin: [
+          "So we made a thing... {topic}.\n\nNot gonna lie, it started as a side project. But then {point} and we realized this could help a lot of people.\n\nCheck it out if you're into that sort of thing. No pressure 😄",
+          "Real talk: {topic} shouldn't be this hard.\n\nThat's why we built something simpler.\n\n{point}\n\nWould love to know — does this resonate with you?",
+          "Monday mood: excited about {topic}.\n\nWhy? Because {point}.\n\nSometimes the simple solutions are the best ones. Who else feels this way?"
+        ],
+        instagram: [
+          "{topic} just hit different ✌️\n\n{point}\n\nwho's trying this?",
+          "new drop: {topic}\n\n{point}\n\ntag someone who needs this 👇",
+          "not me getting obsessed with {topic} 😅\n\n{point}\n\nanyway it's great, link in bio"
+        ],
+        facebook: [
+          "Hey everyone! Super excited to share {topic} with you all.\n\n{point}\n\nLet me know what you think! Always love hearing from this community 💬",
+          "Quick update: {topic} is live!\n\n{point}\n\nBeen working on this for a while and it feels great to finally share it. Give it a try!",
+          "Anyone else been looking for a better way to handle {topic}?\n\n{point}\n\nWe built exactly that. Check it out and lmk your thoughts!"
+        ]
+      },
+      Funny: {
+        twitter: [
+          "me: i don't need {topic}\nalso me: *uses it 47 times a day*\n\n{point}",
+          "if {topic} was a person, i'd buy it dinner\n\n{point}\n\nno i will not elaborate",
+          "scientists: you can't solve {topic} that easily\nus: hold my coffee ☕\n\n{point}",
+          "plot twist: {topic} actually works\n\n{point}\n\ni know, i'm as surprised as you are"
+        ],
+        linkedin: [
+          "Unpopular opinion: {topic} doesn't have to be painful.\n\n*ducks*\n\nBut seriously — {point}\n\nWe built something that actually makes this... dare I say... fun?\n\n(I know, I know. \"Fun\" and \"work\" in the same sentence. Revolutionary.)",
+          "My therapist: \"{topic} can't hurt you.\"\n{topic}: *exists in its current state*\n\nSo we fixed it.\n\n{point}\n\nYou're welcome, everyone's mental health.",
+          "Day 1 of using {topic}:\n\"This seems useful.\"\n\nDay 30:\n\"How did I ever live without this?\"\n\n{point}\n\nThe pipeline is real, folks."
+        ],
+        instagram: [
+          "POV: you discover {topic} and your life changes forever\n\n{point}\n\nnot dramatic at all 💅",
+          "{topic} walked so your productivity could run 🏃‍♂️\n\n{point}\n\nyou're welcome",
+          "me explaining {topic} to my friends vs. them actually trying it\n\n{point}\n\nconverts every time 😂"
+        ],
+        facebook: [
+          "I told my team about {topic} and they looked at me like I was crazy.\n\nThen they tried it.\n\nNow they won't shut up about it. 😂\n\n{point}\n\nThe irony is not lost on me.",
+          "If {topic} was around 10 years ago, I would've saved approximately 4,000 hours of my life.\n\n{point}\n\nBut who's counting? (Me. I'm counting.)",
+          "Breaking: local person discovers {topic}, immediately becomes insufferable about it.\n\nThat person is me.\n\n{point}\n\nSorry not sorry. Try it yourself!"
+        ]
+      },
+      Inspirational: {
+        twitter: [
+          "The best time to start with {topic} was yesterday. The second best time is now.\n\n{point}\n\nDon't wait for perfect. Start today.",
+          "{topic} isn't just a tool — it's a mindset shift.\n\n{point}\n\nGreat things happen when you remove friction from your workflow.",
+          "Imagine a world where {topic} just works.\n\n{point}\n\nWe built that world. Come join us.",
+          "Your potential is unlimited. {topic} just helps you unlock it faster.\n\n{point}"
+        ],
+        linkedin: [
+          "I believe everyone deserves access to great {topic}.\n\nNot just big companies. Not just people with huge budgets.\n\nEveryone.\n\n{point}\n\nThat's why we built this — to level the playing field.\n\nBecause when tools are accessible, innovation follows.",
+          "The future belongs to those who start building it today.\n\n{topic} is our contribution to that future.\n\n{point}\n\nEvery great journey starts with a single step. What's yours?",
+          "What if {topic} could be 10x simpler?\n\nWe asked that question 6 months ago.\n\nToday, we have the answer.\n\n{point}\n\nNever accept \"that's just how it is\" as an answer. Challenge everything."
+        ],
+        instagram: [
+          "Dream bigger. Build faster. {topic} makes it possible.\n\n{point}\n\nYour next chapter starts now ✨",
+          "Every expert was once a beginner.\n\n{topic} meets you where you are and helps you grow.\n\n{point}\n\nStart today. Future you will be grateful 🙏",
+          "Small steps, big impact.\n\n{topic} proves that you don't need complexity to achieve extraordinary results.\n\n{point}\n\nKeep building. Keep growing. 🌱"
+        ],
+        facebook: [
+          "I started this journey because I believed {topic} could be better.\n\nBetter for creators. Better for teams. Better for everyone.\n\n{point}\n\nToday, I'm proud to say we've built exactly that. And this is just the beginning.\n\nWhat's YOUR next big step?",
+          "The most powerful tool in the world is one that empowers people.\n\n{topic} was built with that philosophy.\n\n{point}\n\nWe're here to help you do your best work. Always.",
+          "Here's what I've learned: the best {topic} doesn't just solve problems. It inspires new possibilities.\n\n{point}\n\nDream big. Start small. But start."
+        ]
+      }
+    };
+
+    const hashtagSets = {
+      general: ['#marketing', '#digitalmarketing', '#growth', '#startup', '#business', '#entrepreneur'],
+      twitter: ['#MarketingTwitter', '#GrowthHacking', '#ContentMarketing'],
+      linkedin: ['#innovation', '#leadership', '#futureofwork', '#productivity'],
+      instagram: ['#instagood', '#instabusiness', '#marketingtips', '#socialmediatips', '#contentcreator'],
+      facebook: ['#smallbusiness', '#community', '#newlaunch']
+    };
+
+    function generatePosts() {
+      const topic = document.getElementById('topic').value.trim();
+      if (!topic) return;
+      const keyPoints = document.getElementById('key-points').value.trim();
+      const point = keyPoints || 'It simplifies everything';
+      const audience = 'your team';
+
+      const platformTemplates = templates[selectedTone][selectedPlatform];
+      const platform = platforms.find(p => p.id === selectedPlatform);
+
+      // Generate 4 variations
+      const posts = platformTemplates.map(tpl => {
+        return tpl
+          .replace(/{topic}/g, topic)
+          .replace(/{point}/g, point)
+          .replace(/{audience}/g, audience);
+      });
+
+      const postsList = document.getElementById('posts-list');
+      postsList.innerHTML = posts.map((text, i) => {
+        const len = text.length;
+        const over = len > platform.limit;
+        return `<div class="post-card">
+          <div class="post-text">${text}</div>
+          <div class="post-meta">
+            <span class="char-count ${over ? 'over' : ''}">${len}/${platform.limit} chars${over ? ' (over limit!)' : ''}</span>
+            <button class="copy-btn" data-index="${i}">Copy</button>
+          </div>
+        </div>`;
+      }).join('');
+
+      // Hashtags
+      const topicWords = topic.toLowerCase().split(/\s+/).slice(0, 3);
+      const topicTags = topicWords.map(w => `#${w.replace(/[^a-z0-9]/g, '')}`).filter(h => h.length > 2);
+      const platformTags = hashtagSets[selectedPlatform] || [];
+      const allTags = [...new Set([...topicTags, ...platformTags, ...hashtagSets.general])].slice(0, 12);
+
+      document.getElementById('hashtags').innerHTML = allTags.map(h =>
+        `<span class="hashtag" data-tag="${h}">${h}</span>`
+      ).join('');
+
+      document.getElementById('results').classList.remove('hidden');
+
+      // Copy handlers
+      postsList.querySelectorAll('.copy-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = parseInt(btn.dataset.index);
+          navigator.clipboard.writeText(posts[idx]).then(() => {
+            btn.textContent = 'Copied!';
+            btn.classList.add('copied');
+            setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+          });
+        });
+      });
+
+      // Hashtag copy
+      document.querySelectorAll('.hashtag').forEach(tag => {
+        tag.addEventListener('click', () => {
+          navigator.clipboard.writeText(tag.dataset.tag);
+          tag.style.background = '#f97316';
+          tag.style.color = '#fff';
+          setTimeout(() => { tag.style.background = ''; tag.style.color = ''; }, 1000);
+        });
+      });
+    }
+
+    document.getElementById('generate-btn').addEventListener('click', generatePosts);
+    renderPlatforms();
+    renderTones();
+  </script>
+  <script src="/related.js" defer></script>
+</body>
+</html>

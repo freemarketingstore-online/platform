@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SEO Meta Tag Generator — FreeMarketingStore</title>
+  <meta name="description" content="Generate title tags, meta descriptions, OG tags, and Twitter cards with live previews.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Manrope', system-ui, sans-serif;
+      background: #fafafa;
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      max-width: 900px; margin: 0 auto; padding: 1rem 1.5rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .nav-brand {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-weight: 700; font-size: 0.95rem; text-decoration: none; color: #1a1a1a;
+    }
+    .nav-brand img { width: 24px; height: 24px; }
+    .nav-back { font-size: 0.85rem; color: #6b7280; text-decoration: none; }
+    .nav-back:hover { color: #f97316; }
+
+    .container { max-width: 750px; margin: 0 auto; padding: 2rem 1.5rem; }
+    h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .subtitle { color: #6b7280; font-size: 0.95rem; margin-bottom: 2rem; }
+
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label {
+      display: block; font-size: 0.82rem; font-weight: 600;
+      color: #6b7280; margin-bottom: 0.4rem;
+    }
+    .form-group input, .form-group textarea {
+      width: 100%; padding: 0.7rem 1rem; border: 1px solid #e5e7eb;
+      border-radius: 8px; font-family: inherit; font-size: 0.9rem; background: #ffffff;
+    }
+    .form-group textarea { resize: vertical; min-height: 60px; }
+    .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #f97316; }
+    .char-hint {
+      font-size: 0.72rem; color: #6b7280; margin-top: 0.3rem;
+    }
+    .char-hint.over { color: #ef4444; }
+
+    .btn-generate {
+      width: 100%; padding: 0.8rem; border-radius: 8px; border: none;
+      background: #f97316; color: #fff; font-family: inherit;
+      font-size: 0.9rem; font-weight: 600; cursor: pointer; margin-bottom: 2rem;
+    }
+    .btn-generate:hover { background: #ea580c; }
+
+    .results { display: none; }
+    .results.visible { display: block; }
+
+    .preview-section { margin-bottom: 2rem; }
+    .preview-section h2 { font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; }
+
+    /* Google preview */
+    .google-preview {
+      background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px;
+      padding: 1.5rem; margin-bottom: 1.5rem;
+    }
+    .google-preview .gp-label {
+      font-size: 0.7rem; color: #6b7280; text-transform: uppercase;
+      letter-spacing: 0.05em; margin-bottom: 0.75rem; font-weight: 600;
+    }
+    .google-preview .gp-url {
+      font-size: 0.82rem; color: #202124; margin-bottom: 0.2rem;
+    }
+    .google-preview .gp-title {
+      font-size: 1.2rem; color: #1a0dab; margin-bottom: 0.3rem;
+      font-weight: 400; line-height: 1.3;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .google-preview .gp-desc {
+      font-size: 0.85rem; color: #4d5156; line-height: 1.5;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+
+    /* Social preview */
+    .social-preview {
+      background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px;
+      padding: 1.5rem; margin-bottom: 1.5rem;
+    }
+    .social-preview .sp-label {
+      font-size: 0.7rem; color: #6b7280; text-transform: uppercase;
+      letter-spacing: 0.05em; margin-bottom: 0.75rem; font-weight: 600;
+    }
+    .social-card {
+      border: 1px solid #e5e7eb; border-radius: 10px; overflow: hidden;
+      max-width: 500px;
+    }
+    .social-card .sc-image {
+      background: #f3f4f6; height: 120px; display: flex;
+      align-items: center; justify-content: center; color: #9ca3af; font-size: 0.8rem;
+    }
+    .social-card .sc-body { padding: 0.75rem 1rem; }
+    .social-card .sc-domain { font-size: 0.72rem; color: #6b7280; text-transform: uppercase; }
+    .social-card .sc-title { font-size: 0.9rem; font-weight: 600; margin: 0.2rem 0; }
+    .social-card .sc-desc { font-size: 0.8rem; color: #6b7280; }
+
+    /* Code output */
+    .code-section {
+      background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.5rem;
+    }
+    .code-section h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; }
+    .code-block {
+      background: #1f2937; color: #e5e7eb; border-radius: 8px;
+      padding: 1.25rem; font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.78rem; line-height: 1.7; overflow-x: auto;
+      white-space: pre-wrap; word-break: break-all;
+    }
+    .copy-code-btn {
+      margin-top: 1rem; font-family: inherit; font-size: 0.82rem;
+      padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid #e5e7eb;
+      background: #fff; cursor: pointer; font-weight: 500; transition: all 0.2s;
+    }
+    .copy-code-btn:hover { border-color: #f97316; color: #f97316; }
+    .copy-code-btn.copied { background: #f97316; color: #fff; border-color: #f97316; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="nav-brand"><img src="/favicon.svg" alt="FMS"><span>FreeMarketingStore</span></a>
+    <a href="/" class="nav-back">&larr; All tools</a>
+  </nav>
+
+  <div class="container">
+    <h1>SEO Meta Tag Generator</h1>
+    <p class="subtitle">Generate optimized meta tags with live previews for Google and social media.</p>
+
+    <div class="form-group">
+      <label>Page URL</label>
+      <input type="text" id="page-url" placeholder="https://example.com/my-page">
+    </div>
+    <div class="form-group">
+      <label>Page Title</label>
+      <input type="text" id="page-title" placeholder="e.g., The Ultimate Guide to Content Marketing" maxlength="70">
+      <p class="char-hint" id="title-hint">0/60 characters (recommended max: 60)</p>
+    </div>
+    <div class="form-group">
+      <label>Meta Description</label>
+      <textarea id="page-desc" placeholder="Describe what this page is about in 1-2 sentences..." maxlength="200"></textarea>
+      <p class="char-hint" id="desc-hint">0/155 characters (recommended max: 155)</p>
+    </div>
+    <div class="form-group">
+      <label>Site Name</label>
+      <input type="text" id="site-name" placeholder="e.g., My Blog">
+    </div>
+    <div class="form-group">
+      <label>OG Image URL (optional)</label>
+      <input type="text" id="og-image" placeholder="https://example.com/image.jpg (1200x630 recommended)">
+    </div>
+
+    <button class="btn-generate" id="generate-btn">Generate Meta Tags</button>
+
+    <div class="results" id="results">
+      <div class="preview-section">
+        <h2>Previews</h2>
+
+        <div class="google-preview">
+          <div class="gp-label">Google Search Preview</div>
+          <div class="gp-url" id="gp-url"></div>
+          <div class="gp-title" id="gp-title"></div>
+          <div class="gp-desc" id="gp-desc"></div>
+        </div>
+
+        <div class="social-preview">
+          <div class="sp-label">Social Share Preview (Twitter/Facebook)</div>
+          <div class="social-card">
+            <div class="sc-image" id="sc-image">No image set — 1200x630 recommended</div>
+            <div class="sc-body">
+              <div class="sc-domain" id="sc-domain"></div>
+              <div class="sc-title" id="sc-title"></div>
+              <div class="sc-desc" id="sc-desc"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-section">
+        <h3>Generated HTML Tags</h3>
+        <div class="code-block" id="code-output"></div>
+        <button class="copy-code-btn" id="copy-code">Copy to Clipboard</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const titleInput = document.getElementById('page-title');
+    const descInput = document.getElementById('page-desc');
+    const titleHint = document.getElementById('title-hint');
+    const descHint = document.getElementById('desc-hint');
+
+    titleInput.addEventListener('input', () => {
+      const len = titleInput.value.length;
+      titleHint.textContent = `${len}/60 characters (recommended max: 60)`;
+      titleHint.className = 'char-hint' + (len > 60 ? ' over' : '');
+    });
+
+    descInput.addEventListener('input', () => {
+      const len = descInput.value.length;
+      descHint.textContent = `${len}/155 characters (recommended max: 155)`;
+      descHint.className = 'char-hint' + (len > 155 ? ' over' : '');
+    });
+
+    function generate() {
+      const url = document.getElementById('page-url').value.trim() || 'https://example.com';
+      const title = titleInput.value.trim() || 'Page Title';
+      const desc = descInput.value.trim() || 'Page description goes here.';
+      const siteName = document.getElementById('site-name').value.trim() || 'My Site';
+      const ogImage = document.getElementById('og-image').value.trim();
+
+      // Parse domain from URL
+      let domain = url;
+      try { domain = new URL(url).hostname; } catch (e) {}
+
+      // Google preview
+      document.getElementById('gp-url').textContent = url;
+      document.getElementById('gp-title').textContent = title;
+      document.getElementById('gp-desc').textContent = desc;
+
+      // Social preview
+      document.getElementById('sc-domain').textContent = domain.toUpperCase();
+      document.getElementById('sc-title').textContent = title;
+      document.getElementById('sc-desc').textContent = desc;
+      const imgEl = document.getElementById('sc-image');
+      if (ogImage) {
+        imgEl.innerHTML = `<img src="${ogImage}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.textContent='Image failed to load'">`;
+      } else {
+        imgEl.textContent = 'No image set — 1200x630 recommended';
+      }
+
+      // Generate code
+      const tags = [];
+      tags.push(`<!-- Primary Meta Tags -->`);
+      tags.push(`<title>${escHtml(title)}</title>`);
+      tags.push(`<meta name="title" content="${escAttr(title)}">`);
+      tags.push(`<meta name="description" content="${escAttr(desc)}">`);
+      tags.push('');
+      tags.push(`<!-- Open Graph / Facebook -->`);
+      tags.push(`<meta property="og:type" content="website">`);
+      tags.push(`<meta property="og:url" content="${escAttr(url)}">`);
+      tags.push(`<meta property="og:title" content="${escAttr(title)}">`);
+      tags.push(`<meta property="og:description" content="${escAttr(desc)}">`);
+      tags.push(`<meta property="og:site_name" content="${escAttr(siteName)}">`);
+      if (ogImage) tags.push(`<meta property="og:image" content="${escAttr(ogImage)}">`);
+      tags.push('');
+      tags.push(`<!-- Twitter -->`);
+      tags.push(`<meta property="twitter:card" content="${ogImage ? 'summary_large_image' : 'summary'}">`);
+      tags.push(`<meta property="twitter:url" content="${escAttr(url)}">`);
+      tags.push(`<meta property="twitter:title" content="${escAttr(title)}">`);
+      tags.push(`<meta property="twitter:description" content="${escAttr(desc)}">`);
+      if (ogImage) tags.push(`<meta property="twitter:image" content="${escAttr(ogImage)}">`);
+      tags.push('');
+      tags.push(`<!-- Canonical -->`);
+      tags.push(`<link rel="canonical" href="${escAttr(url)}">`);
+
+      const code = tags.join('\n');
+      document.getElementById('code-output').textContent = code;
+
+      document.getElementById('results').classList.add('visible');
+
+      // Copy handler
+      const copyBtn = document.getElementById('copy-code');
+      copyBtn.onclick = () => {
+        navigator.clipboard.writeText(code).then(() => {
+          copyBtn.textContent = 'Copied!';
+          copyBtn.classList.add('copied');
+          setTimeout(() => { copyBtn.textContent = 'Copy to Clipboard'; copyBtn.classList.remove('copied'); }, 2000);
+        });
+      };
+    }
+
+    function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function escAttr(s) { return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    document.getElementById('generate-btn').addEventListener('click', generate);
+
+    // Live update on input
+    let timeout;
+    document.querySelectorAll('#page-title, #page-desc, #page-url, #site-name, #og-image').forEach(el => {
+      el.addEventListener('input', () => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+          if (document.getElementById('results').classList.contains('visible')) generate();
+        }, 300);
+      });
+    });
+  </script>
+  <script src="/related.js" defer></script>
+</body>
+</html>
