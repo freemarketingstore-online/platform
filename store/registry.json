@@ -161,6 +161,33 @@
       "iconBg": "#06b6d4",
       "category": "seo",
       "section": "seo"
+    },
+    {
+      "id": "domain-finder",
+      "name": "Domain Name Generator",
+      "description": "Generate brandable names + check availability. Chrome AI support. Algorithmic + heuristic domain checking.",
+      "icon": "🌐",
+      "iconBg": "#10b981",
+      "category": "seo",
+      "section": "seo"
+    },
+    {
+      "id": "ai-content-writer",
+      "name": "AI Content Writer",
+      "description": "Blog posts, product copy, social packs, emails. Uses YOUR OpenAI key. Without key: template-based generation.",
+      "icon": "🤖",
+      "iconBg": "#8b5cf6",
+      "category": "content",
+      "section": "content"
+    },
+    {
+      "id": "social-scheduler",
+      "name": "Social Schedule Planner",
+      "description": "Visual weekly planner with best-time-to-post highlights. Drag posts, optimize timing, export schedule.",
+      "icon": "📅",
+      "iconBg": "#3b82f6",
+      "category": "social",
+      "section": "social"
     }
   ]
 }

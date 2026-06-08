@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Content Writer — FreeMarketingStore</title>
+  <meta name="description" content="Generate blog posts, product descriptions, social media posts, emails, and landing page copy with AI or templates.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Manrope', system-ui, sans-serif;
+      background: #fafafa;
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      max-width: 900px; margin: 0 auto; padding: 1rem 1.5rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .nav-brand {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-weight: 700; font-size: 0.95rem; text-decoration: none; color: #1a1a1a;
+    }
+    .nav-brand img { width: 24px; height: 24px; }
+    .nav-back { font-size: 0.85rem; color: #6b7280; text-decoration: none; }
+    .nav-back:hover { color: #f97316; }
+
+    .container { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem; }
+    h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .subtitle { color: #6b7280; font-size: 0.95rem; margin-bottom: 2rem; }
+
+    .api-key-bar {
+      background: #ffffff; border: 1px solid #e5e7eb; border-radius: 10px;
+      padding: 1rem 1.25rem; margin-bottom: 1.5rem;
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    .api-key-bar input {
+      flex: 1; padding: 0.55rem 0.8rem; border: 1px solid #e5e7eb;
+      border-radius: 6px; font-family: inherit; font-size: 0.85rem;
+    }
+    .api-key-bar input:focus { outline: none; border-color: #f97316; }
+    .api-key-bar .key-status {
+      font-size: 0.75rem; color: #6b7280; white-space: nowrap;
+    }
+    .api-key-bar .key-status.active { color: #16a34a; }
+    .privacy-note {
+      font-size: 0.72rem; color: #6b7280; margin-top: 0.5rem; margin-bottom: 1.5rem;
+      padding-left: 0.25rem;
+    }
+
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label {
+      display: block; font-size: 0.82rem; font-weight: 600;
+      color: #6b7280; margin-bottom: 0.4rem;
+    }
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%; padding: 0.7rem 1rem; border: 1px solid #e5e7eb;
+      border-radius: 8px; font-family: inherit; font-size: 0.9rem; background: #ffffff;
+    }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+      outline: none; border-color: #f97316;
+    }
+
+    .row-2 { display: flex; gap: 0.75rem; }
+    .row-2 .form-group { flex: 1; }
+
+    .content-types { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .type-chip {
+      padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid #e5e7eb;
+      font-size: 0.82rem; font-weight: 500; cursor: pointer; background: #ffffff;
+      transition: all 0.2s;
+    }
+    .type-chip.active { background: #f97316; color: #fff; border-color: #f97316; }
+    .type-chip:hover:not(.active) { border-color: #f97316; color: #f97316; }
+
+    .btn-generate {
+      width: 100%; padding: 0.8rem; border-radius: 8px; border: none;
+      background: #f97316; color: #fff; font-family: inherit;
+      font-size: 0.9rem; font-weight: 600; cursor: pointer;
+    }
+    .btn-generate:hover { background: #ea580c; }
+    .btn-generate:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .output-section { display: none; margin-top: 2rem; }
+    .output-section.visible { display: block; }
+    .output-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+    .output-header h2 { font-size: 1.1rem; font-weight: 600; }
+    .output-actions { display: flex; gap: 0.5rem; }
+    .output-actions button {
+      padding: 0.4rem 0.75rem; border-radius: 6px; border: 1px solid #e5e7eb;
+      font-size: 0.78rem; font-weight: 500; cursor: pointer; background: #ffffff;
+      font-family: inherit;
+    }
+    .output-actions button:hover { border-color: #f97316; color: #f97316; }
+    .output-actions button.copied { background: #f97316; color: #fff; border-color: #f97316; }
+
+    .output-box {
+      background: #ffffff; border: 1px solid #e5e7eb; border-radius: 10px;
+      padding: 1.5rem; min-height: 200px; white-space: pre-wrap;
+      font-size: 0.9rem; line-height: 1.7;
+    }
+
+    .refine-bar { display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap; }
+    .refine-bar button {
+      padding: 0.4rem 0.8rem; border-radius: 6px; border: 1px solid #e5e7eb;
+      font-size: 0.78rem; font-weight: 500; cursor: pointer; background: #ffffff;
+      font-family: inherit;
+    }
+    .refine-bar button:hover { border-color: #f97316; color: #f97316; }
+
+    .token-info {
+      margin-top: 0.75rem; font-size: 0.72rem; color: #6b7280;
+      display: flex; gap: 1rem;
+    }
+
+    .settings-toggle {
+      font-size: 0.8rem; color: #6b7280; cursor: pointer; border: none;
+      background: none; font-family: inherit; margin-bottom: 1rem;
+      text-decoration: underline;
+    }
+    .settings-panel {
+      display: none; background: #ffffff; border: 1px solid #e5e7eb;
+      border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1.5rem;
+    }
+    .settings-panel.visible { display: block; }
+    .settings-panel .row-2 { margin-bottom: 0; }
+    .settings-panel .form-group { margin-bottom: 0.75rem; }
+    .settings-panel .form-group:last-child { margin-bottom: 0; }
+
+    .loading-spinner {
+      display: inline-block; width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff;
+      border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="nav-brand"><img src="/favicon.svg" alt="FMS"><span>FreeMarketingStore</span></a>
+    <a href="/" class="nav-back">&larr; All tools</a>
+  </nav>
+
+  <div class="container">
+    <h1>AI Content Writer</h1>
+    <p class="subtitle">Generate marketing copy with AI (your own API key) or use built-in templates.</p>
+
+    <div class="api-key-bar">
+      <input type="password" id="api-key" placeholder="sk-... (OpenAI API key, optional)">
+      <span class="key-status" id="key-status">No key</span>
+    </div>
+    <p class="privacy-note">Your API key stays in your browser. We never see or store it on any server.</p>
+
+    <div class="form-group">
+      <label>Content Type</label>
+      <div class="content-types" id="content-types">
+        <span class="type-chip active" data-type="blog">Blog Post Outline</span>
+        <span class="type-chip" data-type="product">Product Description</span>
+        <span class="type-chip" data-type="social">Social Media Pack</span>
+        <span class="type-chip" data-type="email">Email Newsletter</span>
+        <span class="type-chip" data-type="landing">Landing Page Copy</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Topic / Product</label>
+      <input type="text" id="topic" placeholder="e.g., How to start a podcast in 2024">
+    </div>
+
+    <div class="form-group">
+      <label>Key Points (one per line, optional)</label>
+      <textarea id="key-points" placeholder="e.g.,&#10;Low cost setup&#10;Growing audience&#10;Monetization strategies"></textarea>
+    </div>
+
+    <div class="row-2">
+      <div class="form-group">
+        <label>Tone</label>
+        <select id="tone">
+          <option value="professional">Professional</option>
+          <option value="casual">Casual</option>
+          <option value="witty">Witty</option>
+          <option value="inspiring">Inspiring</option>
+          <option value="urgent">Urgent</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Audience</label>
+        <input type="text" id="audience" placeholder="e.g., small business owners">
+      </div>
+    </div>
+
+    <button class="settings-toggle" id="settings-toggle">Advanced settings</button>
+    <div class="settings-panel" id="settings-panel">
+      <div class="row-2">
+        <div class="form-group">
+          <label>Model</label>
+          <select id="model">
+            <option value="gpt-4o-mini">gpt-4o-mini (cheap, fast)</option>
+            <option value="gpt-4o">gpt-4o (better quality)</option>
+            <option value="gpt-3.5-turbo">gpt-3.5-turbo (legacy)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Temperature (0-1)</label>
+          <input type="number" id="temperature" value="0.7" min="0" max="1" step="0.1">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Max Tokens</label>
+        <input type="number" id="max-tokens" value="1000" min="100" max="4000" step="100">
+      </div>
+    </div>
+
+    <button class="btn-generate" id="generate-btn">Generate Content</button>
+
+    <div class="output-section" id="output-section">
+      <div class="output-header">
+        <h2>Generated Content</h2>
+        <div class="output-actions">
+          <button id="copy-btn">Copy</button>
+        </div>
+      </div>
+      <div class="output-box" id="output-box"></div>
+      <div class="refine-bar" id="refine-bar">
+        <button data-action="regenerate">Regenerate</button>
+        <button data-action="shorter">Make Shorter</button>
+        <button data-action="longer">Make Longer</button>
+        <button data-action="formal">More Formal</button>
+        <button data-action="casual">More Casual</button>
+      </div>
+      <div class="token-info" id="token-info"></div>
+    </div>
+  </div>
+
+  <script>
+    // --- State ---
+    let apiKey = localStorage.getItem('fms-openai-key') || '';
+    let selectedType = 'blog';
+    let lastOutput = '';
+    let lastPrompt = '';
+
+    // --- API key handling ---
+    const keyInput = document.getElementById('api-key');
+    const keyStatus = document.getElementById('key-status');
+    if (apiKey) { keyInput.value = apiKey; updateKeyStatus(true); }
+
+    keyInput.addEventListener('input', () => {
+      apiKey = keyInput.value.trim();
+      if (apiKey.startsWith('sk-')) {
+        localStorage.setItem('fms-openai-key', apiKey);
+        updateKeyStatus(true);
+      } else if (apiKey === '') {
+        localStorage.removeItem('fms-openai-key');
+        updateKeyStatus(false);
+      }
+    });
+
+    function updateKeyStatus(active) {
+      keyStatus.textContent = active ? 'Key saved' : 'No key';
+      keyStatus.className = 'key-status' + (active ? ' active' : '');
+    }
+
+    // --- Content type selection ---
+    document.getElementById('content-types').addEventListener('click', (e) => {
+      const chip = e.target.closest('.type-chip');
+      if (!chip) return;
+      document.querySelectorAll('.type-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      selectedType = chip.dataset.type;
+    });
+
+    // --- Settings toggle ---
+    document.getElementById('settings-toggle').addEventListener('click', () => {
+      document.getElementById('settings-panel').classList.toggle('visible');
+    });
+
+    // --- Template-based generation (no API key) ---
+    function generateFromTemplate(type, topic, keyPoints, tone, audience) {
+      const points = keyPoints.filter(Boolean);
+      const aud = audience || 'your audience';
+
+      const templates = {
+        blog: () => {
+          let out = `# ${topic}\n\n`;
+          out += `## Introduction\n`;
+          out += `- Hook your reader with a surprising fact or question about ${topic}\n`;
+          out += `- Explain why ${aud} should care about this topic\n- Preview what they'll learn\n\n`;
+          const sections = points.length > 0 ? points : [
+            'Understanding the basics', 'Key strategies and approaches',
+            'Common mistakes to avoid', 'Practical tips for getting started',
+            'Tools and resources', 'Next steps'
+          ];
+          sections.forEach((s, i) => {
+            out += `## ${i + 1}. ${s}\n`;
+            out += `- Key insight about ${s.toLowerCase()}\n`;
+            out += `- Supporting evidence or example\n`;
+            out += `- Actionable takeaway for ${aud}\n\n`;
+          });
+          out += `## Conclusion\n`;
+          out += `- Summarize the main points\n- End with a clear call to action\n`;
+          return out;
+        },
+        product: () => {
+          let out = `**${topic}**\n\n`;
+          out += `*For ${aud} who want more from their tools.*\n\n`;
+          const features = points.length > 0 ? points : ['Feature 1', 'Feature 2', 'Feature 3'];
+          out += `**Key Features:**\n`;
+          features.forEach(f => { out += `- ${f} — designed to make your life easier\n`; });
+          out += `\n**Why choose ${topic}?**\n`;
+          out += `Whether you're just starting out or scaling up, ${topic} gives ${aud} everything they need `;
+          out += `in one ${tone === 'casual' ? 'awesome' : 'powerful'} package.\n\n`;
+          out += `**Get started today** — try it free, no credit card required.\n`;
+          return out;
+        },
+        social: () => {
+          let out = '';
+          out += `--- X (Twitter) ---\n`;
+          out += `${topic} is changing the game for ${aud}.\n\nHere's what nobody tells you: [thread]\n\n`;
+          out += `--- Instagram ---\n`;
+          out += `Stop scrolling — this matters.\n\n${topic} can transform how ${aud} work.\n\n`;
+          out += `Here's the breakdown:\n`;
+          points.slice(0, 3).forEach(p => { out += `\n- ${p}`; });
+          out += `\n\nSave this for later. You'll thank yourself.\n\n`;
+          out += `--- LinkedIn ---\n`;
+          out += `I've been thinking about ${topic} a lot lately.\n\n`;
+          out += `After working with ${aud} for years, here's what I've learned:\n\n`;
+          points.forEach(p => { out += `- ${p}\n`; });
+          out += `\nWhat's your take? Drop your thoughts below.\n\n`;
+          out += `--- Facebook ---\n`;
+          out += `Hey friends! Quick thought about ${topic}.\n\n`;
+          out += `If you're ${audience || 'interested in this'}, you NEED to know about this.\n\n`;
+          out += `--- TikTok ---\n`;
+          out += `[Hook] Wait — you're still doing ${topic} the old way?\n`;
+          out += `[Content] Here's the hack that ${aud} are using in 2024...\n`;
+          out += `[CTA] Follow for more tips like this!\n`;
+          return out;
+        },
+        email: () => {
+          let out = `**Subject:** ${tone === 'urgent' ? 'Don\'t miss this: ' : ''}${topic} — what ${aud} need to know\n\n`;
+          out += `---\n\n`;
+          out += `Hi [First Name],\n\n`;
+          out += `${tone === 'casual' ? 'Hope you\'re having a great week!' : 'I wanted to share something important with you.'}\n\n`;
+          out += `${topic} is something that can make a real difference for ${aud}.\n\n`;
+          if (points.length > 0) {
+            out += `Here's what you need to know:\n\n`;
+            points.forEach(p => { out += `- ${p}\n`; });
+            out += `\n`;
+          }
+          out += `**What to do next:**\n`;
+          out += `[Your CTA here — link to resource, landing page, or reply]\n\n`;
+          out += `${tone === 'casual' ? 'Cheers' : 'Best regards'},\n[Your Name]\n\n`;
+          out += `P.S. ${tone === 'urgent' ? 'This won\'t last forever — act now.' : 'Hit reply if you have questions. I read every email.'}\n`;
+          return out;
+        },
+        landing: () => {
+          let out = `## HERO SECTION\n\n`;
+          out += `**Headline:** ${topic} — Built for ${aud}\n`;
+          out += `**Subheadline:** ${points[0] || 'Everything you need, nothing you don\'t.'}\n`;
+          out += `**CTA Button:** Get Started Free\n\n`;
+          out += `---\n\n## FEATURES\n\n`;
+          const feats = points.length > 0 ? points : ['Fast & reliable', 'Easy to use', 'Affordable pricing'];
+          feats.forEach(f => { out += `**${f}**\nBrief explanation of how this helps ${aud}.\n\n`; });
+          out += `---\n\n## SOCIAL PROOF\n\n`;
+          out += `"${topic} completely changed how we work. Can't imagine going back."\n— [Customer Name], ${audience || 'Happy Customer'}\n\n`;
+          out += `---\n\n## FINAL CTA\n\n`;
+          out += `**Ready to try ${topic}?**\n`;
+          out += `Join thousands of ${aud} who already made the switch.\n`;
+          out += `[Get Started] [See Pricing]\n`;
+          return out;
+        }
+      };
+
+      return templates[type]();
+    }
+
+    // --- OpenAI API call ---
+    async function callOpenAI(prompt, action) {
+      const model = document.getElementById('model').value;
+      const temp = parseFloat(document.getElementById('temperature').value) || 0.7;
+      const maxTokens = parseInt(document.getElementById('max-tokens').value) || 1000;
+
+      const messages = [
+        { role: 'system', content: 'You are an expert marketing copywriter. Write compelling, clear content. Output only the content, no meta commentary.' },
+        { role: 'user', content: prompt }
+      ];
+
+      if (action && lastOutput) {
+        messages.push({ role: 'assistant', content: lastOutput });
+        const actionPrompts = {
+          regenerate: 'Generate a completely different version of the same content. Different angle, different structure.',
+          shorter: 'Make this significantly shorter while keeping the key message. Cut by ~40%.',
+          longer: 'Expand this with more detail, examples, and depth. Add ~50% more content.',
+          formal: 'Rewrite this in a more professional, formal tone. Keep the same structure.',
+          casual: 'Rewrite this in a more casual, conversational tone. Keep the same structure.'
+        };
+        messages.push({ role: 'user', content: actionPrompts[action] });
+      }
+
+      const resp = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({ model, messages, temperature: temp, max_tokens: maxTokens })
+      });
+
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({}));
+        throw new Error(err.error?.message || `API error: ${resp.status}`);
+      }
+
+      const data = await resp.json();
+      const usage = data.usage || {};
+      return { content: data.choices[0].message.content, usage };
+    }
+
+    // --- Build prompt ---
+    function buildPrompt(type, topic, keyPoints, tone, audience) {
+      const points = keyPoints.filter(Boolean);
+      const typeLabels = {
+        blog: 'blog post outline with 5-7 section headers and bullet points for each',
+        product: 'compelling product description highlighting features and benefits',
+        social: '5 social media posts (one each for X/Twitter, Instagram, LinkedIn, Facebook, TikTok)',
+        email: 'email newsletter with subject line and body',
+        landing: 'landing page copy with hero section, features, social proof, and CTA'
+      };
+
+      let prompt = `Write a ${typeLabels[type]}.\n\n`;
+      prompt += `Topic/Product: ${topic}\n`;
+      prompt += `Tone: ${tone}\n`;
+      prompt += `Target audience: ${audience || 'general'}\n`;
+      if (points.length > 0) prompt += `Key points to cover:\n${points.map(p => '- ' + p).join('\n')}\n`;
+      return prompt;
+    }
+
+    // --- Generate handler ---
+    document.getElementById('generate-btn').addEventListener('click', async () => {
+      const btn = document.getElementById('generate-btn');
+      const topic = document.getElementById('topic').value.trim();
+      if (!topic) { document.getElementById('topic').focus(); return; }
+
+      const keyPoints = document.getElementById('key-points').value.split('\n').map(l => l.trim());
+      const tone = document.getElementById('tone').value;
+      const audience = document.getElementById('audience').value.trim();
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="loading-spinner"></span> Generating...';
+
+      try {
+        let output;
+        if (apiKey && apiKey.startsWith('sk-')) {
+          const prompt = buildPrompt(selectedType, topic, keyPoints, tone, audience);
+          lastPrompt = prompt;
+          const result = await callOpenAI(prompt);
+          output = result.content;
+          showTokenInfo(result.usage);
+        } else {
+          output = generateFromTemplate(selectedType, topic, keyPoints, tone, audience);
+          document.getElementById('token-info').textContent = 'Generated from template (add OpenAI API key for AI-powered content)';
+        }
+
+        lastOutput = output;
+        document.getElementById('output-box').textContent = output;
+        document.getElementById('output-section').classList.add('visible');
+      } catch (e) {
+        document.getElementById('output-box').textContent = `Error: ${e.message}`;
+        document.getElementById('output-section').classList.add('visible');
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Generate Content';
+    });
+
+    // --- Refine actions ---
+    document.getElementById('refine-bar').addEventListener('click', async (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      const action = btn.dataset.action;
+
+      if (!apiKey || !apiKey.startsWith('sk-')) {
+        // Template mode: simple transformations
+        if (action === 'shorter') {
+          const lines = lastOutput.split('\n').filter(Boolean);
+          lastOutput = lines.slice(0, Math.ceil(lines.length * 0.6)).join('\n');
+        } else if (action === 'longer') {
+          lastOutput += '\n\n[Add more detail here — connect an API key for AI expansion]';
+        } else if (action === 'regenerate') {
+          document.getElementById('generate-btn').click();
+          return;
+        }
+        document.getElementById('output-box').textContent = lastOutput;
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = '...';
+      try {
+        const result = await callOpenAI(lastPrompt, action);
+        lastOutput = result.content;
+        document.getElementById('output-box').textContent = lastOutput;
+        showTokenInfo(result.usage);
+      } catch (e) {
+        document.getElementById('output-box').textContent = `Error: ${e.message}`;
+      }
+      btn.disabled = false;
+      btn.textContent = { regenerate: 'Regenerate', shorter: 'Make Shorter', longer: 'Make Longer', formal: 'More Formal', casual: 'More Casual' }[action];
+    });
+
+    // --- Token info ---
+    function showTokenInfo(usage) {
+      if (!usage) return;
+      const model = document.getElementById('model').value;
+      const costs = { 'gpt-4o-mini': [0.15, 0.6], 'gpt-4o': [2.5, 10], 'gpt-3.5-turbo': [0.5, 1.5] };
+      const [inCost, outCost] = costs[model] || [0, 0];
+      const totalCost = ((usage.prompt_tokens * inCost + usage.completion_tokens * outCost) / 1000000).toFixed(4);
+      document.getElementById('token-info').textContent =
+        `Tokens: ${usage.prompt_tokens} in + ${usage.completion_tokens} out = ${usage.total_tokens} total | Est. cost: $${totalCost}`;
+    }
+
+    // --- Copy ---
+    document.getElementById('copy-btn').addEventListener('click', () => {
+      navigator.clipboard.writeText(lastOutput).then(() => {
+        const btn = document.getElementById('copy-btn');
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+      });
+    });
+  </script>
+  <script src="/related.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Social Media Schedule Planner — FreeMarketingStore</title>
+  <meta name="description" content="Visual weekly schedule builder for social media posts with best time suggestions and multi-platform support.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Manrope', system-ui, sans-serif;
+      background: #fafafa;
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      max-width: 1100px; margin: 0 auto; padding: 1rem 1.5rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .nav-brand {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-weight: 700; font-size: 0.95rem; text-decoration: none; color: #1a1a1a;
+    }
+    .nav-brand img { width: 24px; height: 24px; }
+    .nav-back { font-size: 0.85rem; color: #6b7280; text-decoration: none; }
+    .nav-back:hover { color: #f97316; }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
+    h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .subtitle { color: #6b7280; font-size: 0.95rem; margin-bottom: 1.5rem; }
+
+    .toolbar {
+      display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
+      margin-bottom: 1.25rem;
+    }
+    .toolbar button {
+      padding: 0.45rem 0.85rem; border-radius: 6px; border: 1px solid #e5e7eb;
+      font-size: 0.8rem; font-weight: 500; cursor: pointer; background: #ffffff;
+      font-family: inherit;
+    }
+    .toolbar button:hover { border-color: #f97316; color: #f97316; }
+    .toolbar button.active { background: #f97316; color: #fff; border-color: #f97316; }
+    .toolbar button.accent { background: #f97316; color: #fff; border-color: #f97316; }
+    .toolbar button.accent:hover { background: #ea580c; }
+    .toolbar .spacer { flex: 1; }
+    .toolbar select {
+      padding: 0.45rem 0.7rem; border-radius: 6px; border: 1px solid #e5e7eb;
+      font-size: 0.8rem; font-family: inherit; background: #ffffff;
+    }
+
+    .legend {
+      display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;
+      font-size: 0.72rem; color: #6b7280;
+    }
+    .legend-item { display: flex; align-items: center; gap: 0.3rem; }
+    .legend-dot {
+      width: 10px; height: 10px; border-radius: 3px;
+    }
+
+    .week-grid {
+      display: grid;
+      grid-template-columns: 60px repeat(7, 1fr);
+      background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px;
+      overflow: hidden;
+    }
+    .grid-header {
+      background: #f9fafb; padding: 0.6rem 0.4rem; font-size: 0.75rem;
+      font-weight: 600; text-align: center; border-bottom: 1px solid #e5e7eb;
+    }
+    .grid-header:not(:last-child) { border-right: 1px solid #f3f4f6; }
+    .time-label {
+      padding: 0.4rem 0.3rem; font-size: 0.68rem; color: #6b7280;
+      text-align: center; border-bottom: 1px solid #f3f4f6;
+      border-right: 1px solid #e5e7eb; display: flex; align-items: center;
+      justify-content: center; min-height: 48px;
+    }
+    .grid-cell {
+      border-bottom: 1px solid #f3f4f6; border-right: 1px solid #f3f4f6;
+      min-height: 48px; padding: 2px; position: relative; cursor: pointer;
+      transition: background 0.15s;
+    }
+    .grid-cell:hover { background: #fef3e8; }
+    .grid-cell.best-time { background: #f0fdf4; }
+    .grid-cell.best-time:hover { background: #dcfce7; }
+    .grid-cell.dragover { background: #fed7aa; }
+
+    .post-pill {
+      font-size: 0.62rem; padding: 2px 5px; border-radius: 4px;
+      margin: 1px 0; cursor: grab; white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis; font-weight: 500; line-height: 1.4;
+    }
+    .post-pill:active { cursor: grabbing; }
+    .post-pill[data-platform="x"] { background: #e0f2fe; color: #0369a1; }
+    .post-pill[data-platform="instagram"] { background: #fce7f3; color: #be185d; }
+    .post-pill[data-platform="linkedin"] { background: #ede9fe; color: #6d28d9; }
+    .post-pill[data-platform="facebook"] { background: #dbeafe; color: #1d4ed8; }
+    .post-pill[data-platform="tiktok"] { background: #f0fdf4; color: #15803d; }
+
+    /* Post editor modal */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+      z-index: 100; align-items: center; justify-content: center;
+    }
+    .modal-overlay.visible { display: flex; }
+    .modal {
+      background: #ffffff; border-radius: 12px; padding: 1.5rem;
+      width: 90%; max-width: 420px; box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    }
+    .modal h3 { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; }
+    .modal .form-group { margin-bottom: 1rem; }
+    .modal .form-group label {
+      display: block; font-size: 0.78rem; font-weight: 600;
+      color: #6b7280; margin-bottom: 0.3rem;
+    }
+    .modal .form-group input, .modal .form-group textarea, .modal .form-group select {
+      width: 100%; padding: 0.6rem 0.8rem; border: 1px solid #e5e7eb;
+      border-radius: 6px; font-family: inherit; font-size: 0.85rem; background: #ffffff;
+    }
+    .modal .form-group textarea { resize: vertical; min-height: 60px; }
+    .modal .form-group input:focus, .modal .form-group textarea:focus, .modal .form-group select:focus {
+      outline: none; border-color: #f97316;
+    }
+    .modal-actions { display: flex; gap: 0.5rem; justify-content: flex-end; }
+    .modal-actions button {
+      padding: 0.5rem 1rem; border-radius: 6px; font-family: inherit;
+      font-size: 0.82rem; font-weight: 500; cursor: pointer;
+    }
+    .modal-actions .btn-cancel { background: #f3f4f6; border: none; color: #374151; }
+    .modal-actions .btn-save { background: #f97316; border: none; color: #fff; }
+    .modal-actions .btn-delete { background: #fee2e2; border: none; color: #dc2626; }
+
+    .export-box {
+      display: none; margin-top: 1.5rem; background: #ffffff;
+      border: 1px solid #e5e7eb; border-radius: 10px; padding: 1.25rem;
+    }
+    .export-box.visible { display: block; }
+    .export-box h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.75rem; }
+    .export-box pre {
+      background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px;
+      padding: 1rem; font-size: 0.75rem; line-height: 1.6; overflow-x: auto;
+      white-space: pre-wrap; max-height: 300px; overflow-y: auto;
+    }
+    .export-box button {
+      margin-top: 0.75rem; padding: 0.4rem 0.8rem; border-radius: 6px;
+      border: 1px solid #e5e7eb; font-size: 0.78rem; font-weight: 500;
+      cursor: pointer; background: #ffffff; font-family: inherit;
+    }
+    .export-box button:hover { border-color: #f97316; color: #f97316; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="nav-brand"><img src="/favicon.svg" alt="FMS"><span>FreeMarketingStore</span></a>
+    <a href="/" class="nav-back">&larr; All tools</a>
+  </nav>
+
+  <div class="container">
+    <h1>Social Media Schedule Planner</h1>
+    <p class="subtitle">Plan your weekly posting schedule visually. Drag posts into optimal time slots.</p>
+
+    <div class="toolbar">
+      <button id="btn-add-post" class="accent">+ New Post</button>
+      <button id="btn-optimize">Optimize</button>
+      <span class="spacer"></span>
+      <select id="schedule-select">
+        <option value="">Default Schedule</option>
+      </select>
+      <button id="btn-save">Save</button>
+      <button id="btn-export-md">Export MD</button>
+      <button id="btn-export-csv">Export CSV</button>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#e0f2fe;border:1px solid #0369a1;"></div> X</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#fce7f3;border:1px solid #be185d;"></div> Instagram</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#ede9fe;border:1px solid #6d28d9;"></div> LinkedIn</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#dbeafe;border:1px solid #1d4ed8;"></div> Facebook</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f0fdf4;border:1px solid #15803d;"></div> TikTok</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#dcfce7;border:1px solid #16a34a;"></div> Best time</div>
+    </div>
+
+    <div class="week-grid" id="week-grid"></div>
+
+    <div class="export-box" id="export-box">
+      <h3>Export</h3>
+      <pre id="export-content"></pre>
+      <button id="copy-export">Copy to Clipboard</button>
+    </div>
+  </div>
+
+  <!-- Post editor modal -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <h3 id="modal-title">New Post</h3>
+      <div class="form-group">
+        <label>Platform</label>
+        <select id="post-platform">
+          <option value="x">X (Twitter)</option>
+          <option value="instagram">Instagram</option>
+          <option value="linkedin">LinkedIn</option>
+          <option value="facebook">Facebook</option>
+          <option value="tiktok">TikTok</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Content</label>
+        <textarea id="post-content" placeholder="Write your post content..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Tags / Hashtags</label>
+        <input type="text" id="post-tags" placeholder="#marketing #social">
+      </div>
+      <div class="modal-actions">
+        <button class="btn-delete" id="btn-delete-post" style="display:none;">Delete</button>
+        <button class="btn-cancel" id="btn-modal-cancel">Cancel</button>
+        <button class="btn-save" id="btn-modal-save">Add Post</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Config ---
+    const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const HOURS = [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
+
+    // Best posting times (hour ranges by platform)
+    const BEST_TIMES = {
+      x: [[8,9,10], [12]],
+      instagram: [[11,12,13], [19,20,21]],
+      linkedin: [[7,8], [12], [17,18]],
+      facebook: [[13,14,15,16]],
+      tiktok: [[7,8,9], [12,13,14,15], [19,20,21]]
+    };
+
+    // Flatten for "any platform" best time highlighting
+    const ALL_BEST_HOURS = {};
+    for (const [platform, ranges] of Object.entries(BEST_TIMES)) {
+      for (const range of ranges) {
+        for (const h of range) {
+          if (!ALL_BEST_HOURS[h]) ALL_BEST_HOURS[h] = [];
+          ALL_BEST_HOURS[h].push(platform);
+        }
+      }
+    }
+
+    // --- State ---
+    let posts = []; // { id, platform, content, tags, day, hour }
+    let editingPost = null;
+    let targetCell = null; // { day, hour } for new post placement
+    let dragPost = null;
+
+    // --- Load from localStorage ---
+    function loadSchedule(name) {
+      const key = name ? `fms-schedule-${name}` : 'fms-schedule-default';
+      try { posts = JSON.parse(localStorage.getItem(key) || '[]'); } catch { posts = []; }
+    }
+    function saveSchedule(name) {
+      const key = name ? `fms-schedule-${name}` : 'fms-schedule-default';
+      localStorage.setItem(key, JSON.stringify(posts));
+      updateScheduleList();
+    }
+    function getScheduleNames() {
+      const names = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k.startsWith('fms-schedule-') && k !== 'fms-schedule-default') {
+          names.push(k.replace('fms-schedule-', ''));
+        }
+      }
+      return names;
+    }
+    function updateScheduleList() {
+      const sel = document.getElementById('schedule-select');
+      const names = getScheduleNames();
+      sel.innerHTML = '<option value="">Default Schedule</option>' +
+        names.map(n => `<option value="${n}">${n}</option>`).join('');
+    }
+
+    // --- Render grid ---
+    function renderGrid() {
+      const grid = document.getElementById('week-grid');
+      let html = '<div class="grid-header"></div>';
+      DAYS.forEach(d => { html += `<div class="grid-header">${d}</div>`; });
+
+      for (const hour of HOURS) {
+        const label = hour <= 12 ? `${hour}am` : hour === 12 ? '12pm' : `${hour - 12}pm`;
+        html += `<div class="time-label">${label}</div>`;
+        for (let dayIdx = 0; dayIdx < 7; dayIdx++) {
+          const isBest = ALL_BEST_HOURS[hour] ? true : false;
+          html += `<div class="grid-cell${isBest ? ' best-time' : ''}" data-day="${dayIdx}" data-hour="${hour}"></div>`;
+        }
+      }
+      grid.innerHTML = html;
+
+      // Render posts into cells
+      for (const post of posts) {
+        const cell = grid.querySelector(`.grid-cell[data-day="${post.day}"][data-hour="${post.hour}"]`);
+        if (!cell) continue;
+        const pill = document.createElement('div');
+        pill.className = 'post-pill';
+        pill.dataset.platform = post.platform;
+        pill.dataset.id = post.id;
+        pill.draggable = true;
+        pill.textContent = post.content.slice(0, 25) || post.platform;
+        cell.appendChild(pill);
+      }
+
+      // Cell click to add post
+      grid.querySelectorAll('.grid-cell').forEach(cell => {
+        cell.addEventListener('click', (e) => {
+          if (e.target.classList.contains('post-pill')) return;
+          targetCell = { day: parseInt(cell.dataset.day), hour: parseInt(cell.dataset.hour) };
+          openModal(null);
+        });
+        // Drag events
+        cell.addEventListener('dragover', (e) => { e.preventDefault(); cell.classList.add('dragover'); });
+        cell.addEventListener('dragleave', () => { cell.classList.remove('dragover'); });
+        cell.addEventListener('drop', (e) => {
+          e.preventDefault();
+          cell.classList.remove('dragover');
+          if (!dragPost) return;
+          const post = posts.find(p => p.id === dragPost);
+          if (post) {
+            post.day = parseInt(cell.dataset.day);
+            post.hour = parseInt(cell.dataset.hour);
+            saveSchedule(document.getElementById('schedule-select').value);
+            renderGrid();
+          }
+        });
+      });
+
+      // Pill click to edit, drag to move
+      grid.querySelectorAll('.post-pill').forEach(pill => {
+        pill.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const post = posts.find(p => p.id === pill.dataset.id);
+          if (post) openModal(post);
+        });
+        pill.addEventListener('dragstart', (e) => {
+          dragPost = pill.dataset.id;
+          e.dataTransfer.effectAllowed = 'move';
+        });
+        pill.addEventListener('dragend', () => { dragPost = null; });
+      });
+    }
+
+    // --- Modal ---
+    function openModal(post) {
+      editingPost = post;
+      const overlay = document.getElementById('modal-overlay');
+      document.getElementById('modal-title').textContent = post ? 'Edit Post' : 'New Post';
+      document.getElementById('post-platform').value = post ? post.platform : 'x';
+      document.getElementById('post-content').value = post ? post.content : '';
+      document.getElementById('post-tags').value = post ? post.tags : '';
+      document.getElementById('btn-modal-save').textContent = post ? 'Save' : 'Add Post';
+      document.getElementById('btn-delete-post').style.display = post ? 'inline-block' : 'none';
+      overlay.classList.add('visible');
+    }
+    function closeModal() {
+      document.getElementById('modal-overlay').classList.remove('visible');
+      editingPost = null;
+      targetCell = null;
+    }
+
+    document.getElementById('btn-modal-cancel').addEventListener('click', closeModal);
+    document.getElementById('modal-overlay').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) closeModal();
+    });
+
+    document.getElementById('btn-modal-save').addEventListener('click', () => {
+      const platform = document.getElementById('post-platform').value;
+      const content = document.getElementById('post-content').value.trim();
+      const tags = document.getElementById('post-tags').value.trim();
+
+      if (editingPost) {
+        editingPost.platform = platform;
+        editingPost.content = content;
+        editingPost.tags = tags;
+      } else {
+        const day = targetCell ? targetCell.day : 0;
+        const hour = targetCell ? targetCell.hour : 9;
+        posts.push({ id: crypto.randomUUID(), platform, content, tags, day, hour });
+      }
+      saveSchedule(document.getElementById('schedule-select').value);
+      renderGrid();
+      closeModal();
+    });
+
+    document.getElementById('btn-delete-post').addEventListener('click', () => {
+      if (editingPost) {
+        posts = posts.filter(p => p.id !== editingPost.id);
+        saveSchedule(document.getElementById('schedule-select').value);
+        renderGrid();
+      }
+      closeModal();
+    });
+
+    // --- Add post button (no cell target = defaults to Mon 9am) ---
+    document.getElementById('btn-add-post').addEventListener('click', () => {
+      targetCell = { day: 0, hour: 9 };
+      openModal(null);
+    });
+
+    // --- Optimize: move posts to best time slots ---
+    document.getElementById('btn-optimize').addEventListener('click', () => {
+      for (const post of posts) {
+        const platformBest = BEST_TIMES[post.platform];
+        if (!platformBest) continue;
+        // Flatten best hours for this platform
+        const bestHours = platformBest.flat();
+        if (bestHours.length === 0) continue;
+        // Find a best hour that doesn't conflict (same day+hour+platform)
+        const currentOccupied = posts.filter(p => p.id !== post.id && p.day === post.day)
+          .map(p => p.hour);
+        const available = bestHours.filter(h => !currentOccupied.includes(h));
+        if (available.length > 0) {
+          post.hour = available[Math.floor(Math.random() * available.length)];
+        } else if (bestHours.length > 0) {
+          post.hour = bestHours[0];
+        }
+      }
+      saveSchedule(document.getElementById('schedule-select').value);
+      renderGrid();
+    });
+
+    // --- Save schedule ---
+    document.getElementById('btn-save').addEventListener('click', () => {
+      const current = document.getElementById('schedule-select').value;
+      const name = prompt('Schedule name:', current || 'My Schedule');
+      if (!name) return;
+      saveSchedule(name);
+      document.getElementById('schedule-select').value = name;
+    });
+
+    // --- Load schedule on select change ---
+    document.getElementById('schedule-select').addEventListener('change', (e) => {
+      loadSchedule(e.target.value);
+      renderGrid();
+    });
+
+    // --- Export Markdown ---
+    document.getElementById('btn-export-md').addEventListener('click', () => {
+      let md = '# Social Media Schedule\n\n';
+      for (let dayIdx = 0; dayIdx < 7; dayIdx++) {
+        const dayPosts = posts.filter(p => p.day === dayIdx).sort((a, b) => a.hour - b.hour);
+        if (dayPosts.length === 0) continue;
+        md += `## ${DAYS[dayIdx]}\n\n`;
+        for (const p of dayPosts) {
+          const time = p.hour <= 12 ? `${p.hour}:00 AM` : `${p.hour - 12}:00 PM`;
+          md += `- **${time}** [${p.platform}] ${p.content}`;
+          if (p.tags) md += ` ${p.tags}`;
+          md += '\n';
+        }
+        md += '\n';
+      }
+      showExport(md);
+    });
+
+    // --- Export CSV ---
+    document.getElementById('btn-export-csv').addEventListener('click', () => {
+      let csv = 'Day,Time,Platform,Content,Tags\n';
+      const sorted = [...posts].sort((a, b) => a.day - b.day || a.hour - b.hour);
+      for (const p of sorted) {
+        const time = p.hour <= 12 ? `${p.hour}:00 AM` : `${p.hour - 12}:00 PM`;
+        const content = p.content.replace(/"/g, '""');
+        const tags = p.tags.replace(/"/g, '""');
+        csv += `${DAYS[p.day]},${time},${p.platform},"${content}","${tags}"\n`;
+      }
+      showExport(csv);
+    });
+
+    function showExport(text) {
+      const box = document.getElementById('export-box');
+      document.getElementById('export-content').textContent = text;
+      box.classList.add('visible');
+    }
+
+    document.getElementById('copy-export').addEventListener('click', () => {
+      const text = document.getElementById('export-content').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('copy-export');
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = 'Copy to Clipboard'; }, 2000);
+      });
+    });
+
+    // --- Init ---
+    loadSchedule('');
+    updateScheduleList();
+    renderGrid();
+  </script>
+  <script src="/related.js" defer></script>
+</body>
+</html>

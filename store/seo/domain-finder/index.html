@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Domain Name Generator &amp; Checker — FreeMarketingStore</title>
+  <meta name="description" content="Generate creative domain names algorithmically and check availability across popular TLDs.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Manrope', system-ui, sans-serif;
+      background: #fafafa;
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      max-width: 900px; margin: 0 auto; padding: 1rem 1.5rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .nav-brand {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-weight: 700; font-size: 0.95rem; text-decoration: none; color: #1a1a1a;
+    }
+    .nav-brand img { width: 24px; height: 24px; }
+    .nav-back { font-size: 0.85rem; color: #6b7280; text-decoration: none; }
+    .nav-back:hover { color: #f97316; }
+
+    .container { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem; }
+    h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .subtitle { color: #6b7280; font-size: 0.95rem; margin-bottom: 2rem; }
+
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label {
+      display: block; font-size: 0.82rem; font-weight: 600;
+      color: #6b7280; margin-bottom: 0.4rem;
+    }
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%; padding: 0.7rem 1rem; border: 1px solid #e5e7eb;
+      border-radius: 8px; font-family: inherit; font-size: 0.9rem; background: #ffffff;
+    }
+    .form-group textarea { resize: vertical; min-height: 70px; }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+      outline: none; border-color: #f97316;
+    }
+
+    .keywords-row { display: flex; gap: 0.75rem; }
+    .keywords-row .form-group { flex: 1; }
+
+    .style-options { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .style-chip {
+      padding: 0.45rem 0.9rem; border-radius: 20px; border: 1px solid #e5e7eb;
+      font-size: 0.82rem; font-weight: 500; cursor: pointer; background: #ffffff;
+      transition: all 0.2s;
+    }
+    .style-chip.active { background: #f97316; color: #fff; border-color: #f97316; }
+    .style-chip:hover:not(.active) { border-color: #f97316; color: #f97316; }
+
+    .btn-generate {
+      width: 100%; padding: 0.8rem; border-radius: 8px; border: none;
+      background: #f97316; color: #fff; font-family: inherit;
+      font-size: 0.9rem; font-weight: 600; cursor: pointer; margin: 1.5rem 0;
+    }
+    .btn-generate:hover { background: #ea580c; }
+    .btn-generate:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .ai-badge {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      font-size: 0.72rem; color: #6b7280; margin-top: 0.3rem;
+    }
+    .ai-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; }
+    .ai-badge.off .dot { background: #d1d5db; }
+
+    .results { display: none; }
+    .results.visible { display: block; }
+
+    .results-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .results-header h2 { font-size: 1.2rem; font-weight: 700; }
+    .btn-export {
+      padding: 0.4rem 0.8rem; border-radius: 6px; border: 1px solid #e5e7eb;
+      font-size: 0.8rem; font-weight: 500; cursor: pointer; background: #ffffff;
+      font-family: inherit;
+    }
+    .btn-export:hover { border-color: #f97316; color: #f97316; }
+
+    .tld-filters { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .tld-chip {
+      padding: 0.3rem 0.6rem; border-radius: 4px; border: 1px solid #e5e7eb;
+      font-size: 0.72rem; font-weight: 600; cursor: pointer; background: #ffffff;
+    }
+    .tld-chip.active { background: #f97316; color: #fff; border-color: #f97316; }
+
+    .domain-grid { display: grid; gap: 0.75rem; }
+    .domain-card {
+      background: #ffffff; border: 1px solid #e5e7eb; border-radius: 10px;
+      padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between;
+      transition: border-color 0.2s;
+    }
+    .domain-card:hover { border-color: #f97316; }
+    .domain-name { font-weight: 600; font-size: 0.95rem; }
+    .domain-tlds { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .tld-badge {
+      font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 4px;
+      font-weight: 600;
+    }
+    .tld-badge.available { background: #dcfce7; color: #166534; }
+    .tld-badge.taken { background: #fee2e2; color: #991b1b; }
+    .tld-badge.uncertain { background: #fef9c3; color: #854d0e; }
+    .tld-badge.checking { background: #f3f4f6; color: #6b7280; }
+
+    .check-btn {
+      padding: 0.35rem 0.7rem; border-radius: 6px; border: 1px solid #e5e7eb;
+      font-size: 0.75rem; font-weight: 500; cursor: pointer; background: #ffffff;
+      font-family: inherit; white-space: nowrap;
+    }
+    .check-btn:hover { border-color: #f97316; color: #f97316; }
+
+    .disclaimer {
+      margin-top: 1.5rem; padding: 1rem; background: #fffbeb; border: 1px solid #fde68a;
+      border-radius: 8px; font-size: 0.8rem; color: #92400e; line-height: 1.5;
+    }
+
+    .history-section { margin-top: 2.5rem; }
+    .history-section h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; }
+    .history-list { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .history-tag {
+      font-size: 0.78rem; padding: 0.3rem 0.65rem; border-radius: 4px;
+      background: #f3f4f6; color: #374151; cursor: pointer;
+    }
+    .history-tag:hover { background: #fed7aa; }
+    .clear-history {
+      font-size: 0.75rem; color: #6b7280; cursor: pointer; border: none;
+      background: none; font-family: inherit; margin-top: 0.5rem;
+    }
+    .clear-history:hover { color: #ef4444; }
+
+    .loading-spinner {
+      display: inline-block; width: 14px; height: 14px;
+      border: 2px solid #e5e7eb; border-top-color: #f97316;
+      border-radius: 50%; animation: spin 0.6s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="nav-brand"><img src="/favicon.svg" alt="FMS"><span>FreeMarketingStore</span></a>
+    <a href="/" class="nav-back">&larr; All tools</a>
+  </nav>
+
+  <div class="container">
+    <h1>Domain Name Generator & Checker</h1>
+    <p class="subtitle">Generate creative domain names and check availability across popular TLDs.</p>
+
+    <div class="form-group">
+      <label>Business Description</label>
+      <textarea id="description" placeholder="e.g., A modern coffee subscription service for remote workers..."></textarea>
+    </div>
+
+    <div class="keywords-row">
+      <div class="form-group">
+        <label>Keyword 1</label>
+        <input type="text" id="keyword1" placeholder="e.g., coffee">
+      </div>
+      <div class="form-group">
+        <label>Keyword 2</label>
+        <input type="text" id="keyword2" placeholder="e.g., brew">
+      </div>
+      <div class="form-group">
+        <label>Keyword 3 (optional)</label>
+        <input type="text" id="keyword3" placeholder="e.g., remote">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Name Style</label>
+      <div class="style-options" id="style-options">
+        <span class="style-chip active" data-style="short">Short</span>
+        <span class="style-chip" data-style="brandable">Brandable</span>
+        <span class="style-chip" data-style="descriptive">Descriptive</span>
+        <span class="style-chip" data-style="creative">Creative</span>
+      </div>
+    </div>
+
+    <div class="ai-badge" id="ai-status">
+      <span class="dot"></span>
+      <span>Chrome AI: checking...</span>
+    </div>
+
+    <button class="btn-generate" id="generate-btn">Generate Domain Names</button>
+
+    <div class="results" id="results">
+      <div class="results-header">
+        <h2>Suggestions <span id="count-badge" style="font-size:0.8rem;color:#6b7280;font-weight:400;"></span></h2>
+        <button class="btn-export" id="export-btn">Copy Available</button>
+      </div>
+
+      <div class="tld-filters" id="tld-filters"></div>
+      <div class="domain-grid" id="domain-grid"></div>
+
+      <div class="disclaimer">
+        This availability check is a heuristic (HEAD request timeout). It cannot guarantee a domain is truly available or taken. Always verify with a registrar (Namecheap, Porkbun, Cloudflare Registrar) before purchasing.
+      </div>
+    </div>
+
+    <div class="history-section" id="history-section" style="display:none;">
+      <h3>Recent Searches</h3>
+      <div class="history-list" id="history-list"></div>
+      <button class="clear-history" id="clear-history">Clear history</button>
+    </div>
+  </div>
+
+  <script>
+    // --- Config ---
+    const PREFIXES = ['get', 'try', 'use', 'go', 'my', 'the', 'hey', 'just', 'on', 'hi', 'be'];
+    const SUFFIXES = ['ly', 'ify', 'hub', 'lab', 'io', 'app', 'hq', 'ful', 'ness', 'co', 'ist', 'ware'];
+    const TLDS = ['.com', '.io', '.co', '.app', '.dev', '.online', '.store', '.ai', '.tech', '.xyz', '.org', '.net'];
+    const CHECK_TIMEOUT = 3000;
+
+    let selectedStyles = ['short'];
+    let activeTlds = ['.com', '.io', '.co', '.app', '.dev', '.online'];
+    let generatedNames = [];
+    let chromeAiAvailable = false;
+
+    // --- Style chips ---
+    document.getElementById('style-options').addEventListener('click', (e) => {
+      const chip = e.target.closest('.style-chip');
+      if (!chip) return;
+      chip.classList.toggle('active');
+      selectedStyles = [...document.querySelectorAll('.style-chip.active')].map(c => c.dataset.style);
+      if (selectedStyles.length === 0) { chip.classList.add('active'); selectedStyles = [chip.dataset.style]; }
+    });
+
+    // --- Chrome AI detection ---
+    (async () => {
+      const badge = document.getElementById('ai-status');
+      try {
+        if (window.ai && window.ai.languageModel) {
+          const caps = await window.ai.languageModel.capabilities();
+          if (caps.available === 'readily' || caps.available === 'after-download') {
+            chromeAiAvailable = true;
+            badge.innerHTML = '<span class="dot"></span><span>Chrome AI: available (will enhance suggestions)</span>';
+            return;
+          }
+        }
+      } catch (e) {}
+      chromeAiAvailable = false;
+      badge.classList.add('off');
+      badge.innerHTML = '<span class="dot"></span><span>Chrome AI: not available (algorithmic mode)</span>';
+    })();
+
+    // --- Name generation algorithms ---
+    function generateNames(keywords, description, styles) {
+      const names = new Set();
+      const kws = keywords.filter(k => k.length > 0).map(k => k.toLowerCase().replace(/[^a-z0-9]/g, ''));
+      if (kws.length === 0) return [];
+
+      // Combine keywords
+      for (let i = 0; i < kws.length; i++) {
+        for (let j = 0; j < kws.length; j++) {
+          if (i === j) continue;
+          names.add(kws[i] + kws[j]);
+          if (kws[i].length <= 5 && kws[j].length <= 5) names.add(kws[j] + kws[i]);
+        }
+      }
+
+      // Prefixes
+      if (styles.includes('short') || styles.includes('brandable')) {
+        for (const kw of kws) {
+          for (const p of PREFIXES) {
+            names.add(p + kw);
+          }
+        }
+      }
+
+      // Suffixes
+      if (styles.includes('brandable') || styles.includes('creative')) {
+        for (const kw of kws) {
+          for (const s of SUFFIXES) {
+            names.add(kw + s);
+          }
+        }
+      }
+
+      // Vowel removal (flickr style)
+      if (styles.includes('short') || styles.includes('creative')) {
+        for (const kw of kws) {
+          if (kw.length > 3) {
+            const noVowel = kw[0] + kw.slice(1).replace(/[aeiou]/g, '');
+            if (noVowel.length >= 3 && noVowel !== kw) names.add(noVowel);
+          }
+        }
+        // Combined without vowels
+        if (kws.length >= 2) {
+          const combo = kws[0] + kws[1];
+          const stripped = combo[0] + combo.slice(1).replace(/[aeiou]/g, '');
+          if (stripped.length >= 4) names.add(stripped);
+        }
+      }
+
+      // Blending / portmanteau
+      if (styles.includes('creative') || styles.includes('brandable')) {
+        for (let i = 0; i < kws.length; i++) {
+          for (let j = 0; j < kws.length; j++) {
+            if (i === j) continue;
+            const w1 = kws[i], w2 = kws[j];
+            // Overlap blend: end of w1 matches start of w2
+            for (let overlap = 1; overlap <= Math.min(3, w1.length - 1, w2.length - 1); overlap++) {
+              if (w1.slice(-overlap) === w2.slice(0, overlap)) {
+                names.add(w1 + w2.slice(overlap));
+              }
+            }
+            // Half-merge
+            const half1 = w1.slice(0, Math.ceil(w1.length / 2));
+            const half2 = w2.slice(Math.floor(w2.length / 2));
+            if ((half1 + half2).length >= 4) names.add(half1 + half2);
+          }
+        }
+      }
+
+      // Descriptive combos
+      if (styles.includes('descriptive')) {
+        const descriptors = ['smart', 'fast', 'easy', 'super', 'mega', 'ultra', 'pro', 'prime', 'top', 'best'];
+        for (const kw of kws) {
+          for (const d of descriptors) {
+            names.add(d + kw);
+          }
+        }
+      }
+
+      // Short mutations
+      if (styles.includes('short')) {
+        for (const kw of kws) {
+          if (kw.length > 4) {
+            names.add(kw.slice(0, 4));
+            names.add(kw.slice(0, 5));
+          }
+          // Double last consonant + y/o
+          const last = kw.slice(-1);
+          if (!'aeiou'.includes(last)) {
+            names.add(kw + last + 'y');
+            names.add(kw + last + 'o');
+          }
+        }
+      }
+
+      // Filter: must be 3-15 chars, only lowercase alpha
+      const filtered = [...names].filter(n => n.length >= 3 && n.length <= 15 && /^[a-z0-9]+$/.test(n));
+
+      // Sort: shorter first, then alphabetical
+      filtered.sort((a, b) => a.length - b.length || a.localeCompare(b));
+
+      return filtered.slice(0, 30);
+    }
+
+    // --- Chrome AI enhancement ---
+    async function getAiSuggestions(description, keywords) {
+      if (!chromeAiAvailable) return [];
+      try {
+        const session = await window.ai.languageModel.create();
+        const prompt = `Generate 10 creative brand names for: ${description}. Keywords: ${keywords.join(', ')}. Short, memorable, available as .com. Just list names, one per line. No explanations, no numbering.`;
+        const result = await session.prompt(prompt);
+        session.destroy();
+        return result.split('\n')
+          .map(l => l.trim().toLowerCase().replace(/[^a-z0-9]/g, ''))
+          .filter(n => n.length >= 3 && n.length <= 15);
+      } catch (e) {
+        return [];
+      }
+    }
+
+    // --- Domain availability check ---
+    async function checkDomain(name, tld) {
+      const domain = name + tld;
+      try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), CHECK_TIMEOUT);
+        const resp = await fetch(`https://${domain}/`, {
+          method: 'HEAD',
+          mode: 'no-cors',
+          signal: controller.signal
+        });
+        clearTimeout(timer);
+        // no-cors always gives opaque response, type is 'opaque' if server exists
+        return resp.type === 'opaque' ? 'taken' : 'taken';
+      } catch (e) {
+        // Fetch failed = likely no server = possibly available
+        if (e.name === 'AbortError') return 'uncertain';
+        return 'available';
+      }
+    }
+
+    // --- Render TLD filters ---
+    function renderTldFilters() {
+      const container = document.getElementById('tld-filters');
+      container.innerHTML = TLDS.map(tld =>
+        `<span class="tld-chip ${activeTlds.includes(tld) ? 'active' : ''}" data-tld="${tld}">${tld}</span>`
+      ).join('');
+      container.addEventListener('click', (e) => {
+        const chip = e.target.closest('.tld-chip');
+        if (!chip) return;
+        const tld = chip.dataset.tld;
+        if (activeTlds.includes(tld)) {
+          if (activeTlds.length > 1) activeTlds = activeTlds.filter(t => t !== tld);
+        } else {
+          activeTlds.push(tld);
+        }
+        renderTldFilters();
+      });
+    }
+
+    // --- Render domain cards ---
+    function renderDomains(names) {
+      const grid = document.getElementById('domain-grid');
+      grid.innerHTML = names.map((name, idx) => `
+        <div class="domain-card" data-name="${name}" id="card-${idx}">
+          <div>
+            <div class="domain-name">${name}</div>
+            <div class="domain-tlds" id="tlds-${idx}">
+              ${activeTlds.map(tld => `<span class="tld-badge checking" data-tld="${tld}">${tld}</span>`).join('')}
+            </div>
+          </div>
+          <button class="check-btn" data-idx="${idx}">Check</button>
+        </div>
+      `).join('');
+
+      document.getElementById('count-badge').textContent = `(${names.length} names)`;
+    }
+
+    // --- Check a single card ---
+    async function checkCard(idx) {
+      const name = generatedNames[idx];
+      const container = document.getElementById(`tlds-${idx}`);
+      const badges = container.querySelectorAll('.tld-badge');
+      for (const badge of badges) {
+        badge.className = 'tld-badge checking';
+        badge.textContent = badge.dataset.tld + '...';
+      }
+      for (const badge of badges) {
+        const tld = badge.dataset.tld;
+        const status = await checkDomain(name, tld);
+        badge.className = `tld-badge ${status}`;
+        badge.textContent = tld;
+      }
+    }
+
+    // --- Event: check button ---
+    document.getElementById('domain-grid')?.addEventListener?.('click', (e) => {
+      // delegated on parent, added after render
+    });
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.check-btn');
+      if (!btn) return;
+      const idx = parseInt(btn.dataset.idx);
+      btn.textContent = '...';
+      btn.disabled = true;
+      checkCard(idx).then(() => { btn.textContent = 'Done'; });
+    });
+
+    // --- History ---
+    function getHistory() {
+      try { return JSON.parse(localStorage.getItem('fms-domain-history') || '[]'); } catch { return []; }
+    }
+    function saveHistory(keywords) {
+      const h = getHistory();
+      const entry = keywords.join(' + ');
+      if (!h.includes(entry)) { h.unshift(entry); if (h.length > 20) h.pop(); }
+      localStorage.setItem('fms-domain-history', JSON.stringify(h));
+      renderHistory();
+    }
+    function renderHistory() {
+      const h = getHistory();
+      const section = document.getElementById('history-section');
+      const list = document.getElementById('history-list');
+      if (h.length === 0) { section.style.display = 'none'; return; }
+      section.style.display = 'block';
+      list.innerHTML = h.map(item => `<span class="history-tag">${item}</span>`).join('');
+    }
+    document.getElementById('history-list').addEventListener('click', (e) => {
+      const tag = e.target.closest('.history-tag');
+      if (!tag) return;
+      const parts = tag.textContent.split(' + ');
+      if (parts[0]) document.getElementById('keyword1').value = parts[0];
+      if (parts[1]) document.getElementById('keyword2').value = parts[1];
+      if (parts[2]) document.getElementById('keyword3').value = parts[2];
+    });
+    document.getElementById('clear-history').addEventListener('click', () => {
+      localStorage.removeItem('fms-domain-history');
+      renderHistory();
+    });
+
+    // --- Export available ---
+    document.getElementById('export-btn').addEventListener('click', () => {
+      const available = [];
+      document.querySelectorAll('.domain-card').forEach(card => {
+        const name = card.dataset.name;
+        card.querySelectorAll('.tld-badge.available').forEach(badge => {
+          available.push(name + badge.dataset.tld);
+        });
+      });
+      if (available.length === 0) {
+        const allNames = generatedNames.map(n => n + '.com');
+        navigator.clipboard.writeText(allNames.join('\n'));
+        const btn = document.getElementById('export-btn');
+        btn.textContent = 'Copied all names!';
+        setTimeout(() => { btn.textContent = 'Copy Available'; }, 2000);
+      } else {
+        navigator.clipboard.writeText(available.join('\n'));
+        const btn = document.getElementById('export-btn');
+        btn.textContent = `Copied ${available.length}!`;
+        setTimeout(() => { btn.textContent = 'Copy Available'; }, 2000);
+      }
+    });
+
+    // --- Main generate ---
+    document.getElementById('generate-btn').addEventListener('click', async () => {
+      const btn = document.getElementById('generate-btn');
+      const description = document.getElementById('description').value.trim();
+      const kw1 = document.getElementById('keyword1').value.trim();
+      const kw2 = document.getElementById('keyword2').value.trim();
+      const kw3 = document.getElementById('keyword3').value.trim();
+      const keywords = [kw1, kw2, kw3].filter(Boolean);
+
+      if (keywords.length === 0) {
+        document.getElementById('keyword1').focus();
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="loading-spinner"></span> Generating...';
+
+      // Algorithmic generation
+      let names = generateNames(keywords, description, selectedStyles);
+
+      // Chrome AI enhancement
+      if (chromeAiAvailable && description) {
+        const aiNames = await getAiSuggestions(description, keywords);
+        const nameSet = new Set(names);
+        for (const n of aiNames) {
+          if (!nameSet.has(n)) { names.push(n); nameSet.add(n); }
+        }
+        names = names.slice(0, 35);
+      }
+
+      generatedNames = names;
+      saveHistory(keywords);
+      renderTldFilters();
+      renderDomains(names);
+      document.getElementById('results').classList.add('visible');
+
+      btn.disabled = false;
+      btn.textContent = 'Generate Domain Names';
+    });
+
+    // --- Init ---
+    renderHistory();
+  </script>
+  <script src="/related.js" defer></script>
+</body>
+</html>
