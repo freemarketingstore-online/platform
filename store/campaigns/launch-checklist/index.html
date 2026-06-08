@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product Launch Checklist - FreeMarketingStore</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Manrope',system-ui,sans-serif;background:#fafafa;color:#1a1a1a;min-height:100vh;padding:24px}
+a{color:#f97316;text-decoration:none}
+a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:14px;font-weight:500}
+h1{font-size:28px;font-weight:800;margin-bottom:8px}
+.subtitle{color:#6b7280;margin-bottom:24px;font-size:15px}
+.container{max-width:800px;margin:0 auto}
+.panel{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:24px;margin-bottom:20px}
+.panel h2{font-size:16px;font-weight:700;margin-bottom:16px}
+label{font-size:13px;font-weight:600;display:block;margin-bottom:4px;color:#4b5563}
+input[type="text"]{width:100%;padding:10px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:14px;font-family:inherit;background:#fafafa}
+input[type="text"]:focus{outline:none;border-color:#f97316}
+.btn{padding:10px 20px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-primary{background:#f97316;color:#fff}
+.btn-primary:hover{background:#ea580c}
+.btn-secondary{background:#fff;color:#1a1a1a;border:1px solid #e5e7eb}
+.btn-secondary:hover{border-color:#f97316}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-group{display:flex;gap:8px;flex-wrap:wrap}
+.templates{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.template-btn{padding:8px 16px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;cursor:pointer;font-size:13px;font-weight:600;transition:all .2s}
+.template-btn:hover,.template-btn.active{background:#fff7ed;border-color:#f97316;color:#f97316}
+.progress-bar{background:#e5e7eb;border-radius:999px;height:10px;overflow:hidden;margin-bottom:4px}
+.progress-fill{height:100%;background:linear-gradient(90deg,#f97316,#fb923c);border-radius:999px;transition:width .4s ease}
+.progress-text{font-size:12px;color:#6b7280;text-align:right}
+.phase{margin-bottom:24px}
+.phase-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #e5e7eb}
+.phase-title{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+.phase-badge{padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;background:#fff7ed;color:#f97316}
+.phase-count{font-size:12px;color:#6b7280}
+.checklist-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;margin-bottom:4px;transition:background .2s;cursor:pointer}
+.checklist-item:hover{background:#fafafa}
+.checklist-item input[type="checkbox"]{width:18px;height:18px;accent-color:#f97316;cursor:pointer;flex-shrink:0}
+.checklist-item.checked .item-text{text-decoration:line-through;color:#9ca3af}
+.item-text{font-size:14px;flex:1}
+.item-delete{opacity:0;border:none;background:none;color:#dc2626;cursor:pointer;font-size:16px;padding:4px}
+.checklist-item:hover .item-delete{opacity:1}
+.add-item{display:flex;gap:8px;margin-top:12px}
+.add-item input{flex:1}
+.summary-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.summary-stats{display:flex;gap:16px}
+.summary-stat{text-align:center}
+.summary-stat .num{font-size:24px;font-weight:800;color:#f97316}
+.summary-stat .lbl{font-size:11px;color:#6b7280;text-transform:uppercase}
+.export-box{background:#1a1a1a;border-radius:10px;padding:16px;margin-top:12px;font-family:'SF Mono',monospace;font-size:12px;color:#e5e7eb;white-space:pre-wrap;max-height:300px;overflow-y:auto;display:none}
+</style>
+</head>
+<body>
+<div class="container">
+<a class="back" href="/">Back to Store</a>
+<h1>Product Launch Checklist</h1>
+<p class="subtitle">Structured launch plans with pre-built templates for every product type</p>
+
+<div class="panel">
+  <h2>Choose a Template</h2>
+  <div class="templates">
+    <button class="template-btn active" onclick="loadTemplate('saas')">SaaS Launch</button>
+    <button class="template-btn" onclick="loadTemplate('mobile')">Mobile App</button>
+    <button class="template-btn" onclick="loadTemplate('physical')">Physical Product</button>
+    <button class="template-btn" onclick="loadTemplate('event')">Event</button>
+    <button class="template-btn" onclick="loadTemplate('course')">Online Course</button>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="summary-bar">
+    <div>
+      <div class="progress-bar" style="width:300px"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+      <div class="progress-text" id="progress-text">0% complete</div>
+    </div>
+    <div class="summary-stats">
+      <div class="summary-stat"><div class="num" id="stat-done">0</div><div class="lbl">Done</div></div>
+      <div class="summary-stat"><div class="num" id="stat-total">0</div><div class="lbl">Total</div></div>
+      <div class="summary-stat"><div class="num" id="stat-remain">0</div><div class="lbl">Remaining</div></div>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-secondary btn-sm" onclick="exportMarkdown()">Export MD</button>
+      <button class="btn btn-secondary btn-sm" onclick="resetProgress()">Reset</button>
+    </div>
+  </div>
+
+  <div id="checklist-container"></div>
+</div>
+
+<div class="export-box" id="export-box"></div>
+</div>
+
+<script>
+const TEMPLATES = {
+  saas: {
+    name: 'SaaS Launch',
+    phases: {
+      'Pre-Launch (30 days out)': [
+        'Define target audience and ICP',
+        'Set launch goals and KPIs',
+        'Create landing page with email capture',
+        'Write launch blog post / announcement',
+        'Prepare demo video or walkthrough',
+        'Set up analytics (GA4, Mixpanel, etc.)',
+        'Create onboarding email sequence',
+        'Build press kit / media page',
+        'Reach out to beta testers for testimonials',
+        'Set up customer support channels',
+        'Prepare social media content calendar',
+        'Write Product Hunt description and assets',
+        'Create pricing page',
+        'Test billing and payment flow end-to-end',
+        'Security audit and penetration testing'
+      ],
+      'Launch Day': [
+        'Publish landing page updates',
+        'Send launch email to waitlist',
+        'Post on Product Hunt',
+        'Share on Twitter/X, LinkedIn, Reddit',
+        'Notify press contacts',
+        'Monitor error rates and server load',
+        'Respond to all comments and questions',
+        'Share launch metrics with team',
+        'Update status page if any issues',
+        'Thank early supporters personally'
+      ],
+      'Post-Launch (7 days)': [
+        'Follow up with trial signups (Day 1)',
+        'Send second email to non-openers (Day 2)',
+        'Publish retrospective blog post',
+        'Collect and respond to user feedback',
+        'Fix critical bugs reported by users',
+        'Share social proof (user counts, testimonials)',
+        'Reach out to journalists with results',
+        'Plan first feature update based on feedback',
+        'Set up weekly metrics review',
+        'Create referral or affiliate program'
+      ]
+    }
+  },
+  mobile: {
+    name: 'Mobile App',
+    phases: {
+      'Pre-Launch (30 days out)': [
+        'Finalize app store listing copy',
+        'Create app screenshots and preview video',
+        'Design app icon (multiple sizes)',
+        'Set up App Store Connect / Google Play Console',
+        'Prepare press kit with app assets',
+        'Submit for App Store review (allow 7 days)',
+        'Create landing page with download links',
+        'Set up crash reporting (Sentry, Crashlytics)',
+        'Build referral mechanism in-app',
+        'Test on 10+ device configurations',
+        'Prepare ASO keywords and metadata',
+        'Create social media teaser campaign',
+        'Set up push notification infrastructure'
+      ],
+      'Launch Day': [
+        'Publish app on both stores',
+        'Send announcement to email list',
+        'Post on social media (all channels)',
+        'Submit to app review sites (AppAdvice, etc.)',
+        'Monitor crash rates and ANRs',
+        'Respond to all app store reviews',
+        'Track installs and retention in real-time',
+        'Run paid install campaign (if budget allows)',
+        'Share download milestones on social'
+      ],
+      'Post-Launch (7 days)': [
+        'Respond to all 1-star and 2-star reviews',
+        'Ship hotfix for top-reported crashes',
+        'Analyze Day 1 and Day 7 retention',
+        'A/B test app store screenshots',
+        'Submit for editorial features',
+        'Start content marketing (blog, YouTube)',
+        'Plan v1.1 based on user feedback',
+        'Set up weekly App Store analytics review'
+      ]
+    }
+  },
+  physical: {
+    name: 'Physical Product',
+    phases: {
+      'Pre-Launch (30 days out)': [
+        'Finalize product photography (lifestyle + detail)',
+        'Write product descriptions and specs',
+        'Set up e-commerce store / listing',
+        'Configure shipping rates and options',
+        'Create unboxing video',
+        'Send samples to influencers',
+        'Prepare inventory and fulfillment',
+        'Set up returns / exchange policy',
+        'Create email launch sequence',
+        'Build pre-order page with countdown',
+        'Prepare customer support FAQ',
+        'Order packaging and inserts',
+        'Test entire purchase flow end-to-end'
+      ],
+      'Launch Day': [
+        'Open store / activate listings',
+        'Send launch email blast',
+        'Post launch announcement on social',
+        'Go live with paid ads (if planned)',
+        'Monitor order volume and inventory',
+        'Respond to customer questions immediately',
+        'Share behind-the-scenes content',
+        'Track conversion rate and AOV',
+        'Update sold-out items if needed'
+      ],
+      'Post-Launch (7 days)': [
+        'Ship all Day 1 orders within 48 hours',
+        'Follow up for reviews (after delivery)',
+        'Analyze which channels drove most sales',
+        'Restock fast-selling variants',
+        'Share customer photos and testimonials',
+        'Optimize ad creative based on data',
+        'Plan restocking timeline',
+        'Send thank-you email with care instructions'
+      ]
+    }
+  },
+  event: {
+    name: 'Event',
+    phases: {
+      'Pre-Launch (30 days out)': [
+        'Finalize event agenda and speakers',
+        'Create event landing page',
+        'Set up registration / ticketing',
+        'Design promotional graphics',
+        'Send save-the-date emails',
+        'Create social media event pages',
+        'Reach out to sponsors / partners',
+        'Prepare speaker briefs and materials',
+        'Test AV equipment and streaming setup',
+        'Create attendee communication plan',
+        'Prepare name badges and materials',
+        'Arrange catering and venue logistics',
+        'Create event hashtag and social plan'
+      ],
+      'Launch Day': [
+        'Send day-of reminder email',
+        'Post event start on social media',
+        'Live-tweet / live-post key moments',
+        'Ensure smooth registration check-in',
+        'Record sessions (if applicable)',
+        'Monitor attendee engagement',
+        'Handle any tech issues quickly',
+        'Share photos and highlights in real-time',
+        'Collect feedback (in-session surveys)'
+      ],
+      'Post-Launch (7 days)': [
+        'Send thank-you email to attendees',
+        'Share recording links',
+        'Publish event recap blog post',
+        'Send speaker thank-you notes',
+        'Compile feedback and NPS scores',
+        'Share highlights reel on social',
+        'Follow up with leads generated',
+        'Debrief with team on what worked'
+      ]
+    }
+  },
+  course: {
+    name: 'Online Course',
+    phases: {
+      'Pre-Launch (30 days out)': [
+        'Finalize curriculum and lesson outlines',
+        'Record and edit all video content',
+        'Create downloadable resources and worksheets',
+        'Set up course platform (Teachable, etc.)',
+        'Write sales page with outcomes and testimonials',
+        'Create free lead magnet related to course',
+        'Build email nurture sequence',
+        'Set up payment and access automation',
+        'Get beta student testimonials',
+        'Create social proof graphics',
+        'Prepare launch webinar or masterclass',
+        'Set up affiliate / referral program',
+        'Test entire student experience end-to-end'
+      ],
+      'Launch Day': [
+        'Open enrollment',
+        'Send launch email to list',
+        'Host live webinar or Q&A',
+        'Post announcement on all channels',
+        'Share student success stories',
+        'Offer early-bird pricing (if planned)',
+        'Monitor signups and payment issues',
+        'Engage in comments and DMs',
+        'Update social with live enrollment count'
+      ],
+      'Post-Launch (7 days)': [
+        'Welcome email to new students (Day 1)',
+        'Check completion rates of Module 1',
+        'Host first office hours or Q&A',
+        'Send encouragement email (Day 3)',
+        'Collect first testimonials from fast movers',
+        'Fix any content or platform issues',
+        'Plan bonuses or community events',
+        'Close enrollment (if cohort-based)'
+      ]
+    }
+  }
+};
+
+let currentTemplate = 'saas';
+let state = {};
+
+function loadState() {
+  const saved = localStorage.getItem('fms-launch-' + currentTemplate);
+  if(saved) {
+    state = JSON.parse(saved);
+  } else {
+    state = { checked: {}, custom: {} };
+  }
+}
+
+function saveState() {
+  localStorage.setItem('fms-launch-' + currentTemplate, JSON.stringify(state));
+}
+
+function loadTemplate(key) {
+  currentTemplate = key;
+  document.querySelectorAll('.template-btn').forEach(b => b.classList.toggle('active', b.textContent === TEMPLATES[key].name));
+  loadState();
+  render();
+}
+
+function render() {
+  const template = TEMPLATES[currentTemplate];
+  const container = document.getElementById('checklist-container');
+  let html = '';
+  let totalItems = 0, checkedItems = 0;
+
+  Object.entries(template.phases).forEach(([phase, items]) => {
+    const allItems = [...items, ...(state.custom[phase] || [])];
+    const phaseChecked = allItems.filter((_, i) => state.checked[phase + '::' + i]).length;
+    totalItems += allItems.length;
+    checkedItems += phaseChecked;
+
+    html += `<div class="phase">
+      <div class="phase-header">
+        <div class="phase-title"><span class="phase-badge">${phase.includes('Pre') ? 'PRE' : phase.includes('Day') ? 'DAY' : 'POST'}</span> ${phase}</div>
+        <div class="phase-count">${phaseChecked}/${allItems.length}</div>
+      </div>`;
+
+    allItems.forEach((item, i) => {
+      const key = phase + '::' + i;
+      const checked = state.checked[key];
+      const isCustom = i >= items.length;
+      html += `<div class="checklist-item ${checked?'checked':''}">
+        <input type="checkbox" ${checked?'checked':''} onchange="toggleItem('${esc(phase)}',${i})">
+        <span class="item-text">${esc(item)}</span>
+        ${isCustom ? `<button class="item-delete" onclick="deleteCustom('${esc(phase)}',${i - items.length})">x</button>` : ''}
+      </div>`;
+    });
+
+    html += `<div class="add-item">
+      <input type="text" placeholder="Add custom item..." id="add-${phase.replace(/[^a-z]/gi,'')}" onkeydown="if(event.key==='Enter')addCustom('${esc(phase)}',this)">
+      <button class="btn btn-secondary btn-sm" onclick="addCustom('${esc(phase)}',document.getElementById('add-${phase.replace(/[^a-z]/gi,'')}'))">Add</button>
+    </div></div>`;
+  });
+
+  container.innerHTML = html;
+  updateStats(checkedItems, totalItems);
+}
+
+function toggleItem(phase, idx) {
+  const key = phase + '::' + idx;
+  state.checked[key] = !state.checked[key];
+  saveState();
+  render();
+}
+
+function addCustom(phase, input) {
+  const text = input.value.trim();
+  if(!text) return;
+  if(!state.custom[phase]) state.custom[phase] = [];
+  state.custom[phase].push(text);
+  input.value = '';
+  saveState();
+  render();
+}
+
+function deleteCustom(phase, customIdx) {
+  if(!state.custom[phase]) return;
+  state.custom[phase].splice(customIdx, 1);
+  // Reindex checked state
+  const template = TEMPLATES[currentTemplate];
+  const baseLen = template.phases[phase].length;
+  const newChecked = {};
+  Object.entries(state.checked).forEach(([k,v]) => {
+    if(!k.startsWith(phase+'::')) { newChecked[k]=v; return; }
+    const i = parseInt(k.split('::')[1]);
+    if(i < baseLen) { newChecked[k]=v; }
+    else if(i < baseLen + customIdx) { newChecked[k]=v; }
+    else if(i > baseLen + customIdx) { newChecked[phase+'::'+(i-1)]=v; }
+  });
+  state.checked = newChecked;
+  saveState();
+  render();
+}
+
+function updateStats(done, total) {
+  const pct = total > 0 ? Math.round((done/total)*100) : 0;
+  document.getElementById('progress-fill').style.width = pct+'%';
+  document.getElementById('progress-text').textContent = pct+'% complete';
+  document.getElementById('stat-done').textContent = done;
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-remain').textContent = total - done;
+}
+
+function resetProgress() {
+  if(!confirm('Reset all progress for this template?')) return;
+  state = { checked: {}, custom: {} };
+  saveState();
+  render();
+}
+
+function exportMarkdown() {
+  const template = TEMPLATES[currentTemplate];
+  let md = `# ${template.name} Checklist\n\n`;
+
+  Object.entries(template.phases).forEach(([phase, items]) => {
+    const allItems = [...items, ...(state.custom[phase] || [])];
+    md += `## ${phase}\n\n`;
+    allItems.forEach((item, i) => {
+      const key = phase + '::' + i;
+      const checked = state.checked[key] ? 'x' : ' ';
+      md += `- [${checked}] ${item}\n`;
+    });
+    md += '\n';
+  });
+
+  const box = document.getElementById('export-box');
+  box.textContent = md;
+  box.style.display = 'block';
+
+  // Also copy to clipboard
+  navigator.clipboard.writeText(md).catch(()=>{});
+}
+
+function esc(s) { return (s||'').replace(/'/g, "\\'").replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+loadTemplate('saas');
+</script>
+<script src="/related.js"></script>
+</body>
+</html>
