@@ -2,385 +2,1001 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Domain Name Generator & Checker - FreeMarketingStore</title>
-<meta name="description" content="Generate and check domain names. Full history, per-name controls, 34 TLDs. Chrome AI enhanced.">
+<title>Domain Name Finder - The Most Comprehensive Domain Tool | FreeMarketingStore</title>
+<meta name="description" content="Generate brandable domain names with AI, check 34+ TLDs, score brandability, save favorites. The most comprehensive free domain name tool.">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--accent:#f97316;--bg:#fafafa;--text:#1a1a1a;--muted:#6b7280;--panel:#ffffff;--line:#e5e7eb;--green:#16a34a;--red:#dc2626;--yellow:#ca8a04}
-body{font-family:'Manrope',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+:root{--accent:#f97316;--bg:#fafafa;--text:#1a1a1a;--muted:#6b7280;--panel:#ffffff;--line:#e5e7eb;--green:#16a34a;--red:#dc2626;--yellow:#ca8a04;--radius:10px}
+body{font-family:'Manrope',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:60px}
 a{color:var(--accent);text-decoration:none}
 .back{position:fixed;top:12px;left:12px;z-index:99;font-size:.8rem;font-weight:600;opacity:.7}.back:hover{opacity:1}
-h1{text-align:center;margin:20px 0 4px;font-size:1.5rem;font-weight:700}
-.sub{text-align:center;color:var(--muted);font-size:.85rem;margin-bottom:16px}
-.container{max-width:900px;margin:0 auto;padding:0 16px 40px}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
-.panel h3{font-size:.88rem;font-weight:700;margin-bottom:10px}
-label{font-size:.75rem;color:var(--muted);display:block;margin-bottom:4px;font-weight:500}
-input[type=text],textarea{width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:8px;font-size:.88rem;font-family:inherit;background:var(--panel)}
-input:focus,textarea:focus{outline:none;border-color:var(--accent)}
-textarea{resize:vertical;min-height:60px}
-.row{display:flex;gap:8px}
-.row>*{flex:1}
-.chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
-.chip{padding:5px 12px;border-radius:20px;border:1px solid var(--line);font-size:.78rem;font-weight:500;cursor:pointer;background:var(--panel);transition:.15s}
-.chip.active{background:var(--accent);color:#fff;border-color:var(--accent)}
-.chip:hover:not(.active){border-color:var(--accent)}
-.btn{padding:8px 18px;border-radius:8px;border:none;font-family:inherit;font-size:.85rem;font-weight:600;cursor:pointer;transition:.15s}
+header{text-align:center;padding:24px 16px 0}
+header h1{font-size:1.6rem;font-weight:800}
+header p{color:var(--muted);font-size:.85rem;margin-top:4px}
+.container{max-width:940px;margin:0 auto;padding:16px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.03)}
+label{font-size:.75rem;color:var(--muted);display:block;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+input[type=text],textarea{width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:8px;font-size:.88rem;font-family:inherit;background:var(--panel);transition:border .15s}
+input:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(249,115,22,.08)}
+textarea{resize:vertical;min-height:64px}
+.btn{padding:9px 18px;border-radius:8px;border:none;font-family:inherit;font-size:.84rem;font-weight:600;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:6px}
 .btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:#ea580c}
-.btn-secondary{background:var(--panel);border:1px solid var(--line);color:var(--text)}.btn-secondary:hover{border-color:var(--accent)}
+.btn-secondary{background:var(--panel);border:1px solid var(--line);color:var(--text)}.btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+.btn-ghost{background:transparent;border:none;color:var(--muted);padding:6px 10px}.btn-ghost:hover{color:var(--accent)}
 .btn:disabled{opacity:.5;cursor:not-allowed}
-.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
+.btn-sm{padding:5px 12px;font-size:.72rem}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.ai-note{font-size:.72rem;color:var(--muted);margin:6px 0;display:flex;align-items:center;gap:6px}
-.ai-dot{width:6px;height:6px;border-radius:50%;background:#d1d5db}.ai-dot.on{background:#22c55e}
+
+/* Keywords chips */
+.kw-container{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 12px;border:1px solid var(--line);border-radius:8px;min-height:44px;cursor:text;transition:border .15s}
+.kw-container:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(249,115,22,.08)}
+.kw-chip{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;border-radius:20px;font-size:.78rem;font-weight:600;animation:chipIn .2s}
+@keyframes chipIn{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+.kw-chip button{background:none;border:none;color:#c2410c;cursor:pointer;font-size:.9rem;line-height:1;padding:0 2px;opacity:.6}.kw-chip button:hover{opacity:1}
+.kw-input{border:none;outline:none;font-size:.84rem;font-family:inherit;flex:1;min-width:100px;padding:2px 0;background:transparent}
+
+/* Style chips */
+.style-row{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.style-chip{padding:6px 14px;border-radius:20px;border:1px solid var(--line);font-size:.78rem;font-weight:600;cursor:pointer;background:var(--panel);transition:.15s;user-select:none}
+.style-chip.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.style-chip:hover:not(.active){border-color:var(--accent);color:var(--accent)}
+
+/* AI indicator */
+.ai-status{font-size:.72rem;color:var(--muted);display:flex;align-items:center;gap:6px;margin:8px 0}
+.ai-dot{width:7px;height:7px;border-radius:50%;background:#d1d5db;flex-shrink:0}.ai-dot.on{background:#22c55e}
+
+/* Tabs */
+.tabs{display:flex;gap:0;border-bottom:2px solid var(--line);margin-bottom:12px}
+.tab{padding:10px 20px;font-size:.84rem;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;color:var(--muted);transition:.15s}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-count{font-size:.7rem;background:#f3f4f6;padding:1px 7px;border-radius:10px;margin-left:6px}
+
+/* Sort/Filter bar */
+.toolbar{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.toolbar select{padding:6px 10px;border:1px solid var(--line);border-radius:6px;font-size:.78rem;font-family:inherit;background:var(--panel)}
+.toolbar label{margin:0;font-size:.75rem;display:flex;align-items:center;gap:4px;cursor:pointer;text-transform:none;letter-spacing:0}
 
 /* Name cards */
-.names-list{display:flex;flex-direction:column;gap:8px;margin-top:12px}
-.name-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;transition:border-color .15s}
-.name-card:hover{border-color:var(--accent)}
-.name-header{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.name-text{font-size:1.05rem;font-weight:700;flex:1}
+.names-list{display:flex;flex-direction:column;gap:8px}
+.name-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;transition:all .15s}
+.name-card:hover{border-color:var(--accent);box-shadow:0 2px 8px rgba(249,115,22,.06)}
+.name-card.favorited{border-left:3px solid var(--accent)}
+.name-header{display:flex;align-items:center;gap:10px}
+.name-text{font-size:1.1rem;font-weight:700;flex:1;letter-spacing:-.3px}
+.name-score{font-size:.7rem;font-weight:700;padding:3px 8px;border-radius:12px;background:#f0fdf4;color:#166534}
+.name-score.mid{background:#fef9c3;color:#854d0e}
+.name-score.low{background:#fef2f2;color:#991b1b}
 .name-actions{display:flex;gap:4px}
-.name-actions .btn{padding:4px 10px;font-size:.7rem}
-.tld-row{display:flex;gap:4px;flex-wrap:wrap}
-.tld-badge{font-size:.68rem;padding:3px 8px;border-radius:4px;font-weight:600;text-decoration:none;cursor:pointer;transition:.15s;display:inline-block}
+.tld-row{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px}
+.tld-badge{font-size:.7rem;padding:4px 9px;border-radius:5px;font-weight:600;text-decoration:none;cursor:pointer;transition:.15s;display:inline-block}
 .tld-badge:hover{transform:scale(1.05);box-shadow:0 2px 6px rgba(0,0,0,.08)}
 .tld-badge.available{background:#dcfce7;color:#166534}
 .tld-badge.taken{background:#fee2e2;color:#991b1b}
 .tld-badge.uncertain{background:#fef9c3;color:#854d0e}
-.tld-badge.checking{background:#f3f4f6;color:#6b7280}
+.tld-badge.checking{background:#f3f4f6;color:#6b7280;animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.5}}
 .tld-badge.unchecked{background:#f9fafb;color:#9ca3af;border:1px dashed #d1d5db}
-.add-tld-input{width:80px;padding:3px 8px;font-size:.7rem;border:1px dashed var(--line);border-radius:4px;background:transparent}
-.name-meta{font-size:.65rem;color:var(--muted);margin-top:6px}
-.name-note{font-size:.72rem;color:var(--muted);margin-top:4px;font-style:italic}
+.add-tld-input{width:70px;padding:4px 8px;font-size:.7rem;border:1px dashed var(--line);border-radius:5px;background:transparent}
+.name-note{margin-top:6px;display:flex;gap:4px;align-items:center}
+.name-note input{font-size:.72rem;padding:4px 8px;border:1px solid var(--line);border-radius:4px;flex:1;font-style:italic;color:var(--muted)}
+.name-source{font-size:.62rem;color:var(--muted);margin-top:4px;opacity:.7}
 
-/* History panel */
-.history-panel{margin-top:20px}
-.history-panel h3{font-size:.9rem;margin-bottom:8px}
-.history-items{display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto}
-.history-item{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 14px;cursor:pointer;transition:.15s}
+/* Empty state */
+.empty-state{text-align:center;padding:40px 20px;color:var(--muted);font-size:.88rem}
+.empty-state p{margin-top:6px;font-size:.78rem}
+
+/* Status bar */
+.status-bar{position:fixed;bottom:0;left:0;right:0;background:var(--panel);border-top:1px solid var(--line);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;font-size:.75rem;color:var(--muted);z-index:100;gap:12px}
+.status-bar .status-left{display:flex;align-items:center;gap:12px}
+.status-bar .progress-text{font-weight:600;color:var(--text)}
+.status-bar .progress-bar{width:120px;height:4px;background:var(--line);border-radius:2px;overflow:hidden}
+.status-bar .progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .3s}
+
+/* Toast notifications */
+.toast-container{position:fixed;bottom:60px;right:16px;z-index:200;display:flex;flex-direction:column;gap:8px;max-width:320px}
+.toast{padding:10px 16px;background:var(--panel);border:1px solid var(--line);border-radius:8px;font-size:.78rem;box-shadow:0 4px 12px rgba(0,0,0,.1);animation:toastIn .3s;display:flex;align-items:center;gap:8px}
+@keyframes toastIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+.toast.success{border-left:3px solid var(--green)}
+.toast.info{border-left:3px solid var(--accent)}
+
+/* Export dropdown */
+.export-menu{position:relative;display:inline-block}
+.export-dropdown{position:absolute;top:100%;right:0;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:4px;min-width:140px;box-shadow:0 4px 12px rgba(0,0,0,.1);display:none;z-index:50}
+.export-dropdown.open{display:block}
+.export-dropdown button{display:block;width:100%;text-align:left;padding:8px 12px;border:none;background:none;font-size:.78rem;font-family:inherit;cursor:pointer;border-radius:4px}
+.export-dropdown button:hover{background:#f3f4f6}
+
+/* History */
+.history-item{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 14px;cursor:pointer;transition:.15s;margin-bottom:6px}
 .history-item:hover{border-color:var(--accent)}
-.history-item-name{font-weight:700;font-size:.9rem}
-.history-item-meta{font-size:.68rem;color:var(--muted);margin-top:2px}
-.history-item-tlds{display:flex;gap:3px;flex-wrap:wrap;margin-top:4px}
-.history-item-tlds .tld-badge{font-size:.6rem;padding:2px 5px}
-.empty-state{text-align:center;padding:30px;color:var(--muted);font-size:.85rem}
 
-footer{text-align:center;padding:20px;font-size:.68rem;color:var(--muted)}
-footer a{color:var(--accent)}
+@media(max-width:640px){
+  .container{padding:12px}
+  .tabs{overflow-x:auto}
+  .toolbar{flex-direction:column;align-items:flex-start}
+  header h1{font-size:1.3rem}
+  .name-header{flex-wrap:wrap}
+}
 </style>
 </head>
 <body>
 <a class="back" href="/">Back to Store</a>
-<h1>Domain Name Finder</h1>
-<p class="sub">Generate names, check per-name, add TLDs, full history. Everything saved locally.</p>
+
+<header>
+  <h1>Domain Name Finder</h1>
+  <p>Multi-keyword generation, AI brainstorming, 34+ TLD checks, brandability scoring. All saved locally.</p>
+</header>
 
 <div class="container">
-<div class="panel">
-<h3>Describe your project</h3>
-<textarea id="desc" placeholder="e.g., Electric semi trucks — tough and durable brand for logistics companies"></textarea>
-<div class="row" style="margin-top:8px">
-<div><label>Keyword 1</label><input type="text" id="kw1" placeholder="e.g., truck"></div>
-<div><label>Keyword 2</label><input type="text" id="kw2" placeholder="e.g., electric"></div>
-<div><label>Keyword 3</label><input type="text" id="kw3" placeholder="e.g., haul"></div>
-</div>
-<label style="margin-top:10px">Style</label>
-<div class="chips" id="styleChips">
-<span class="chip active" data-s="short">Short</span>
-<span class="chip active" data-s="brandable">Brandable</span>
-<span class="chip" data-s="descriptive">Descriptive</span>
-<span class="chip" data-s="creative">Creative</span>
-</div>
-<div class="ai-note"><span class="ai-dot" id="aiDot"></span><span id="aiText">Checking Chrome AI...</span></div>
-<button class="btn btn-primary" id="genBtn" style="width:100%;margin-top:10px">Generate Names</button>
+  <!-- Input Panel -->
+  <div class="panel">
+    <label>Describe your project</label>
+    <textarea id="desc" placeholder="e.g., A modern project management tool for remote teams that combines task tracking with async video updates"></textarea>
+
+    <label style="margin-top:12px">Keywords (up to 8 - press Enter or paste comma-separated)</label>
+    <div class="kw-container" id="kwContainer">
+      <input class="kw-input" id="kwInput" placeholder="Type keyword and press Enter..." maxlength="20">
+    </div>
+    <button class="btn btn-ghost btn-sm" style="margin-top:6px" id="suggestBtn">Suggest keywords from description</button>
+
+    <label style="margin-top:12px">Style</label>
+    <div class="style-row" id="styleChips">
+      <span class="style-chip active" data-s="short">Short</span>
+      <span class="style-chip active" data-s="brandable">Brandable</span>
+      <span class="style-chip" data-s="creative">Creative</span>
+      <span class="style-chip" data-s="descriptive">Descriptive</span>
+      <span class="style-chip" data-s="all">All</span>
+    </div>
+
+    <div class="ai-status"><span class="ai-dot" id="aiDot"></span><span id="aiText">Checking Chrome AI...</span></div>
+
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn btn-primary" id="genBtn" style="flex:1">Generate Names</button>
+      <button class="btn btn-secondary" id="aiBrainBtn" disabled>AI Brainstorm</button>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs" id="tabs">
+    <div class="tab active" data-tab="generated">Generated<span class="tab-count" id="genCount">0</span></div>
+    <div class="tab" data-tab="saved">Saved<span class="tab-count" id="savedCount">0</span></div>
+    <div class="tab" data-tab="favorites">Favorites<span class="tab-count" id="favCount">0</span></div>
+    <div class="tab" data-tab="history">History</div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar" id="toolbar">
+    <select id="sortSelect">
+      <option value="score">Sort: Score</option>
+      <option value="length">Sort: Length</option>
+      <option value="alpha">Sort: A-Z</option>
+      <option value="newest">Sort: Newest</option>
+    </select>
+    <label><input type="checkbox" id="filterAvail"> Available only</label>
+    <div style="flex:1"></div>
+    <div class="export-menu">
+      <button class="btn btn-secondary btn-sm" id="exportToggle">Export</button>
+      <div class="export-dropdown" id="exportDropdown">
+        <button onclick="exportData('csv')">CSV</button>
+        <button onclick="exportData('json')">JSON</button>
+        <button onclick="exportData('text')">Plain Text</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content area -->
+  <div id="contentArea">
+    <div class="names-list" id="namesList"></div>
+    <div class="empty-state" id="emptyState">
+      <strong>No names generated yet</strong>
+      <p>Add keywords and click Generate to get started.</p>
+    </div>
+  </div>
 </div>
 
-<div id="namesArea" style="display:none">
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-<h3 style="font-size:1rem" id="namesCount">0 names</h3>
-<div style="display:flex;gap:6px">
-<button class="btn btn-secondary" id="checkAllBtn" style="font-size:.72rem">Check All (.com)</button>
-<button class="btn btn-secondary" id="exportBtn" style="font-size:.72rem">Export Available</button>
-</div>
-</div>
-<div class="names-list" id="namesList"></div>
+<!-- Status Bar -->
+<div class="status-bar">
+  <div class="status-left">
+    <span id="statusText">Idle</span>
+    <div class="progress-bar" id="progressBar" style="display:none"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+  <span id="statusRight"></span>
 </div>
 
-<div class="history-panel" id="historyPanel">
-<h3>Saved Names <span style="font-size:.72rem;color:var(--muted);font-weight:400" id="histCount"></span></h3>
-<div class="history-items" id="historyItems"></div>
-</div>
-</div>
-
-<footer>Built with <a href="/">FreeMarketingStore</a> | <a href="https://openfrontier.pages.dev">Open Frontier</a></footer>
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
 
 <script>
-const PREFIXES=['get','try','use','go','my','the','hey','just','on','hi','be','re','un'];
-const SUFFIXES=['ly','ify','hub','lab','io','app','hq','ful','co','ist','ware','zy','oo'];
-const ALL_TLDS=['.com','.io','.co','.app','.dev','.online','.store','.ai','.tech','.xyz','.org','.net','.me','.so','.to','.gg','.cc','.biz','.pro','.agency','.studio','.design','.tools','.cloud','.digital','.global','.world','.one','.zone','.site','.space','.fun','.link'];
+// === CONFIG ===
+const PREFIXES=['get','try','use','go','my','the','hey','re','un','hi','be','on','up'];
+const SUFFIXES=['ly','ify','hub','lab','io','app','hq','ful','co','ist','ware','zy','er','oo'];
+const ALL_TLDS=['.com','.io','.co','.app','.dev','.online','.store','.ai','.tech','.xyz','.org','.net','.me','.so','.to','.gg','.cc','.biz','.pro','.agency','.studio','.design','.tools','.cloud','.digital','.global','.world','.one','.zone','.site','.space','.fun','.link','.live'];
 const DEFAULT_TLDS=['.com','.io','.co','.app','.dev','.ai'];
-const CHECK_TIMEOUT=3000;
-let names=[];
-let chromeAi=false;
+const CHECK_TIMEOUT=4000;
+const STORAGE_KEY='fms-domain-finder';
 
-// --- Chrome AI detection ---
+// === STATE ===
+let state={keywords:[],description:'',names:[],currentTab:'generated',sort:'score',filterAvail:false};
+let savedNames=loadSaved();
+let sessionHistory=loadHistory();
+let chromeAi=false;
+let aiSession=null;
+let checkQueue=[];
+let isChecking=false;
+let notifPermission=false;
+
+// === INIT ===
 (async()=>{
   try{
     if(window.ai&&window.ai.languageModel){
       const c=await window.ai.languageModel.capabilities();
-      if(c.available==='readily'||c.available==='after-download'){chromeAi=true;document.getElementById('aiDot').classList.add('on');document.getElementById('aiText').textContent='Chrome AI available — will enhance suggestions';}
-      else{document.getElementById('aiText').textContent='Chrome AI: not available (algorithmic mode)';}
-    }else{document.getElementById('aiText').textContent='Chrome AI: not available (algorithmic mode)';}
-  }catch(e){document.getElementById('aiText').textContent='Chrome AI: not available (algorithmic mode)';}
+      if(c.available==='readily'||c.available==='after-download'){
+        chromeAi=true;
+        document.getElementById('aiDot').classList.add('on');
+        document.getElementById('aiText').textContent='Chrome AI ready — enhanced suggestions available';
+        document.getElementById('aiBrainBtn').disabled=false;
+      } else {
+        document.getElementById('aiText').textContent='Chrome AI not available — using algorithmic mode';
+      }
+    } else {
+      document.getElementById('aiText').textContent='Enable Chrome AI for smarter suggestions (algorithmic mode active)';
+    }
+  }catch(e){
+    document.getElementById('aiText').textContent='Chrome AI unavailable — algorithmic generation active';
+  }
+  restoreSession();
+  renderAll();
 })();
 
-// --- Style chips ---
-document.getElementById('styleChips').onclick=e=>{const c=e.target.closest('.chip');if(c)c.classList.toggle('active');};
-function getStyles(){return[...document.querySelectorAll('#styleChips .chip.active')].map(c=>c.dataset.s);}
+// === KEYWORDS SYSTEM ===
+const kwContainer=document.getElementById('kwContainer');
+const kwInput=document.getElementById('kwInput');
 
-// --- Name generation ---
-function generateNames(keywords,styles){
+kwContainer.onclick=()=>kwInput.focus();
+
+kwInput.addEventListener('keydown',e=>{
+  if(e.key==='Enter'){
+    e.preventDefault();
+    addKeywordsFromInput(kwInput.value);
+    kwInput.value='';
+  }
+  if(e.key==='Backspace'&&!kwInput.value&&state.keywords.length){
+    removeKeyword(state.keywords.length-1);
+  }
+});
+
+kwInput.addEventListener('paste',e=>{
+  setTimeout(()=>{
+    addKeywordsFromInput(kwInput.value);
+    kwInput.value='';
+  },0);
+});
+
+function addKeywordsFromInput(raw){
+  const words=raw.split(/[,;\s]+/).map(w=>w.trim().toLowerCase().replace(/[^a-z0-9]/g,'')).filter(w=>w.length>=2&&w.length<=20);
+  for(const w of words){
+    if(state.keywords.length>=8)break;
+    if(!state.keywords.includes(w)){
+      state.keywords.push(w);
+    }
+  }
+  renderKeywords();
+  saveSession();
+}
+
+function removeKeyword(idx){
+  state.keywords.splice(idx,1);
+  renderKeywords();
+  saveSession();
+}
+
+function renderKeywords(){
+  const chips=kwContainer.querySelectorAll('.kw-chip');
+  chips.forEach(c=>c.remove());
+  state.keywords.forEach((kw,i)=>{
+    const chip=document.createElement('span');
+    chip.className='kw-chip';
+    chip.innerHTML=`${kw}<button onclick="removeKeyword(${i})">&times;</button>`;
+    kwContainer.insertBefore(chip,kwInput);
+  });
+}
+
+// Suggest keywords from description
+document.getElementById('suggestBtn').onclick=()=>{
+  const desc=document.getElementById('desc').value.trim();
+  if(!desc)return;
+  const stops=new Set(['a','an','the','in','on','at','to','for','of','with','and','or','is','are','that','this','from','by','about','very','just','also','new','old','big','good','bad','can','will','have','has','been','was','were','being','would','could','should','more','most','some','all','each','every','they','them','their','there','here','what','when','where','which','while','into','than','then','over','under','after','before','between','through','during','because','since','both','other','another','such','only','even','still','much','many','well','back','down','our','your','out']);
+  const words=desc.toLowerCase().replace(/[^a-z\s]/g,'').split(/\s+/).filter(w=>w.length>=3&&!stops.has(w));
+  const unique=[...new Set(words)].slice(0,5);
+  for(const w of unique){
+    if(state.keywords.length>=8)break;
+    if(!state.keywords.includes(w))state.keywords.push(w);
+  }
+  renderKeywords();
+  saveSession();
+};
+
+// === STYLE CHIPS ===
+document.getElementById('styleChips').onclick=e=>{
+  const c=e.target.closest('.style-chip');
+  if(!c)return;
+  if(c.dataset.s==='all'){
+    const chips=document.querySelectorAll('#styleChips .style-chip');
+    const allActive=[...chips].every(ch=>ch.classList.contains('active'));
+    chips.forEach(ch=>ch.classList.toggle('active',!allActive));
+  } else {
+    c.classList.toggle('active');
+  }
+};
+
+function getStyles(){return[...document.querySelectorAll('#styleChips .style-chip.active')].map(c=>c.dataset.s);}
+
+// === TABS ===
+document.getElementById('tabs').onclick=e=>{
+  const tab=e.target.closest('.tab');
+  if(!tab)return;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tab.classList.add('active');
+  state.currentTab=tab.dataset.tab;
+  renderAll();
+};
+
+// === SORT & FILTER ===
+document.getElementById('sortSelect').onchange=e=>{state.sort=e.target.value;renderAll();};
+document.getElementById('filterAvail').onchange=e=>{state.filterAvail=e.target.checked;renderAll();};
+
+// === EXPORT ===
+document.getElementById('exportToggle').onclick=()=>{
+  document.getElementById('exportDropdown').classList.toggle('open');
+};
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.export-menu'))document.getElementById('exportDropdown').classList.remove('open');
+});
+
+function exportData(format){
+  const items=savedNames.length?savedNames:state.names.map(n=>({name:n.name,tlds:n.tlds||{}}));
+  if(!items.length){showToast('Nothing to export','info');return;}
+  let content,filename,type;
+  if(format==='csv'){
+    const rows=['Name,Score,TLDs Available,TLDs Taken,Note'];
+    items.forEach(item=>{
+      const avail=Object.entries(item.tlds||{}).filter(([,s])=>s==='available').map(([t])=>t).join(' ');
+      const taken=Object.entries(item.tlds||{}).filter(([,s])=>s==='taken').map(([t])=>t).join(' ');
+      rows.push(`${item.name},${item.score||''},${avail},${taken},${(item.note||'').replace(/,/g,';')}`);
+    });
+    content=rows.join('\n');filename='domains.csv';type='text/csv';
+  } else if(format==='json'){
+    content=JSON.stringify(items,null,2);filename='domains.json';type='application/json';
+  } else {
+    content=items.map(i=>{
+      const avail=Object.entries(i.tlds||{}).filter(([,s])=>s==='available').map(([t])=>i.name+t);
+      return avail.length?avail.join('\n'):i.name;
+    }).join('\n');
+    filename='domains.txt';type='text/plain';
+  }
+  const blob=new Blob([content],{type});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=filename;a.click();
+  URL.revokeObjectURL(url);
+  document.getElementById('exportDropdown').classList.remove('open');
+  showToast(`Exported ${items.length} names as ${format.toUpperCase()}`,'success');
+}
+
+// === GENERATION PIPELINES ===
+
+// Pipeline 1: Algorithmic (instant)
+function generateAlgorithmic(keywords,styles){
   const s=new Set();
   const kws=keywords.filter(k=>k).map(k=>k.toLowerCase().replace(/[^a-z0-9]/g,''));
   if(!kws.length)return[];
-  // Combos
-  for(let i=0;i<kws.length;i++)for(let j=0;j<kws.length;j++){if(i===j)continue;s.add(kws[i]+kws[j]);if(kws[i].length<=5&&kws[j].length<=5)s.add(kws[j]+kws[i]);}
+
+  // Keyword combos (AB, BA)
+  for(let i=0;i<kws.length;i++)for(let j=0;j<kws.length;j++){
+    if(i===j)continue;
+    s.add(kws[i]+kws[j]);
+    s.add(kws[j]+kws[i]);
+  }
+
   // Prefixes
-  if(styles.includes('short')||styles.includes('brandable'))for(const k of kws)for(const p of PREFIXES)s.add(p+k);
+  if(styles.includes('short')||styles.includes('brandable')||styles.includes('all'))
+    for(const k of kws)for(const p of PREFIXES)s.add(p+k);
+
   // Suffixes
-  if(styles.includes('brandable')||styles.includes('creative'))for(const k of kws)for(const sf of SUFFIXES)s.add(k+sf);
-  // Vowel removal
-  if(styles.includes('short')||styles.includes('creative'))for(const k of kws){if(k.length>3){const nv=k[0]+k.slice(1).replace(/[aeiou]/g,'');if(nv.length>=3&&nv!==k)s.add(nv);}}
-  // Blends
-  if(styles.includes('creative')||styles.includes('brandable'))for(let i=0;i<kws.length;i++)for(let j=0;j<kws.length;j++){if(i===j)continue;const a=kws[i],b=kws[j];for(let o=1;o<=Math.min(3,a.length-1,b.length-1);o++){if(a.slice(-o)===b.slice(0,o))s.add(a+b.slice(o));}const h1=a.slice(0,Math.ceil(a.length/2)),h2=b.slice(Math.floor(b.length/2));if((h1+h2).length>=4)s.add(h1+h2);}
-  // Descriptive
-  if(styles.includes('descriptive')){const desc=['smart','fast','easy','super','mega','ultra','pro','prime','top','best','next','neo'];for(const k of kws)for(const d of desc)s.add(d+k);}
-  // Short
-  if(styles.includes('short'))for(const k of kws){if(k.length>4){s.add(k.slice(0,4));s.add(k.slice(0,5));}const l=k.slice(-1);if(!'aeiou'.includes(l)){s.add(k+l+'y');s.add(k+l+'o');}}
-  return[...s].filter(n=>n.length>=3&&n.length<=14&&/^[a-z0-9]+$/.test(n)).sort((a,b)=>a.length-b.length||a.localeCompare(b)).slice(0,40);
+  if(styles.includes('brandable')||styles.includes('creative')||styles.includes('all'))
+    for(const k of kws)for(const sf of SUFFIXES)s.add(k+sf);
+
+  // Vowel removal (flickr style)
+  for(const k of kws){
+    if(k.length>3){
+      const nv=k[0]+k.slice(1).replace(/[aeiou]/g,'');
+      if(nv.length>=3&&nv!==k)s.add(nv);
+    }
+  }
+
+  // Portmanteau/blending
+  if(styles.includes('creative')||styles.includes('brandable')||styles.includes('all'))
+    for(let i=0;i<kws.length;i++)for(let j=0;j<kws.length;j++){
+      if(i===j)continue;
+      const a=kws[i],b=kws[j];
+      // Overlap blending
+      for(let o=1;o<=Math.min(3,a.length-1,b.length-1);o++){
+        if(a.slice(-o)===b.slice(0,o))s.add(a+b.slice(o));
+      }
+      // Half blending
+      const h1=a.slice(0,Math.ceil(a.length/2)),h2=b.slice(Math.floor(b.length/2));
+      if((h1+h2).length>=4)s.add(h1+h2);
+      // First+last
+      if(a.length>=3&&b.length>=3)s.add(a.slice(0,3)+b.slice(-3));
+    }
+
+  // Descriptive combos
+  if(styles.includes('descriptive')||styles.includes('all')){
+    const desc=['smart','fast','easy','super','mega','ultra','pro','prime','top','next','neo','swift','bold','flux','zen'];
+    for(const k of kws)for(const d of desc)s.add(d+k);
+  }
+
+  // Short mutations
+  if(styles.includes('short')||styles.includes('all'))
+    for(const k of kws){
+      if(k.length>4){s.add(k.slice(0,4));s.add(k.slice(0,5));}
+      // Double last consonant + y/o
+      const l=k.slice(-1);
+      if(!'aeiou'.includes(l)){s.add(k+l+'y');s.add(k+l+'o');}
+    }
+
+  // Rhyming (swap first letter)
+  if(styles.includes('creative')||styles.includes('all')){
+    const consonants='bcdfghjklmnprstvwz'.split('');
+    for(const k of kws){
+      if(k.length>=4)for(const c of consonants){
+        const rhyme=c+k.slice(1);
+        if(rhyme!==k)s.add(rhyme);
+      }
+    }
+  }
+
+  // Acronyms from description
+  const desc=document.getElementById('desc').value.trim();
+  if(desc&&desc.split(/\s+/).length>=3){
+    const words=desc.split(/\s+/).filter(w=>w.length>2).slice(0,5);
+    if(words.length>=2){
+      s.add(words.map(w=>w[0]).join('').toLowerCase());
+      s.add(words.slice(0,3).map(w=>w[0]).join('').toLowerCase());
+    }
+  }
+
+  return[...s].filter(n=>n.length>=3&&n.length<=14&&/^[a-z0-9]+$/.test(n));
 }
 
-// --- Chrome AI ---
-async function aiSuggest(desc,keywords){
+// Pipeline 3: Concept variations
+function generateVariations(baseNames,keywords){
+  const s=new Set();
+  const foreign=['mi','le','un','zen','neo','via','vu','kai','sol','lux'];
+
+  for(const name of baseNames.slice(0,20)){
+    s.add(name+'s');
+    s.add(name+'er');
+    s.add('the'+name);
+    s.add(name+'ai');
+    s.add(name+'app');
+    for(const f of foreign){
+      if(name.length<=6)s.add(f+name);
+      if(name.length<=8)s.add(name+f);
+    }
+  }
+
+  return[...s].filter(n=>n.length>=3&&n.length<=14&&/^[a-z0-9]+$/.test(n)&&!baseNames.includes(n));
+}
+
+// Pipeline 2: Chrome AI
+async function generateAI(desc,keywords){
   if(!chromeAi)return[];
-  try{const sess=await window.ai.languageModel.create();const r=await sess.prompt(`Generate 10 creative short brand names for: ${desc}. Keywords: ${keywords.join(', ')}. One per line, no explanation.`);sess.destroy();return r.split('\n').map(l=>l.trim().toLowerCase().replace(/[^a-z0-9]/g,'')).filter(n=>n.length>=3&&n.length<=14);}catch(e){return[];}
+  const results=[];
+  const prompts=[
+    `Generate 10 brandable .com domain names for: ${desc}. Requirements: short (4-10 chars), memorable, easy to spell. Output ONLY the names, one per line, no TLD, no explanation.`,
+    `Generate 10 creative made-up words that could be brand names related to: ${keywords.join(', ')}. Short, catchy, pronounceable nonsense words. One per line, no explanation.`,
+    `Generate 5 domain names using wordplay or puns on: ${keywords.join(', ')}. Clever, memorable, short. One per line, no explanation.`
+  ];
+
+  updateStatus('AI: generating suggestions...');
+  const promises=prompts.map(async(prompt,i)=>{
+    try{
+      const sess=await window.ai.languageModel.create();
+      const r=await sess.prompt(prompt);
+      sess.destroy();
+      const names=r.split('\n').map(l=>l.trim().toLowerCase().replace(/[^a-z0-9]/g,'').replace(/^\d+/,'')).filter(n=>n.length>=3&&n.length<=14);
+      return names;
+    }catch(e){return[];}
+  });
+
+  const allResults=await Promise.allSettled(promises);
+  for(const r of allResults){
+    if(r.status==='fulfilled')results.push(...r.value);
+  }
+  return[...new Set(results)];
 }
 
-// --- Domain check ---
+// === SCORING ===
+function scoreName(name){
+  let score=50;
+
+  // Length bonus (4-8 is ideal)
+  if(name.length>=4&&name.length<=6)score+=25;
+  else if(name.length>=7&&name.length<=8)score+=20;
+  else if(name.length<=10)score+=10;
+  else score-=5;
+
+  // Pronounceability: consonant-vowel patterns
+  const vowels='aeiou';
+  let cvPattern='';
+  for(const ch of name)cvPattern+=vowels.includes(ch)?'v':'c';
+  // Good patterns have alternating CV
+  let alternations=0;
+  for(let i=1;i<cvPattern.length;i++){
+    if(cvPattern[i]!==cvPattern[i-1])alternations++;
+  }
+  const altRatio=alternations/(cvPattern.length-1||1);
+  score+=Math.round(altRatio*15);
+
+  // No triple consonants or triple vowels
+  if(/[bcdfghjklmnpqrstvwxyz]{4}/.test(name))score-=15;
+  if(/[aeiou]{3}/.test(name))score-=8;
+
+  // Starts with consonant (slightly more memorable)
+  if(!vowels.includes(name[0]))score+=3;
+
+  // Common ending patterns
+  if(/(?:ly|er|io|fy|oo|ia|zy)$/.test(name))score+=5;
+
+  // Not too common (simple heuristic: short common words score lower)
+  const common=['the','get','set','use','try','app','web','run','top','best','fast','easy'];
+  if(common.includes(name))score-=20;
+
+  return Math.max(0,Math.min(100,score));
+}
+
+// === MAIN GENERATE ===
+document.getElementById('genBtn').onclick=async()=>{
+  const btn=document.getElementById('genBtn');
+  if(!state.keywords.length){
+    // Try extracting from description
+    const desc=document.getElementById('desc').value.trim();
+    if(desc){document.getElementById('suggestBtn').click();await new Promise(r=>setTimeout(r,50));}
+    if(!state.keywords.length){kwInput.focus();showToast('Add at least one keyword','info');return;}
+  }
+
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Generating...';
+  updateStatus('Generating names...');
+  state.description=document.getElementById('desc').value.trim();
+
+  // Pipeline 1: Algorithmic (instant)
+  const styles=getStyles();
+  let algoNames=generateAlgorithmic(state.keywords,styles);
+
+  // Pipeline 3: Variations
+  const variations=generateVariations(algoNames.slice(0,20),state.keywords);
+  algoNames=[...algoNames,...variations];
+
+  // Dedupe and score
+  const nameSet=new Set();
+  state.names=[];
+  for(const n of algoNames){
+    if(nameSet.has(n))continue;
+    nameSet.add(n);
+    state.names.push({name:n,score:scoreName(n),tlds:{},source:'algo',note:'',favorite:false,checked:false});
+  }
+
+  // Sort and limit
+  state.names.sort((a,b)=>b.score-a.score);
+  state.names=state.names.slice(0,80);
+
+  state.currentTab='generated';
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelector('[data-tab="generated"]').classList.add('active');
+  renderAll();
+
+  // Pipeline 2: AI (async)
+  if(chromeAi&&state.description){
+    btn.innerHTML='<span class="spinner"></span> AI enhancing...';
+    const aiNames=await generateAI(state.description,state.keywords);
+    for(const n of aiNames){
+      if(nameSet.has(n))continue;
+      nameSet.add(n);
+      state.names.push({name:n,score:scoreName(n),tlds:{},source:'ai',note:'',favorite:false,checked:false});
+    }
+    state.names.sort((a,b)=>b.score-a.score);
+    state.names=state.names.slice(0,100);
+    renderAll();
+  }
+
+  btn.disabled=false;btn.textContent='Generate Names';
+  updateStatus('Idle');
+  saveSession();
+  saveHistory();
+  showToast(`Generated ${state.names.length} names`,'success');
+};
+
+// AI Brainstorm button
+document.getElementById('aiBrainBtn').onclick=async()=>{
+  if(!chromeAi){showToast('Chrome AI not available','info');return;}
+  const btn=document.getElementById('aiBrainBtn');
+  const desc=document.getElementById('desc').value.trim()||state.keywords.join(' ');
+  if(!desc&&!state.keywords.length){showToast('Add description or keywords first','info');return;}
+
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>';
+  updateStatus('AI brainstorming...');
+
+  const aiNames=await generateAI(desc||state.keywords.join(', '),state.keywords);
+  const nameSet=new Set(state.names.map(n=>n.name));
+  let added=0;
+  for(const n of aiNames){
+    if(nameSet.has(n))continue;
+    nameSet.add(n);
+    state.names.push({name:n,score:scoreName(n),tlds:{},source:'ai',note:'',favorite:false,checked:false});
+    added++;
+  }
+  if(state.sort==='score')state.names.sort((a,b)=>b.score-a.score);
+  renderAll();
+
+  btn.disabled=false;btn.textContent='AI Brainstorm';
+  updateStatus('Idle');
+  saveSession();
+  showToast(`AI added ${added} new names`,'success');
+};
+
+// === DOMAIN CHECKING ===
 async function checkDomain(name,tld){
-  const cached=getCache(name+tld);
+  const cacheKey=name+tld;
+  const cached=getCache(cacheKey);
   if(cached)return cached;
+
   let status;
-  try{const ctrl=new AbortController();const t=setTimeout(()=>ctrl.abort(),CHECK_TIMEOUT);await fetch(`https://${name}${tld}/`,{method:'HEAD',mode:'no-cors',signal:ctrl.signal});clearTimeout(t);status='taken';}
-  catch(e){status=e.name==='AbortError'?'uncertain':'available';}
-  setCache(name+tld,status);
+  try{
+    const ctrl=new AbortController();
+    const t=setTimeout(()=>ctrl.abort(),CHECK_TIMEOUT);
+    await fetch(`https://${name}${tld}/`,{method:'HEAD',mode:'no-cors',signal:ctrl.signal});
+    clearTimeout(t);
+    status='taken';
+  }catch(e){
+    status=e.name==='AbortError'?'uncertain':'available';
+  }
+  setCache(cacheKey,status);
   return status;
 }
 
-// --- localStorage cache ---
-function getCache(key){try{const d=JSON.parse(localStorage.getItem('fms-dc')||'{}');const r=d[key];if(r&&Date.now()-r.t<86400000)return r.s;}catch{}return null;}
-function setCache(key,status){try{const d=JSON.parse(localStorage.getItem('fms-dc')||'{}');d[key]={s:status,t:Date.now()};const entries=Object.entries(d);if(entries.length>500){entries.sort((a,b)=>b[1].t-a[1].t);const trimmed=Object.fromEntries(entries.slice(0,500));localStorage.setItem('fms-dc',JSON.stringify(trimmed));}else localStorage.setItem('fms-dc',JSON.stringify(d));}catch{}}
+async function checkNameTlds(nameObj,card){
+  const tldRow=card.querySelector('.tld-row');
+  const badges=tldRow.querySelectorAll('.tld-badge');
+  let available=0,total=0;
 
-// --- Saved names (full history with per-name state) ---
-function getSaved(){try{return JSON.parse(localStorage.getItem('fms-dn-saved')||'[]');}catch{return[];}}
-function setSaved(v){localStorage.setItem('fms-dn-saved',JSON.stringify(v));}
-function saveName(name,tlds){
-  const saved=getSaved();
-  const existing=saved.find(n=>n.name===name);
-  if(existing){existing.tlds={...existing.tlds,...tlds};existing.updated=Date.now();}
-  else saved.unshift({name,tlds:tlds||{},created:Date.now(),updated:Date.now(),note:''});
-  if(saved.length>100)saved.length=100;
-  setSaved(saved);
-  renderHistory();
-}
-function removeSaved(name){const saved=getSaved().filter(n=>n.name!==name);setSaved(saved);renderHistory();}
-function updateNote(name,note){const saved=getSaved();const n=saved.find(s=>s.name===name);if(n){n.note=note;n.updated=Date.now();}setSaved(saved);}
-
-// --- Render names ---
-function renderNames(){
-  const area=document.getElementById('namesArea');
-  const list=document.getElementById('namesList');
-  if(!names.length){area.style.display='none';return;}
-  area.style.display='block';
-  document.getElementById('namesCount').textContent=`${names.length} names generated`;
-
-  list.innerHTML=names.map((name,i)=>`
-    <div class="name-card" data-name="${name}" id="nc-${i}">
-      <div class="name-header">
-        <span class="name-text">${name}</span>
-        <div class="name-actions">
-          <button class="btn btn-secondary" onclick="checkName(${i})">Check</button>
-          <button class="btn btn-secondary" onclick="saveName('${name}',getNameTlds(${i}))">Save</button>
-        </div>
-      </div>
-      <div class="tld-row" id="tlds-${i}">
-        ${DEFAULT_TLDS.map(tld=>`<a href="https://${name}${tld}" target="_blank" class="tld-badge unchecked" data-tld="${tld}" title="Click to visit">${tld}</a>`).join('')}
-        <input class="add-tld-input" placeholder="+tld" data-idx="${i}" title="Type a TLD and press Enter">
-      </div>
-      <div class="name-meta" id="meta-${i}"></div>
-    </div>
-  `).join('');
-}
-
-function getNameTlds(idx){
-  const container=document.getElementById('tlds-'+idx);
-  if(!container)return{};
-  const result={};
-  container.querySelectorAll('.tld-badge').forEach(b=>{
-    const cls=[...b.classList];
-    if(cls.includes('available'))result[b.dataset.tld]='available';
-    else if(cls.includes('taken'))result[b.dataset.tld]='taken';
-    else if(cls.includes('uncertain'))result[b.dataset.tld]='uncertain';
-  });
-  return result;
-}
-
-async function checkName(idx){
-  const name=names[idx];
-  const container=document.getElementById('tlds-'+idx);
-  const badges=container.querySelectorAll('.tld-badge');
-  const meta=document.getElementById('meta-'+idx);
-  meta.textContent='Checking...';
-  let available=0,taken=0;
   for(const badge of badges){
+    const tld=badge.dataset.tld;
+    if(!tld)continue;
+    total++;
     badge.className='tld-badge checking';
-    badge.textContent=badge.dataset.tld+'...';
-    const status=await checkDomain(name,badge.dataset.tld);
+    badge.textContent=tld+'...';
+    const status=await checkDomain(nameObj.name,tld);
+    nameObj.tlds[tld]=status;
     badge.className='tld-badge '+status;
-    badge.textContent=badge.dataset.tld;
-    if(status==='available')available++;
-    if(status==='taken')taken++;
+    badge.textContent=tld;
+    badge.href=`https://${nameObj.name}${tld}`;
+    if(status==='available'){
+      available++;
+      if(tld==='.com')notifyUser(`${nameObj.name}.com is available!`);
+    }
+    updateProgress(badges.length,total);
   }
-  meta.textContent=`${available} likely available, ${taken} taken`;
-  // Auto-save with results
-  saveName(name,getNameTlds(idx));
+  nameObj.checked=true;
+  saveSession();
+  updateStatus('Idle');
+  hideProgress();
+  if(available)showToast(`${nameObj.name}: ${available} TLD${available>1?'s':''} available`,'success');
 }
 
-// --- Add TLD via input ---
-document.addEventListener('keydown',e=>{
-  if(e.key!=='Enter')return;
-  const input=e.target.closest('.add-tld-input');
-  if(!input)return;
-  let tld=input.value.trim().toLowerCase();
-  if(!tld)return;
-  if(!tld.startsWith('.'))tld='.'+tld;
-  const idx=+input.dataset.idx;
-  const container=document.getElementById('tlds-'+idx);
-  // Check if already exists
-  if(container.querySelector(`[data-tld="${tld}"]`)){input.value='';return;}
-  const badge=document.createElement('a');
-  badge.href=`https://${names[idx]}${tld}`;
-  badge.target='_blank';
-  badge.className='tld-badge unchecked';
-  badge.dataset.tld=tld;
-  badge.title='Click to visit';
-  badge.textContent=tld;
-  container.insertBefore(badge,input);
-  input.value='';
-});
+// === RENDER ===
+function renderAll(){
+  updateCounts();
+  const list=document.getElementById('namesList');
+  const empty=document.getElementById('emptyState');
+  let items=[];
 
-// --- Check All (.com) ---
-document.getElementById('checkAllBtn').onclick=async()=>{
-  const btn=document.getElementById('checkAllBtn');
-  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Checking...';
-  for(let i=0;i<names.length;i++){
-    const container=document.getElementById('tlds-'+i);
-    const comBadge=container.querySelector('[data-tld=".com"]');
-    if(comBadge&&comBadge.classList.contains('unchecked')){
-      comBadge.className='tld-badge checking';comBadge.textContent='.com...';
-      const status=await checkDomain(names[i],'.com');
-      comBadge.className='tld-badge '+status;comBadge.textContent='.com';
-    }
-    btn.innerHTML=`<span class="spinner"></span>${i+1}/${names.length}`;
+  if(state.currentTab==='generated'){
+    items=state.names;
+  } else if(state.currentTab==='saved'){
+    items=savedNames;
+  } else if(state.currentTab==='favorites'){
+    items=savedNames.filter(n=>n.favorite);
+  } else if(state.currentTab==='history'){
+    renderHistory();
+    return;
   }
-  btn.disabled=false;btn.textContent='Check All (.com)';
-};
 
-// --- Export ---
-document.getElementById('exportBtn').onclick=()=>{
-  const avail=[];
-  document.querySelectorAll('.name-card').forEach(card=>{
-    const name=card.dataset.name;
-    card.querySelectorAll('.tld-badge.available').forEach(b=>avail.push(name+b.dataset.tld));
-  });
-  if(!avail.length){const all=names.map(n=>n+'.com');navigator.clipboard.writeText(all.join('\n'));alert('Copied all names (none checked yet)');}
-  else{navigator.clipboard.writeText(avail.join('\n'));alert(`Copied ${avail.length} available domains`);}
-};
+  // Apply filter
+  if(state.filterAvail){
+    items=items.filter(n=>Object.values(n.tlds||{}).includes('available'));
+  }
 
-// --- History ---
-function renderHistory(){
-  const saved=getSaved();
-  document.getElementById('histCount').textContent=saved.length?`(${saved.length} saved)`:'';
-  const container=document.getElementById('historyItems');
-  if(!saved.length){container.innerHTML='<div class="empty-state">Names you save will appear here. They persist across sessions.</div>';return;}
-  container.innerHTML=saved.map((item,i)=>{
-    const tldBadges=Object.entries(item.tlds||{}).map(([tld,status])=>`<span class="tld-badge ${status}">${tld}</span>`).join('');
-    const time=new Date(item.updated||item.created).toLocaleDateString();
-    return`<div class="history-item" data-hi="${i}">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <span class="history-item-name">${item.name}</span>
-        <div style="display:flex;gap:4px">
-          <button class="btn btn-secondary" style="font-size:.65rem;padding:2px 8px" onclick="event.stopPropagation();recheckSaved(${i})">Re-check</button>
-          <button class="btn btn-secondary" style="font-size:.65rem;padding:2px 8px" onclick="event.stopPropagation();removeSaved('${item.name}')">Remove</button>
+  // Apply sort
+  items=[...items];
+  if(state.sort==='score')items.sort((a,b)=>(b.score||0)-(a.score||0));
+  else if(state.sort==='length')items.sort((a,b)=>a.name.length-b.name.length);
+  else if(state.sort==='alpha')items.sort((a,b)=>a.name.localeCompare(b.name));
+  else if(state.sort==='newest')items.reverse();
+
+  if(!items.length){
+    list.innerHTML='';
+    empty.style.display='block';
+    if(state.currentTab==='saved')empty.innerHTML='<strong>No saved names yet</strong><p>Click Save on any generated name to keep it here.</p>';
+    else if(state.currentTab==='favorites')empty.innerHTML='<strong>No favorites yet</strong><p>Star names you love to find them here.</p>';
+    else empty.innerHTML='<strong>No names generated yet</strong><p>Add keywords and click Generate to get started.</p>';
+    return;
+  }
+
+  empty.style.display='none';
+  list.innerHTML=items.map((item,i)=>{
+    const scoreClass=item.score>=75?'':item.score>=50?' mid':' low';
+    const isSaved=savedNames.some(s=>s.name===item.name);
+    const isFav=item.favorite||(savedNames.find(s=>s.name===item.name)||{}).favorite;
+    const tlds=Object.keys(item.tlds||{}).length?item.tlds:{};
+    const tldBadges=DEFAULT_TLDS.map(tld=>{
+      const status=tlds[tld]||'unchecked';
+      return`<a href="https://${item.name}${tld}" target="_blank" class="tld-badge ${status}" data-tld="${tld}" title="${status==='unchecked'?'Not checked':status}">${tld}</a>`;
+    }).join('');
+    // Extra checked TLDs not in defaults
+    const extraTlds=Object.keys(tlds).filter(t=>!DEFAULT_TLDS.includes(t)).map(tld=>{
+      return`<a href="https://${item.name}${tld}" target="_blank" class="tld-badge ${tlds[tld]}" data-tld="${tld}">${tld}</a>`;
+    }).join('');
+
+    return`<div class="name-card${isFav?' favorited':''}" data-idx="${i}" data-name="${item.name}">
+      <div class="name-header">
+        <span class="name-text">${item.name}</span>
+        <span class="name-score${scoreClass}">${item.score||0}</span>
+        <div class="name-actions">
+          <button class="btn btn-secondary btn-sm" onclick="handleCheck(${i})" title="Check TLD availability">Check</button>
+          <button class="btn btn-secondary btn-sm" onclick="handleFav(${i})" title="Favorite">${isFav?'&#9733;':'&#9734;'}</button>
+          <button class="btn btn-secondary btn-sm" onclick="handleSave(${i})" title="${isSaved?'Already saved':'Save'}">${isSaved?'Saved':'Save'}</button>
         </div>
       </div>
-      <div class="history-item-meta">${time}${item.note?' — '+item.note:''}</div>
-      <div class="history-item-tlds">${tldBadges||'<span style="font-size:.65rem;color:#9ca3af">Not checked yet</span>'}</div>
+      <div class="tld-row">${tldBadges}${extraTlds}<input class="add-tld-input" placeholder="+tld" data-name="${item.name}" data-idx="${i}"></div>
+      <div class="name-note"><input type="text" placeholder="Add a note..." value="${(item.note||'').replace(/"/g,'&quot;')}" onchange="handleNote(${i},this.value)" data-name="${item.name}"></div>
+      ${item.source==='ai'?'<div class="name-source">AI generated</div>':''}
     </div>`;
   }).join('');
 }
 
-async function recheckSaved(idx){
-  const saved=getSaved();
-  const item=saved[idx];
-  if(!item)return;
-  const tlds=Object.keys(item.tlds);
-  if(!tlds.length){for(const tld of DEFAULT_TLDS)item.tlds[tld]='checking';}
-  for(const tld of Object.keys(item.tlds)){
-    item.tlds[tld]=await checkDomain(item.name,tld);
-  }
-  item.updated=Date.now();
-  setSaved(saved);
-  renderHistory();
+function updateCounts(){
+  document.getElementById('genCount').textContent=state.names.length;
+  document.getElementById('savedCount').textContent=savedNames.length;
+  document.getElementById('favCount').textContent=savedNames.filter(n=>n.favorite).length;
 }
 
-// --- Generate ---
-document.getElementById('genBtn').onclick=async()=>{
-  const btn=document.getElementById('genBtn');
-  const desc=document.getElementById('desc').value.trim();
-  let kws=[document.getElementById('kw1').value.trim(),document.getElementById('kw2').value.trim(),document.getElementById('kw3').value.trim()].filter(Boolean);
-
-  // Auto-extract from description
-  if(!kws.length&&desc){
-    const stops=new Set(['a','an','the','in','on','at','to','for','of','with','and','or','is','are','that','this','from','by','about','very','just','also','new','old','big','good','bad']);
-    const words=desc.toLowerCase().replace(/[^a-z\s]/g,'').split(/\s+/).filter(w=>w.length>3&&!stops.has(w));
-    kws=words.slice(0,3);
-    if(kws[0])document.getElementById('kw1').value=kws[0];
-    if(kws[1])document.getElementById('kw2').value=kws[1];
-    if(kws[2])document.getElementById('kw3').value=kws[2];
+function renderHistory(){
+  const list=document.getElementById('namesList');
+  const empty=document.getElementById('emptyState');
+  if(!sessionHistory.length){
+    list.innerHTML='';
+    empty.style.display='block';
+    empty.innerHTML='<strong>No history yet</strong><p>Your generation sessions will appear here.</p>';
+    return;
   }
-  if(!kws.length){document.getElementById('kw1').focus();return;}
+  empty.style.display='none';
+  list.innerHTML=sessionHistory.map((session,i)=>{
+    const date=new Date(session.timestamp).toLocaleString();
+    return`<div class="history-item" onclick="restoreFromHistory(${i})">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <strong style="font-size:.88rem">${session.keywords.join(', ')}</strong>
+        <span style="font-size:.68rem;color:var(--muted)">${date}</span>
+      </div>
+      <div style="font-size:.72rem;color:var(--muted);margin-top:4px">${session.count} names generated</div>
+    </div>`;
+  }).join('');
+}
 
-  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Generating...';
-  names=generateNames(kws,getStyles());
-  renderNames();
+// === HANDLERS ===
+function handleCheck(idx){
+  const items=getCurrentItems();
+  const item=items[idx];
+  if(!item)return;
+  const card=document.querySelectorAll('.name-card')[idx];
+  if(!card)return;
+  updateStatus(`Checking ${item.name}...`);
+  showProgress();
+  checkNameTlds(item,card);
+}
 
-  if(chromeAi&&desc){
-    btn.innerHTML='<span class="spinner"></span>AI enhancing...';
-    const ai=await aiSuggest(desc,kws);
-    const set=new Set(names);
-    for(const n of ai)if(!set.has(n)){names.push(n);set.add(n);}
-    names=names.slice(0,50);
-    renderNames();
+function handleSave(idx){
+  const items=getCurrentItems();
+  const item=items[idx];
+  if(!item)return;
+  const existing=savedNames.find(s=>s.name===item.name);
+  if(existing){
+    // Update TLDs
+    Object.assign(existing.tlds,item.tlds);
+    existing.updated=Date.now();
+  } else {
+    savedNames.unshift({...item,created:Date.now(),updated:Date.now()});
   }
+  if(savedNames.length>200)savedNames.length=200;
+  saveSaved();
+  renderAll();
+  showToast(`Saved: ${item.name}`,'success');
+}
 
-  btn.disabled=false;btn.textContent='Generate Names';
-};
+function handleFav(idx){
+  const items=getCurrentItems();
+  const item=items[idx];
+  if(!item)return;
+  // Toggle in saved
+  let saved=savedNames.find(s=>s.name===item.name);
+  if(!saved){
+    savedNames.unshift({...item,favorite:true,created:Date.now(),updated:Date.now()});
+  } else {
+    saved.favorite=!saved.favorite;
+  }
+  // Also toggle in state.names
+  const inState=state.names.find(n=>n.name===item.name);
+  if(inState)inState.favorite=!inState.favorite;
+  saveSaved();
+  renderAll();
+}
 
-// --- Init ---
-renderHistory();
+function handleNote(idx,note){
+  const items=getCurrentItems();
+  const item=items[idx];
+  if(!item)return;
+  item.note=note;
+  const saved=savedNames.find(s=>s.name===item.name);
+  if(saved)saved.note=note;
+  const inState=state.names.find(n=>n.name===item.name);
+  if(inState)inState.note=note;
+  saveSaved();
+  saveSession();
+}
+
+function getCurrentItems(){
+  if(state.currentTab==='generated')return state.names;
+  if(state.currentTab==='saved')return savedNames;
+  if(state.currentTab==='favorites')return savedNames.filter(n=>n.favorite);
+  return[];
+}
+
+// Add TLD via input
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter')return;
+  const input=e.target.closest('.add-tld-input');
+  if(!input)return;
+  e.preventDefault();
+  let tld=input.value.trim().toLowerCase();
+  if(!tld)return;
+  if(!tld.startsWith('.'))tld='.'+tld;
+  const name=input.dataset.name;
+  const row=input.parentElement;
+  if(row.querySelector(`[data-tld="${tld}"]`)){input.value='';return;}
+  const badge=document.createElement('a');
+  badge.href=`https://${name}${tld}`;
+  badge.target='_blank';
+  badge.className='tld-badge unchecked';
+  badge.dataset.tld=tld;
+  badge.textContent=tld;
+  row.insertBefore(badge,input);
+  input.value='';
+});
+
+function restoreFromHistory(idx){
+  const session=sessionHistory[idx];
+  if(!session)return;
+  state.keywords=session.keywords||[];
+  state.description=session.description||'';
+  state.names=session.names||[];
+  document.getElementById('desc').value=state.description;
+  renderKeywords();
+  state.currentTab='generated';
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelector('[data-tab="generated"]').classList.add('active');
+  renderAll();
+  showToast('Session restored','info');
+}
+
+// === NOTIFICATIONS ===
+function requestNotifPermission(){
+  if(!('Notification' in window))return;
+  if(Notification.permission==='default'){
+    Notification.requestPermission().then(p=>{notifPermission=p==='granted';});
+  } else {
+    notifPermission=Notification.permission==='granted';
+  }
+}
+
+function notifyUser(msg){
+  if(notifPermission&&document.hidden){
+    new Notification('Domain Finder',{body:msg,icon:'/favicon.svg'});
+  }
+  showToast(msg,'success');
+}
+
+// Request permission on first interaction
+document.addEventListener('click',function once(){
+  requestNotifPermission();
+  document.removeEventListener('click',once);
+},{once:true});
+
+// === TOASTS ===
+function showToast(msg,type='info'){
+  const container=document.getElementById('toastContainer');
+  const toast=document.createElement('div');
+  toast.className=`toast ${type}`;
+  toast.textContent=msg;
+  container.appendChild(toast);
+  setTimeout(()=>{toast.style.opacity='0';toast.style.transition='opacity .3s';setTimeout(()=>toast.remove(),300);},3500);
+  // Keep max 3 toasts
+  while(container.children.length>3)container.firstChild.remove();
+}
+
+// === STATUS BAR ===
+function updateStatus(text){
+  document.getElementById('statusText').textContent=text;
+}
+function showProgress(){
+  document.getElementById('progressBar').style.display='block';
+  document.getElementById('progressFill').style.width='0%';
+}
+function updateProgress(total,current){
+  const pct=Math.round((current/total)*100);
+  document.getElementById('progressFill').style.width=pct+'%';
+  document.getElementById('statusRight').textContent=`${current}/${total}`;
+}
+function hideProgress(){
+  document.getElementById('progressBar').style.display='none';
+  document.getElementById('statusRight').textContent='';
+}
+
+// === LOCAL STORAGE ===
+function getCache(key){
+  try{const d=JSON.parse(localStorage.getItem('fms-dc')||'{}');const r=d[key];if(r&&Date.now()-r.t<86400000)return r.s;}catch{}return null;
+}
+function setCache(key,status){
+  try{const d=JSON.parse(localStorage.getItem('fms-dc')||'{}');d[key]={s:status,t:Date.now()};const entries=Object.entries(d);if(entries.length>1000){entries.sort((a,b)=>b[1].t-a[1].t);localStorage.setItem('fms-dc',JSON.stringify(Object.fromEntries(entries.slice(0,800))));}else localStorage.setItem('fms-dc',JSON.stringify(d));}catch{}
+}
+
+function saveSession(){
+  try{localStorage.setItem(STORAGE_KEY+'-session',JSON.stringify({keywords:state.keywords,description:state.description,names:state.names}));}catch{}
+}
+function restoreSession(){
+  try{
+    const raw=localStorage.getItem(STORAGE_KEY+'-session');
+    if(!raw)return;
+    const data=JSON.parse(raw);
+    if(data.keywords)state.keywords=data.keywords;
+    if(data.description){state.description=data.description;document.getElementById('desc').value=data.description;}
+    if(data.names)state.names=data.names;
+    renderKeywords();
+  }catch{}
+}
+
+function loadSaved(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY+'-saved')||'[]');}catch{return[];}}
+function saveSaved(){try{localStorage.setItem(STORAGE_KEY+'-saved',JSON.stringify(savedNames));}catch{}}
+
+function loadHistory(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY+'-history')||'[]');}catch{return[];}}
+function saveHistory(){
+  try{
+    if(!state.names.length)return;
+    sessionHistory.unshift({keywords:[...state.keywords],description:state.description,count:state.names.length,names:state.names.slice(0,20),timestamp:Date.now()});
+    if(sessionHistory.length>20)sessionHistory.length=20;
+    localStorage.setItem(STORAGE_KEY+'-history',JSON.stringify(sessionHistory));
+  }catch{}
+}
+
+// === DESCRIPTION TEXTAREA AUTO-SAVE ===
+document.getElementById('desc').addEventListener('input',e=>{
+  state.description=e.target.value;
+});
+
+// Init status
+updateStatus('Idle');
 </script>
 <script src="/related.js"></script>
 </body>
