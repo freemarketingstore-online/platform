@@ -670,13 +670,13 @@ async function checkDomain(name,tld){
 
 async function checkNameTlds(nameObj,card){
   const tldRow=card.querySelector('.tld-row');
-  const badges=tldRow.querySelectorAll('.tld-badge');
-  let available=0,total=0;
+  const badges=[...tldRow.querySelectorAll('.tld-badge')];
+  let available=0,checked=0;
+  const totalBadges=badges.length;
 
   for(const badge of badges){
     const tld=badge.dataset.tld;
     if(!tld)continue;
-    total++;
     badge.className='tld-badge checking';
     badge.textContent=tld+'...';
     const status=await checkDomain(nameObj.name,tld);
@@ -684,17 +684,23 @@ async function checkNameTlds(nameObj,card){
     badge.className='tld-badge '+status;
     badge.textContent=tld;
     badge.href=`https://${nameObj.name}${tld}`;
+    checked++;
     if(status==='available'){
       available++;
-      if(tld==='.com')notifyUser(`${nameObj.name}.com is available!`);
+      if(tld==='.com')notifyUser(`${nameObj.name}.com is likely available!`);
     }
-    updateProgress(badges.length,total);
+    updateProgress(totalBadges,checked);
   }
   nameObj.checked=true;
   saveSession();
+  // Also update saved if exists
+  const saved=savedNames.find(s=>s.name===nameObj.name);
+  if(saved)Object.assign(saved.tlds,nameObj.tlds);
+  saveSaved();
   updateStatus('Idle');
   hideProgress();
-  if(available)showToast(`${nameObj.name}: ${available} TLD${available>1?'s':''} available`,'success');
+  if(available)showToast(`${nameObj.name}: ${available} TLD${available>1?'s':''} likely available`,'success');
+  else if(checked)showToast(`${nameObj.name}: all ${checked} TLDs taken`,'info');
 }
 
 // === RENDER ===
@@ -801,7 +807,8 @@ function handleCheck(idx){
   const items=getCurrentItems();
   const item=items[idx];
   if(!item)return;
-  const card=document.querySelectorAll('.name-card')[idx];
+  // Find card by name to avoid index mismatch after sorting/filtering
+  const card=document.querySelector(`.name-card[data-name="${item.name}"]`);
   if(!card)return;
   updateStatus(`Checking ${item.name}...`);
   showProgress();
