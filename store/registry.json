@@ -1,58 +1,166 @@
-[
-  {
-    "id": "content-calendar",
-    "name": "Content Calendar",
-    "description": "Visual weekly/monthly calendar to plan and schedule social media posts across platforms.",
-    "category": "Campaigns",
-    "path": "campaigns/content-calendar/index.html"
-  },
-  {
-    "id": "campaign-planner",
-    "name": "Campaign Planner",
-    "description": "Step-by-step wizard to build a full marketing campaign brief from goal to tactics.",
-    "category": "Campaigns",
-    "path": "campaigns/campaign-planner/index.html"
-  },
-  {
-    "id": "post-generator",
-    "name": "Social Post Generator",
-    "description": "Generate platform-specific social media posts with tone control and hashtag suggestions.",
-    "category": "Social",
-    "path": "social/post-generator/index.html"
-  },
-  {
-    "id": "hashtag-research",
-    "name": "Hashtag Research Tool",
-    "description": "Find and categorize hashtags by reach and relevance with platform-specific limits.",
-    "category": "Social",
-    "path": "social/hashtag-research/index.html"
-  },
-  {
-    "id": "headline-tester",
-    "name": "Headline A/B Tester",
-    "description": "Score and compare headlines on emotion, power words, clarity, and predicted CTR.",
-    "category": "Content",
-    "path": "content/headline-tester/index.html"
-  },
-  {
-    "id": "email-subject",
-    "name": "Email Subject Line Generator",
-    "description": "Generate and score email subject lines in multiple styles with open-rate prediction.",
-    "category": "Content",
-    "path": "content/email-subject/index.html"
-  },
-  {
-    "id": "meta-generator",
-    "name": "SEO Meta Tag Generator",
-    "description": "Generate title tags, meta descriptions, OG tags, and Twitter cards with live previews.",
-    "category": "SEO",
-    "path": "seo/meta-generator/index.html"
-  },
-  {
-    "id": "keyword-planner",
-    "name": "Keyword Planner",
-    "description": "Generate related keywords categorized by intent with content type suggestions.",
-    "category": "SEO",
-    "path": "seo/keyword-planner/index.html"
-  }
-]
+{
+  "robots": [
+    {
+      "id": "ab-calculator",
+      "name": "A/B Test Calculator",
+      "description": "Statistical significance, confidence intervals, sample size calculator.",
+      "icon": "📊",
+      "iconBg": "#10b981",
+      "category": "campaigns",
+      "section": "campaigns"
+    },
+    {
+      "id": "campaign-planner",
+      "name": "Campaign Planner",
+      "description": "Step wizard: goal, audience, channels, timeline. Pre-built templates. Export markdown.",
+      "icon": "🎯",
+      "iconBg": "#8b5cf6",
+      "category": "campaigns",
+      "section": "campaigns"
+    },
+    {
+      "id": "content-calendar",
+      "name": "Content Calendar",
+      "description": "Visual monthly calendar with drag-and-drop. Color-coded by platform. Export JSON/CSV.",
+      "icon": "📅",
+      "iconBg": "#f97316",
+      "category": "campaigns",
+      "section": "campaigns"
+    },
+    {
+      "id": "launch-checklist",
+      "name": "Launch Checklist",
+      "description": "Pre-launch, launch day, post-launch. 5 templates. Track progress, export markdown.",
+      "icon": "🚀",
+      "iconBg": "#f97316",
+      "category": "campaigns",
+      "section": "campaigns"
+    },
+    {
+      "id": "pricing-page",
+      "name": "Pricing Page Generator",
+      "description": "Build 2-4 tier pricing. Cards/table/slider layouts. Export as HTML.",
+      "icon": "💰",
+      "iconBg": "#f59e0b",
+      "category": "campaigns",
+      "section": "campaigns"
+    },
+    {
+      "id": "swot-analysis",
+      "name": "SWOT Analysis",
+      "description": "Strengths, Weaknesses, Opportunities, Threats. Auto-generate strategic actions.",
+      "icon": "📋",
+      "iconBg": "#10b981",
+      "category": "campaigns",
+      "section": "campaigns"
+    },
+    {
+      "id": "utm-builder",
+      "name": "UTM Link Builder",
+      "description": "Build tracked URLs. Platform presets, QR code, history. Copy to clipboard.",
+      "icon": "🔗",
+      "iconBg": "#3b82f6",
+      "category": "campaigns",
+      "section": "campaigns"
+    },
+    {
+      "id": "bio-generator",
+      "name": "Social Bio Generator",
+      "description": "Platform-specific bios (X, IG, LinkedIn, TikTok). 4 tones, emoji, char counter.",
+      "icon": "✍️",
+      "iconBg": "#3b82f6",
+      "category": "social",
+      "section": "social"
+    },
+    {
+      "id": "hashtag-research",
+      "name": "Hashtag Research",
+      "description": "Topic to hashtags. Broad, niche, branded categories. Optimal mix for each platform.",
+      "icon": "#️⃣",
+      "iconBg": "#10b981",
+      "category": "social",
+      "section": "social"
+    },
+    {
+      "id": "post-generator",
+      "name": "Social Post Generator",
+      "description": "Platform-specific posts with tone control. Hashtag suggestions, char limits, copy to clipboard.",
+      "icon": "✍️",
+      "iconBg": "#3b82f6",
+      "category": "social",
+      "section": "social"
+    },
+    {
+      "id": "customer-journey",
+      "name": "Customer Journey Mapper",
+      "description": "Map 5 stages with touchpoints, emotions, pain points. Export PNG.",
+      "icon": "🗺️",
+      "iconBg": "#8b5cf6",
+      "category": "content",
+      "section": "content"
+    },
+    {
+      "id": "email-subject",
+      "name": "Email Subject Lines",
+      "description": "Generate 10 subject lines in 5 styles. Open-rate scoring, A/B compare, copy.",
+      "icon": "📧",
+      "iconBg": "#ec4899",
+      "category": "content",
+      "section": "content"
+    },
+    {
+      "id": "headline-tester",
+      "name": "Headline A/B Tester",
+      "description": "Score 2 headlines on emotion, power, clarity, curiosity. Predict CTR winner.",
+      "icon": "🏆",
+      "iconBg": "#f59e0b",
+      "category": "content",
+      "section": "content"
+    },
+    {
+      "id": "persona-builder",
+      "name": "Customer Persona Builder",
+      "description": "Visual persona cards. Demographics, goals, frustrations. Trading-card output.",
+      "icon": "👤",
+      "iconBg": "#8b5cf6",
+      "category": "content",
+      "section": "content"
+    },
+    {
+      "id": "value-proposition",
+      "name": "Value Proposition Canvas",
+      "description": "Customer jobs/pains/gains vs your products/relievers/creators. Fit scoring.",
+      "icon": "💎",
+      "iconBg": "#ec4899",
+      "category": "content",
+      "section": "content"
+    },
+    {
+      "id": "competitor-audit",
+      "name": "Competitor Quick Audit",
+      "description": "Score vs 3 competitors. SEO, content, social, UX. Radar chart + action items.",
+      "icon": "🔍",
+      "iconBg": "#ef4444",
+      "category": "seo",
+      "section": "seo"
+    },
+    {
+      "id": "keyword-planner",
+      "name": "Keyword Planner",
+      "description": "Seed keyword to long-tail, questions, comparisons. Intent categorization. CSV export.",
+      "icon": "🔑",
+      "iconBg": "#6366f1",
+      "category": "seo",
+      "section": "seo"
+    },
+    {
+      "id": "meta-generator",
+      "name": "SEO Meta Generator",
+      "description": "Generate title, description, OG tags. Preview in Google search and social cards.",
+      "icon": "🔍",
+      "iconBg": "#06b6d4",
+      "category": "seo",
+      "section": "seo"
+    }
+  ]
+}
