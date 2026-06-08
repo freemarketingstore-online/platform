@@ -114,6 +114,8 @@
     .domain-card:hover { border-color: #f97316; }
     .domain-name { font-weight: 600; font-size: 0.95rem; }
     .domain-tlds { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    a.tld-badge { text-decoration: none; cursor: pointer; }
+    a.tld-badge:hover { transform: scale(1.05); box-shadow: 0 2px 6px rgba(0,0,0,.1); }
     .tld-badge {
       font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 4px;
       font-weight: 600;
@@ -234,7 +236,7 @@
     // --- Config ---
     const PREFIXES = ['get', 'try', 'use', 'go', 'my', 'the', 'hey', 'just', 'on', 'hi', 'be'];
     const SUFFIXES = ['ly', 'ify', 'hub', 'lab', 'io', 'app', 'hq', 'ful', 'ness', 'co', 'ist', 'ware'];
-    const TLDS = ['.com', '.io', '.co', '.app', '.dev', '.online', '.store', '.ai', '.tech', '.xyz', '.org', '.net'];
+    const TLDS = ['.com', '.io', '.co', '.app', '.dev', '.online', '.store', '.ai', '.tech', '.xyz', '.org', '.net', '.me', '.so', '.to', '.gg', '.cc', '.biz', '.info', '.pro', '.agency', '.studio', '.design', '.tools', '.cloud', '.digital', '.global', '.world', '.one', '.zone', '.site', '.space', '.fun', '.link'];
     const CHECK_TIMEOUT = 3000;
 
     let selectedStyles = ['short'];
@@ -391,7 +393,12 @@
 
     // --- Domain availability check ---
     async function checkDomain(name, tld) {
+      // Check cache first
+      const cached = getCheckedDomain(name, tld);
+      if (cached) return cached;
+
       const domain = name + tld;
+      let status;
       try {
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), CHECK_TIMEOUT);
@@ -401,13 +408,14 @@
           signal: controller.signal
         });
         clearTimeout(timer);
-        // no-cors always gives opaque response, type is 'opaque' if server exists
-        return resp.type === 'opaque' ? 'taken' : 'taken';
+        // no-cors always gives opaque response if server responds
+        status = 'taken';
       } catch (e) {
         // Fetch failed = likely no server = possibly available
-        if (e.name === 'AbortError') return 'uncertain';
-        return 'available';
+        status = e.name === 'AbortError' ? 'uncertain' : 'available';
       }
+      saveCheckedDomain(name, tld, status);
+      return status;
     }
 
     // --- Render TLD filters ---
@@ -437,7 +445,7 @@
           <div>
             <div class="domain-name">${name}</div>
             <div class="domain-tlds" id="tlds-${idx}">
-              ${activeTlds.map(tld => `<span class="tld-badge checking" data-tld="${tld}">${tld}</span>`).join('')}
+              ${activeTlds.map(tld => `<a href="https://${name}${tld}" target="_blank" rel="noopener" class="tld-badge checking" data-tld="${tld}" title="Click to visit ${name}${tld}">${tld}</a>`).join('')}
             </div>
           </div>
           <button class="check-btn" data-idx="${idx}">Check</button>
@@ -477,16 +485,45 @@
       checkCard(idx).then(() => { btn.textContent = 'Done'; });
     });
 
-    // --- History ---
+    // --- History (enhanced with results) ---
     function getHistory() {
-      try { return JSON.parse(localStorage.getItem('fms-domain-history') || '[]'); } catch { return []; }
+      try { return JSON.parse(localStorage.getItem('fms-domain-history-v2') || '[]'); } catch { return []; }
     }
     function saveHistory(keywords) {
       const h = getHistory();
-      const entry = keywords.join(' + ');
-      if (!h.includes(entry)) { h.unshift(entry); if (h.length > 20) h.pop(); }
-      localStorage.setItem('fms-domain-history', JSON.stringify(h));
+      const entry = {
+        keywords: keywords,
+        description: document.getElementById('description').value.trim(),
+        timestamp: Date.now(),
+        names: generatedNames.slice(0, 10)
+      };
+      h.unshift(entry);
+      if (h.length > 30) h.pop();
+      localStorage.setItem('fms-domain-history-v2', JSON.stringify(h));
       renderHistory();
+    }
+    // Save checked domain results
+    function saveCheckedDomain(name, tld, status) {
+      const key = 'fms-domain-checked';
+      let checked = {};
+      try { checked = JSON.parse(localStorage.getItem(key) || '{}'); } catch {}
+      checked[name + tld] = { status, timestamp: Date.now() };
+      // Keep only last 500 checks
+      const entries = Object.entries(checked);
+      if (entries.length > 500) {
+        entries.sort((a, b) => b[1].timestamp - a[1].timestamp);
+        checked = Object.fromEntries(entries.slice(0, 500));
+      }
+      localStorage.setItem(key, JSON.stringify(checked));
+    }
+    function getCheckedDomain(name, tld) {
+      try {
+        const checked = JSON.parse(localStorage.getItem('fms-domain-checked') || '{}');
+        const result = checked[name + tld];
+        // Cache valid for 24 hours
+        if (result && Date.now() - result.timestamp < 86400000) return result.status;
+      } catch {}
+      return null;
     }
     function renderHistory() {
       const h = getHistory();
@@ -494,18 +531,34 @@
       const list = document.getElementById('history-list');
       if (h.length === 0) { section.style.display = 'none'; return; }
       section.style.display = 'block';
-      list.innerHTML = h.map(item => `<span class="history-tag">${item}</span>`).join('');
+      list.innerHTML = h.map((item, i) => {
+        const time = new Date(item.timestamp).toLocaleDateString();
+        const kws = item.keywords.join(' + ');
+        const namesPreview = (item.names || []).slice(0, 3).join(', ');
+        return `<div class="history-tag" data-idx="${i}" title="${namesPreview}">
+          <strong>${kws}</strong>
+          <span style="font-size:.65rem;color:#9ca3af;margin-left:6px">${time}</span>
+          ${item.names ? `<br><span style="font-size:.65rem;color:#6b7280">${namesPreview}...</span>` : ''}
+        </div>`;
+      }).join('');
     }
     document.getElementById('history-list').addEventListener('click', (e) => {
       const tag = e.target.closest('.history-tag');
       if (!tag) return;
-      const parts = tag.textContent.split(' + ');
-      if (parts[0]) document.getElementById('keyword1').value = parts[0];
-      if (parts[1]) document.getElementById('keyword2').value = parts[1];
-      if (parts[2]) document.getElementById('keyword3').value = parts[2];
+      const h = getHistory();
+      const item = h[+tag.dataset.idx];
+      if (!item) return;
+      const kws = item.keywords;
+      if (kws[0]) document.getElementById('keyword1').value = kws[0];
+      if (kws[1]) document.getElementById('keyword2').value = kws[1];
+      if (kws[2]) document.getElementById('keyword3').value = kws[2];
+      if (item.description) document.getElementById('description').value = item.description;
+      // Re-run generation
+      document.getElementById('generate-btn').click();
     });
     document.getElementById('clear-history').addEventListener('click', () => {
-      localStorage.removeItem('fms-domain-history');
+      localStorage.removeItem('fms-domain-history-v2');
+      localStorage.removeItem('fms-domain-checked');
       renderHistory();
     });
 
