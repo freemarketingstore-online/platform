@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SWOT Analysis - FreeMarketingStore</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Manrope',system-ui,sans-serif;background:#fafafa;color:#1a1a1a;min-height:100vh;padding:24px}
+a{color:#f97316;text-decoration:none}
+a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:14px;font-weight:500}
+h1{font-size:28px;font-weight:800;margin-bottom:8px}
+.subtitle{color:#6b7280;margin-bottom:24px;font-size:15px}
+.container{max-width:1100px;margin:0 auto}
+.panel{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:24px;margin-bottom:20px}
+.btn{padding:10px 20px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-primary{background:#f97316;color:#fff}
+.btn-primary:hover{background:#ea580c}
+.btn-secondary{background:#fff;color:#1a1a1a;border:1px solid #e5e7eb}
+.btn-secondary:hover{border-color:#f97316}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-group{display:flex;gap:8px;flex-wrap:wrap}
+.toolbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.project-name{padding:10px 14px;border:1px solid #e5e7eb;border-radius:8px;font-size:14px;font-family:inherit;width:280px}
+.project-name:focus{outline:none;border-color:#f97316}
+.swot-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+@media(max-width:640px){.swot-grid{grid-template-columns:1fr}}
+.quadrant{border-radius:12px;padding:20px;min-height:220px;border:2px solid}
+.quadrant.strengths{background:#f0fdf4;border-color:#bbf7d0}
+.quadrant.weaknesses{background:#fef2f2;border-color:#fecaca}
+.quadrant.opportunities{background:#eff6ff;border-color:#bfdbfe}
+.quadrant.threats{background:#fff7ed;border-color:#fed7aa}
+.quadrant-header{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.quadrant-header h3{font-size:16px;font-weight:700}
+.quadrant.strengths .quadrant-header h3{color:#16a34a}
+.quadrant.weaknesses .quadrant-header h3{color:#dc2626}
+.quadrant.opportunities .quadrant-header h3{color:#2563eb}
+.quadrant.threats .quadrant-header h3{color:#ea580c}
+.quadrant-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff}
+.quadrant.strengths .quadrant-icon{background:#16a34a}
+.quadrant.weaknesses .quadrant-icon{background:#dc2626}
+.quadrant.opportunities .quadrant-icon{background:#2563eb}
+.quadrant.threats .quadrant-icon{background:#ea580c}
+.item-list{list-style:none;padding:0;display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.item-list li{padding:8px 12px;background:rgba(255,255,255,.7);border-radius:6px;font-size:13px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:all .15s;border:1px solid transparent}
+.item-list li:hover{border-color:currentColor;opacity:.8}
+.item-list li button{background:none;border:none;color:inherit;cursor:pointer;font-size:14px;opacity:.5;flex-shrink:0}
+.item-list li button:hover{opacity:1}
+.add-row{display:flex;gap:6px}
+.add-row input{flex:1;padding:8px 12px;border:1px solid #e5e7eb;border-radius:6px;font-size:13px;font-family:inherit;background:#fff}
+.add-row input:focus{outline:none;border-color:#f97316}
+.add-row button{padding:8px 14px;border:none;background:#f97316;color:#fff;border-radius:6px;font-size:13px;cursor:pointer;font-weight:600}
+.strategies-section{margin-top:24px}
+.strategies-section h2{font-size:18px;font-weight:800;margin-bottom:16px}
+.strategy-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:640px){.strategy-grid{grid-template-columns:1fr}}
+.strategy-card{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:16px}
+.strategy-card h4{font-size:13px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.strategy-card .badge{font-size:10px;padding:2px 6px;border-radius:4px;font-weight:700;color:#fff}
+.strategy-card.so .badge{background:#16a34a}
+.strategy-card.wo .badge{background:#2563eb}
+.strategy-card.st .badge{background:#ea580c}
+.strategy-card.wt .badge{background:#dc2626}
+.strategy-card p{font-size:12px;color:#6b7280;line-height:1.5}
+.strategy-card ul{list-style:none;padding:0;margin-top:8px}
+.strategy-card li{font-size:12px;padding:4px 0;color:#4b5563}
+.strategy-card li::before{content:">";margin-right:6px;font-weight:700}
+.strategy-card.so li::before{color:#16a34a}
+.strategy-card.wo li::before{color:#2563eb}
+.strategy-card.st li::before{color:#ea580c}
+.strategy-card.wt li::before{color:#dc2626}
+.empty-strategies{text-align:center;padding:30px;color:#6b7280;font-size:13px}
+#export-canvas{position:absolute;left:-9999px}
+</style>
+</head>
+<body>
+<div class="container">
+<a class="back" href="/">Back to Store</a>
+<h1>SWOT Analysis</h1>
+<p class="subtitle">Identify strengths, weaknesses, opportunities, and threats to shape strategy</p>
+
+<div class="toolbar">
+  <input class="project-name" id="project-name" placeholder="Project or business name" value="My Business">
+  <div class="btn-group">
+    <button class="btn btn-primary btn-sm" onclick="generateStrategies()">Generate Strategies</button>
+    <button class="btn btn-secondary btn-sm" onclick="exportPNG()">Export PNG</button>
+    <button class="btn btn-secondary btn-sm" onclick="exportMarkdown()">Export Markdown</button>
+    <button class="btn btn-secondary btn-sm" onclick="resetAll()">Reset</button>
+  </div>
+</div>
+
+<div class="swot-grid" id="swot-grid">
+  <div class="quadrant strengths">
+    <div class="quadrant-header">
+      <div class="quadrant-icon">S</div>
+      <h3>Strengths</h3>
+    </div>
+    <ul class="item-list" id="list-strengths"></ul>
+    <div class="add-row">
+      <input placeholder="Add a strength" id="input-strengths" onkeydown="if(event.key==='Enter')addItem('strengths')">
+      <button onclick="addItem('strengths')">+</button>
+    </div>
+  </div>
+  <div class="quadrant weaknesses">
+    <div class="quadrant-header">
+      <div class="quadrant-icon">W</div>
+      <h3>Weaknesses</h3>
+    </div>
+    <ul class="item-list" id="list-weaknesses"></ul>
+    <div class="add-row">
+      <input placeholder="Add a weakness" id="input-weaknesses" onkeydown="if(event.key==='Enter')addItem('weaknesses')">
+      <button onclick="addItem('weaknesses')">+</button>
+    </div>
+  </div>
+  <div class="quadrant opportunities">
+    <div class="quadrant-header">
+      <div class="quadrant-icon">O</div>
+      <h3>Opportunities</h3>
+    </div>
+    <ul class="item-list" id="list-opportunities"></ul>
+    <div class="add-row">
+      <input placeholder="Add an opportunity" id="input-opportunities" onkeydown="if(event.key==='Enter')addItem('opportunities')">
+      <button onclick="addItem('opportunities')">+</button>
+    </div>
+  </div>
+  <div class="quadrant threats">
+    <div class="quadrant-header">
+      <div class="quadrant-icon">T</div>
+      <h3>Threats</h3>
+    </div>
+    <ul class="item-list" id="list-threats"></ul>
+    <div class="add-row">
+      <input placeholder="Add a threat" id="input-threats" onkeydown="if(event.key==='Enter')addItem('threats')">
+      <button onclick="addItem('threats')">+</button>
+    </div>
+  </div>
+</div>
+
+<div class="strategies-section" id="strategies-section" style="display:none">
+  <h2>Strategic Actions</h2>
+  <div class="strategy-grid" id="strategy-grid"></div>
+</div>
+</div>
+
+<canvas id="export-canvas"></canvas>
+
+<script>
+let swot = { strengths: [], weaknesses: [], opportunities: [], threats: [] };
+
+function loadData() {
+  const saved = localStorage.getItem('fms-swot');
+  if (saved) {
+    const parsed = JSON.parse(saved);
+    swot = parsed.swot || swot;
+    if (parsed.name) document.getElementById('project-name').value = parsed.name;
+  }
+  render();
+}
+
+function saveData() {
+  localStorage.setItem('fms-swot', JSON.stringify({ swot, name: document.getElementById('project-name').value }));
+}
+
+function render() {
+  Object.keys(swot).forEach(key => {
+    const list = document.getElementById('list-' + key);
+    list.innerHTML = swot[key].map((item, i) => `<li>${esc(item)}<button onclick="removeItem('${key}',${i})">x</button></li>`).join('');
+  });
+}
+
+function addItem(key) {
+  const input = document.getElementById('input-' + key);
+  const val = input.value.trim();
+  if (!val) return;
+  swot[key].push(val);
+  input.value = '';
+  saveData();
+  render();
+}
+
+function removeItem(key, idx) {
+  swot[key].splice(idx, 1);
+  saveData();
+  render();
+}
+
+function resetAll() {
+  if (!confirm('Clear all SWOT items?')) return;
+  swot = { strengths: [], weaknesses: [], opportunities: [], threats: [] };
+  document.getElementById('strategies-section').style.display = 'none';
+  saveData();
+  render();
+}
+
+function generateStrategies() {
+  const section = document.getElementById('strategies-section');
+  const grid = document.getElementById('strategy-grid');
+  const s = swot.strengths, w = swot.weaknesses, o = swot.opportunities, t = swot.threats;
+
+  if (!s.length && !w.length && !o.length && !t.length) {
+    section.style.display = 'block';
+    grid.innerHTML = '<div class="empty-strategies">Add items to at least two quadrants to generate strategies.</div>';
+    return;
+  }
+
+  let cards = '';
+
+  if (s.length && o.length) {
+    const items = s.slice(0, 3).map((si, i) => `Use "${si}" to capitalize on "${o[i % o.length]}"`);
+    cards += `<div class="strategy-card so"><h4><span class="badge">SO</span> Leverage (Strengths + Opportunities)</h4><p>Use your strengths to take advantage of opportunities.</p><ul>${items.map(i => '<li>' + esc(i) + '</li>').join('')}</ul></div>`;
+  }
+
+  if (w.length && o.length) {
+    const items = w.slice(0, 3).map((wi, i) => `Improve "${wi}" to unlock "${o[i % o.length]}"`);
+    cards += `<div class="strategy-card wo"><h4><span class="badge">WO</span> Improve (Weaknesses + Opportunities)</h4><p>Overcome weaknesses by pursuing opportunities.</p><ul>${items.map(i => '<li>' + esc(i) + '</li>').join('')}</ul></div>`;
+  }
+
+  if (s.length && t.length) {
+    const items = s.slice(0, 3).map((si, i) => `Apply "${si}" to counter "${t[i % t.length]}"`);
+    cards += `<div class="strategy-card st"><h4><span class="badge">ST</span> Defend (Strengths + Threats)</h4><p>Use your strengths to mitigate threats.</p><ul>${items.map(i => '<li>' + esc(i) + '</li>').join('')}</ul></div>`;
+  }
+
+  if (w.length && t.length) {
+    const items = w.slice(0, 3).map((wi, i) => `Address "${wi}" before "${t[i % t.length]}" becomes critical`);
+    cards += `<div class="strategy-card wt"><h4><span class="badge">WT</span> Avoid (Weaknesses + Threats)</h4><p>Minimize weaknesses and avoid threats.</p><ul>${items.map(i => '<li>' + esc(i) + '</li>').join('')}</ul></div>`;
+  }
+
+  if (!cards) {
+    cards = '<div class="empty-strategies">Add items to at least two quadrants (e.g. Strengths + Opportunities) to generate strategies.</div>';
+  }
+
+  section.style.display = 'block';
+  grid.innerHTML = cards;
+}
+
+function exportPNG() {
+  const canvas = document.getElementById('export-canvas');
+  const ctx = canvas.getContext('2d');
+  const w = 900, h = 700;
+  canvas.width = w; canvas.height = h;
+  ctx.fillStyle = '#fafafa'; ctx.fillRect(0, 0, w, h);
+
+  const name = document.getElementById('project-name').value || 'SWOT Analysis';
+  ctx.fillStyle = '#1a1a1a'; ctx.font = 'bold 22px Manrope,sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText(name + ' - SWOT Analysis', w / 2, 36);
+
+  const colors = { strengths: '#16a34a', weaknesses: '#dc2626', opportunities: '#2563eb', threats: '#ea580c' };
+  const bgColors = { strengths: '#f0fdf4', weaknesses: '#fef2f2', opportunities: '#eff6ff', threats: '#fff7ed' };
+  const labels = { strengths: 'STRENGTHS', weaknesses: 'WEAKNESSES', opportunities: 'OPPORTUNITIES', threats: 'THREATS' };
+  const positions = { strengths: [20, 60], weaknesses: [460, 60], opportunities: [20, 380], threats: [460, 380] };
+
+  Object.keys(swot).forEach(key => {
+    const [x, y] = positions[key];
+    const qw = 420, qh = 300;
+    ctx.fillStyle = bgColors[key]; ctx.beginPath(); ctx.roundRect(x, y, qw, qh, 10); ctx.fill();
+    ctx.strokeStyle = colors[key]; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = colors[key]; ctx.font = 'bold 14px Manrope,sans-serif'; ctx.textAlign = 'left';
+    ctx.fillText(labels[key], x + 16, y + 28);
+    ctx.fillStyle = '#4b5563'; ctx.font = '12px Manrope,sans-serif';
+    swot[key].slice(0, 10).forEach((item, i) => {
+      ctx.fillText('- ' + item.substring(0, 45), x + 16, y + 52 + i * 22);
+    });
+  });
+
+  const link = document.createElement('a');
+  link.download = (name.replace(/\s+/g, '-').toLowerCase() || 'swot') + '-analysis.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+function exportMarkdown() {
+  const name = document.getElementById('project-name').value || 'SWOT Analysis';
+  let md = `# ${name} - SWOT Analysis\n\n`;
+  md += `## Strengths\n${swot.strengths.map(s => '- ' + s).join('\n') || '- (none)'}\n\n`;
+  md += `## Weaknesses\n${swot.weaknesses.map(s => '- ' + s).join('\n') || '- (none)'}\n\n`;
+  md += `## Opportunities\n${swot.opportunities.map(s => '- ' + s).join('\n') || '- (none)'}\n\n`;
+  md += `## Threats\n${swot.threats.map(s => '- ' + s).join('\n') || '- (none)'}\n`;
+
+  const blob = new Blob([md], { type: 'text/markdown' });
+  const link = document.createElement('a');
+  link.download = (name.replace(/\s+/g, '-').toLowerCase() || 'swot') + '-analysis.md';
+  link.href = URL.createObjectURL(blob);
+  link.click();
+}
+
+function esc(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+
+loadData();
+</script>
+<script src="/related.js"></script>
+</body>
+</html>

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Social Media Bio Generator - FreeMarketingStore</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Manrope',system-ui,sans-serif;background:#fafafa;color:#1a1a1a;min-height:100vh;padding:24px}
+a{color:#f97316;text-decoration:none}
+a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:20px;font-size:14px;font-weight:500}
+h1{font-size:28px;font-weight:800;margin-bottom:8px}
+.subtitle{color:#6b7280;margin-bottom:24px;font-size:15px}
+.container{max-width:900px;margin:0 auto}
+.panel{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:24px;margin-bottom:20px}
+.btn{padding:10px 20px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-primary{background:#f97316;color:#fff}
+.btn-primary:hover{background:#ea580c}
+.btn-secondary{background:#fff;color:#1a1a1a;border:1px solid #e5e7eb}
+.btn-secondary:hover{border-color:#f97316}
+.btn-sm{padding:6px 12px;font-size:12px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:640px){.form-grid{grid-template-columns:1fr}}
+.form-group{margin-bottom:16px}
+label{font-size:13px;font-weight:600;display:block;margin-bottom:4px}
+input,select,textarea{width:100%;padding:10px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:14px;font-family:inherit;background:#fafafa}
+input:focus,select:focus{outline:none;border-color:#f97316}
+.tone-options{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.tone-btn{padding:8px 16px;border-radius:20px;border:1px solid #e5e7eb;background:#fff;cursor:pointer;font-size:13px;font-weight:600;transition:all .2s}
+.tone-btn:hover{border-color:#f97316}
+.tone-btn.active{background:#f97316;color:#fff;border-color:#f97316}
+.results{display:grid;gap:16px;margin-top:20px}
+.bio-card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:20px;position:relative}
+.bio-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.bio-platform{font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px}
+.bio-platform .icon{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff}
+.bio-platform.x .icon{background:#000}
+.bio-platform.instagram .icon{background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)}
+.bio-platform.linkedin .icon{background:#0077b5}
+.bio-platform.tiktok .icon{background:#000}
+.char-count{font-size:12px;font-weight:600;padding:3px 8px;border-radius:10px}
+.char-count.green{background:#dcfce7;color:#16a34a}
+.char-count.yellow{background:#fef9c3;color:#ca8a04}
+.char-count.red{background:#fee2e2;color:#dc2626}
+.bio-text{font-size:14px;line-height:1.6;padding:12px;background:#fafafa;border-radius:8px;margin-bottom:10px;min-height:48px;word-break:break-word}
+.bio-actions{display:flex;gap:8px}
+.copy-btn{padding:6px 14px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;background:#f97316;color:#fff;transition:all .2s}
+.copy-btn:hover{background:#ea580c}
+.copy-btn.copied{background:#10b981}
+.emoji-suggestions{margin-top:6px;font-size:12px;color:#6b7280}
+.emoji-suggestions span{cursor:pointer;font-size:16px;margin-right:4px}
+.history-section{margin-top:24px}
+.history-section h3{font-size:15px;font-weight:700;margin-bottom:12px}
+.history-item{padding:12px 16px;background:#fff;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;font-size:13px}
+.history-item .meta{color:#6b7280;font-size:11px}
+.history-item button{background:none;border:none;cursor:pointer;font-size:12px;font-weight:600}
+.history-item .load-btn{color:#f97316}
+.history-item .del-btn{color:#ef4444;margin-left:8px}
+.empty{text-align:center;padding:30px;color:#6b7280;font-size:13px}
+</style>
+</head>
+<body>
+<div class="container">
+<a class="back" href="/">Back to Store</a>
+<h1>Social Media Bio Generator</h1>
+<p class="subtitle">Create optimized bios for every platform in seconds</p>
+
+<div class="panel">
+  <div class="form-grid">
+    <div class="form-group">
+      <label>Your Name</label>
+      <input type="text" id="bio-name" placeholder="e.g. Alex Rivera">
+    </div>
+    <div class="form-group">
+      <label>Role / What You Do</label>
+      <input type="text" id="bio-role" placeholder="e.g. Product Designer, Startup Founder">
+    </div>
+  </div>
+  <div class="form-group">
+    <label>Key Skills (3-5, comma-separated)</label>
+    <input type="text" id="bio-skills" placeholder="e.g. UX Design, Branding, Growth Marketing, Storytelling">
+  </div>
+  <div class="form-grid">
+    <div class="form-group">
+      <label>Personality Adjective</label>
+      <input type="text" id="bio-adjective" placeholder="e.g. creative, data-driven, bold">
+    </div>
+    <div class="form-group">
+      <label>Call to Action</label>
+      <input type="text" id="bio-cta" placeholder="e.g. DM for collabs, Link in bio, Let's connect">
+    </div>
+  </div>
+
+  <label style="margin-bottom:8px">Tone</label>
+  <div class="tone-options">
+    <button class="tone-btn active" onclick="setTone('professional')">Professional</button>
+    <button class="tone-btn" onclick="setTone('witty')">Witty</button>
+    <button class="tone-btn" onclick="setTone('minimal')">Minimal</button>
+    <button class="tone-btn" onclick="setTone('bold')">Bold</button>
+  </div>
+
+  <button class="btn btn-primary" onclick="generateBios()">Generate Bios</button>
+</div>
+
+<div class="results" id="results"></div>
+
+<div class="panel history-section" id="history-section" style="display:none">
+  <h3>History</h3>
+  <div id="history-list"></div>
+</div>
+</div>
+
+<script>
+let currentTone = 'professional';
+let history = JSON.parse(localStorage.getItem('fms-bio-history') || '[]');
+
+const PLATFORMS = [
+  { id: 'x', name: 'X (Twitter)', limit: 160, icon: 'X' },
+  { id: 'instagram', name: 'Instagram', limit: 150, icon: 'IG' },
+  { id: 'linkedin', name: 'LinkedIn', limit: 300, icon: 'in' },
+  { id: 'tiktok', name: 'TikTok', limit: 80, icon: 'TT' }
+];
+
+const EMOJIS = {
+  professional: ['💼', '📈', '🎯', '💡', '🚀'],
+  witty: ['😏', '🔥', '✨', '🎪', '🫡'],
+  minimal: ['—', '·', '|', '/', '~'],
+  bold: ['⚡', '💥', '🏆', '👊', '🦾']
+};
+
+function setTone(tone) {
+  currentTone = tone;
+  document.querySelectorAll('.tone-btn').forEach(b => b.classList.toggle('active', b.textContent.toLowerCase() === tone));
+}
+
+function generateBios() {
+  const name = document.getElementById('bio-name').value.trim();
+  const role = document.getElementById('bio-role').value.trim();
+  const skills = document.getElementById('bio-skills').value.trim().split(',').map(s => s.trim()).filter(Boolean);
+  const adjective = document.getElementById('bio-adjective').value.trim();
+  const cta = document.getElementById('bio-cta').value.trim();
+
+  if (!name && !role) { alert('Enter at least a name or role.'); return; }
+
+  const bios = PLATFORMS.map(platform => {
+    const bio = buildBio(platform, name, role, skills, adjective, cta, currentTone);
+    return { platform, bio };
+  });
+
+  renderResults(bios);
+  saveToHistory(name, role, currentTone, bios);
+}
+
+function buildBio(platform, name, role, skills, adjective, cta, tone) {
+  const limit = platform.limit;
+  let bio = '';
+
+  if (tone === 'professional') {
+    const parts = [];
+    if (name) parts.push(name);
+    if (role) parts.push(role);
+    if (skills.length) parts.push(skills.slice(0, 3).join(' | '));
+    if (adjective) parts.push(adjective.charAt(0).toUpperCase() + adjective.slice(1) + ' approach');
+    if (cta) parts.push(cta);
+    bio = parts.join(' // ');
+  } else if (tone === 'witty') {
+    const parts = [];
+    if (role) parts.push(role + ' by day');
+    if (skills.length) parts.push(skills[0] + ' enthusiast by night');
+    if (adjective) parts.push('Unapologetically ' + adjective);
+    if (skills.length > 1) parts.push('Also into ' + skills.slice(1, 3).join(' & '));
+    if (cta) parts.push(cta);
+    bio = parts.join('. ');
+  } else if (tone === 'minimal') {
+    const parts = [];
+    if (name) parts.push(name);
+    if (role) parts.push(role);
+    if (skills.length) parts.push(skills.slice(0, 2).join(' / '));
+    if (cta) parts.push(cta);
+    bio = parts.join(' | ');
+  } else if (tone === 'bold') {
+    const parts = [];
+    if (role) parts.push(role.toUpperCase());
+    if (adjective) parts.push('The ' + adjective + ' one');
+    if (skills.length) parts.push('I do: ' + skills.slice(0, 3).join(', '));
+    if (cta) parts.push(cta + ' NOW');
+    bio = parts.join(' // ');
+  }
+
+  // Truncate to fit platform limit
+  if (bio.length > limit) {
+    bio = bio.substring(0, limit - 3) + '...';
+  }
+
+  return bio;
+}
+
+function renderResults(bios) {
+  const container = document.getElementById('results');
+  const emojis = EMOJIS[currentTone];
+
+  container.innerHTML = bios.map(({ platform, bio }) => {
+    const len = bio.length;
+    const pct = len / platform.limit;
+    const colorClass = pct <= 0.8 ? 'green' : pct <= 1 ? 'yellow' : 'red';
+
+    return `
+      <div class="bio-card">
+        <div class="bio-card-header">
+          <div class="bio-platform ${platform.id}">
+            <div class="icon">${platform.icon}</div>
+            ${platform.name}
+          </div>
+          <span class="char-count ${colorClass}">${len}/${platform.limit}</span>
+        </div>
+        <div class="bio-text" id="bio-text-${platform.id}">${esc(bio)}</div>
+        <div class="bio-actions">
+          <button class="copy-btn" onclick="copyBio('${platform.id}', this)">Copy</button>
+        </div>
+        <div class="emoji-suggestions">Try adding: ${emojis.map(e => `<span onclick="addEmoji('${platform.id}','${e}')">${e}</span>`).join('')}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function copyBio(platformId, btn) {
+  const text = document.getElementById('bio-text-' + platformId).textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500);
+  });
+}
+
+function addEmoji(platformId, emoji) {
+  const el = document.getElementById('bio-text-' + platformId);
+  el.textContent = emoji + ' ' + el.textContent;
+  // Update char count
+  const card = el.closest('.bio-card');
+  const platform = PLATFORMS.find(p => p.id === platformId);
+  const len = el.textContent.length;
+  const pct = len / platform.limit;
+  const colorClass = pct <= 0.8 ? 'green' : pct <= 1 ? 'yellow' : 'red';
+  const counter = card.querySelector('.char-count');
+  counter.textContent = `${len}/${platform.limit}`;
+  counter.className = 'char-count ' + colorClass;
+}
+
+function saveToHistory(name, role, tone, bios) {
+  const entry = {
+    id: Date.now(),
+    name: name || role,
+    tone,
+    bios: bios.map(b => ({ platform: b.platform.id, bio: b.bio })),
+    date: new Date().toISOString()
+  };
+  history.unshift(entry);
+  if (history.length > 20) history = history.slice(0, 20);
+  localStorage.setItem('fms-bio-history', JSON.stringify(history));
+  renderHistory();
+}
+
+function renderHistory() {
+  const section = document.getElementById('history-section');
+  const list = document.getElementById('history-list');
+  if (!history.length) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  list.innerHTML = history.slice(0, 10).map(h => `
+    <div class="history-item">
+      <div>
+        <strong>${esc(h.name)}</strong> <span class="meta">(${h.tone}, ${new Date(h.date).toLocaleDateString()})</span>
+      </div>
+      <div>
+        <button class="load-btn" onclick="loadHistory(${h.id})">Load</button>
+        <button class="del-btn" onclick="deleteHistory(${h.id})">Del</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function loadHistory(id) {
+  const entry = history.find(h => h.id === id);
+  if (!entry) return;
+  const bios = entry.bios.map(b => ({
+    platform: PLATFORMS.find(p => p.id === b.platform),
+    bio: b.bio
+  })).filter(b => b.platform);
+  renderResults(bios);
+}
+
+function deleteHistory(id) {
+  history = history.filter(h => h.id !== id);
+  localStorage.setItem('fms-bio-history', JSON.stringify(history));
+  renderHistory();
+}
+
+function esc(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+
+renderHistory();
+</script>
+<script src="/related.js"></script>
+</body>
+</html>
