@@ -144,8 +144,10 @@
     const statusLine = document.getElementById('status-line');
     const sitesEl = document.getElementById('sites');
     const reportEl = document.getElementById('report');
+    const searchParams = new URLSearchParams(window.location.search);
     let sites = loadSites();
-    let activeId = sites[0]?.id || null;
+    const requestedSiteId = searchParams.get('site');
+    let activeId = sites.some(site => site.id === requestedSiteId) ? requestedSiteId : sites[0]?.id || null;
 
     function loadSites() {
       try {
@@ -191,6 +193,13 @@
       if (score >= 85) return 'ok';
       if (score >= 65) return 'warning';
       return 'critical';
+    }
+
+    function setSiteRoute(id) {
+      if (!id) return;
+      const url = new URL(window.location.href);
+      url.search = '?site=' + encodeURIComponent(id);
+      window.history.replaceState({}, '', url);
     }
 
     function formatBytes(bytes) {
@@ -316,6 +325,7 @@
         saveSites();
         renderSites();
         renderReport();
+        setSiteRoute(site.id);
         statusLine.textContent = 'Audit complete for ' + domainFor(normalized) + '.';
       } catch (error) {
         statusLine.textContent = error.message || String(error);
@@ -346,6 +356,7 @@
         renderReport();
       } else {
         activeId = id;
+        setSiteRoute(id);
         renderSites();
         renderReport();
       }
@@ -367,7 +378,7 @@
     renderSites();
     renderReport();
 
-    const initialUrl = new URLSearchParams(window.location.search).get('url');
+    const initialUrl = searchParams.get('url');
     if (initialUrl) {
       input.value = initialUrl;
       try { runAudit(normalizeUrl(initialUrl)); }
