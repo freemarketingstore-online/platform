@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marketing Console — FreeMarketingStore</title>
+  <meta name="description" content="FreeMarketingStore console for website SEO monitoring, crawl audits, and marketing operations.">
+  <link rel="canonical" href="https://freemarketingstore.pages.dev/console/">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --accent: #f97316;
+      --bg: #f7f8fb;
+      --panel: #fff;
+      --text: #1a1a1a;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --ok: #12805c;
+      --warn: #9a5b00;
+      --bad: #b42318;
+      --shadow: 0 8px 22px rgba(31, 41, 55, .08);
+    }
+    body { font-family: 'Manrope', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    nav { display: flex; align-items: center; justify-content: space-between; max-width: 1200px; margin: 0 auto; padding: 1rem 1.5rem; background: var(--panel); border-bottom: 1px solid var(--line); }
+    .brand { display: flex; align-items: center; gap: .5rem; color: var(--text); font-weight: 800; }
+    .brand img { width: 24px; height: 24px; }
+    .nav-links { display: flex; align-items: center; gap: .9rem; font-size: .84rem; font-weight: 700; }
+    .nav-links a { color: var(--muted); }
+    .shell { max-width: 1200px; margin: 0 auto; padding: 1.25rem 1.5rem 2.5rem; }
+    .hero { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); padding: 1.25rem; margin-bottom: 1rem; }
+    h1 { font-size: 2rem; line-height: 1.12; margin-bottom: .45rem; letter-spacing: 0; }
+    .subtitle { color: var(--muted); line-height: 1.6; max-width: 760px; }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+    .card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); padding: 1rem; min-width: 0; }
+    .card h2 { font-size: 1rem; margin-bottom: .45rem; }
+    .card p { color: var(--muted); line-height: 1.55; margin-bottom: .9rem; }
+    .button { display: inline-flex; align-items: center; justify-content: center; min-height: 38px; border-radius: 7px; padding: .55rem .8rem; background: var(--accent); color: #fff; font-weight: 800; }
+    .button:hover { text-decoration: none; background: #ea580c; }
+    .button.secondary { background: #fff; color: var(--text); border: 1px solid var(--line); }
+    .status { display: grid; gap: .55rem; margin-top: .7rem; }
+    .row { display: flex; justify-content: space-between; gap: .75rem; border-top: 1px solid var(--line); padding-top: .55rem; color: var(--muted); }
+    .value { color: var(--text); font-weight: 800; text-align: right; overflow-wrap: anywhere; }
+    .ok { color: var(--ok); }
+    .warn { color: var(--warn); }
+    .bad { color: var(--bad); }
+    .wide { grid-column: span 2; }
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } .wide { grid-column: auto; } nav { align-items: flex-start; flex-direction: column; gap: .75rem; } }
+    @media (max-width: 560px) { nav, .shell { padding-left: .9rem; padding-right: .9rem; } h1 { font-size: 1.55rem; } .nav-links { flex-wrap: wrap; } }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="brand"><img src="/favicon.svg" alt="FMS"><span>FreeMarketingStore</span></a>
+    <div class="nav-links">
+      <a href="/seo/site-audit/">SEO Audit</a>
+      <a href="/sitemap.xml">Sitemap</a>
+      <a href="/">Store</a>
+    </div>
+  </nav>
+
+  <main class="shell">
+    <section class="hero">
+      <h1>Marketing Console</h1>
+      <p class="subtitle">Operational entry point for FreeMarketingStore. The first console module is website SEO monitoring; future modules should add accounts, saved teams, scheduled checks, Search Console imports, and alerting.</p>
+    </section>
+
+    <section class="grid">
+      <article class="card wide">
+        <h2>Website SEO Monitoring</h2>
+        <p>Register your websites, run crawl audits, and review prioritized issues for robots.txt, sitemaps, metadata, canonical URLs, and indexability.</p>
+        <a class="button" href="/seo/site-audit/">Open SEO Audit</a>
+      </article>
+
+      <article class="card">
+        <h2>Console Status</h2>
+        <div class="status">
+          <div class="row"><span>Console route</span><span class="value ok">/console/</span></div>
+          <div class="row"><span>Deploy target</span><span class="value">freemarketingstore.pages.dev</span></div>
+          <div class="row"><span>CI/CD</span><span class="value warn">GitHub Actions</span></div>
+        </div>
+      </article>
+
+      <article class="card">
+        <h2>Registered Sites</h2>
+        <p>The free audit tool stores registered sites in browser localStorage for now. Persisted organization-level projects should move to an API database.</p>
+        <a class="button secondary" href="/seo/site-audit/">View local sites</a>
+      </article>
+
+      <article class="card">
+        <h2>Search Console</h2>
+        <p>Not connected yet. The next mature step is OAuth for Google Search Console and a per-site indexing coverage panel.</p>
+        <a class="button secondary" href="/seo/site-audit/">Run technical audit</a>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

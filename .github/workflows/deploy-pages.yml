@@ -1,0 +1,73 @@
+name: Deploy Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'store/**'
+      - 'functions/**'
+      - '.github/workflows/deploy-pages.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-pages-${{ github.repository }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Wrangler
+        run: npm install -g wrangler@4.78.0
+
+      - name: Build Pages artifact
+        run: |
+          rm -rf .deploy
+          mkdir .deploy
+          cp -R store/. .deploy/
+          wrangler pages functions build functions \
+            --outdir .deploy \
+            --build-output-directory .deploy \
+            --project-directory .
+          test -f .deploy/index.html
+          test -f .deploy/index.js
+          test -f .deploy/sitemap.xml
+
+      - name: Deploy to Cloudflare Pages
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          wrangler pages deploy .deploy \
+            --project-name freemarketingstore \
+            --branch main \
+            --commit-hash "${GITHUB_SHA}" \
+            --commit-message "${{ github.event.head_commit.message || 'Manual deploy' }}" \
+            --commit-dirty=false
+
+      - name: Smoke test
+        run: |
+          for path in / /console/ /seo/site-audit/ /sitemap.xml /api/audit?url=https%3A%2F%2Ffreemarketingstore.pages.dev%2F; do
+            for i in 1 2 3 4 5; do
+              status=$(curl -s -o /tmp/fms-smoke -w "%{http_code}" "https://freemarketingstore.pages.dev$path")
+              if [ "$status" = "200" ]; then
+                echo "OK $path"
+                break
+              fi
+              if [ "$i" = "5" ]; then
+                echo "::error::$path returned $status"
+                cat /tmp/fms-smoke
+                exit 1
+              fi
+              sleep 5
+            done
+          done
