@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Website SEO Audit — FreeMarketingStore</title>
+  <meta name="description" content="Register websites, run technical SEO crawl checks, and see prioritized indexing, sitemap, metadata, and crawlability issues.">
+  <link rel="canonical" href="https://freemarketingstore.pages.dev/seo/site-audit/">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --accent: #f97316;
+      --bg: #f7f8fb;
+      --panel: #ffffff;
+      --text: #1a1a1a;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --ok: #12805c;
+      --ok-bg: #e7f7ef;
+      --warn: #9a5b00;
+      --warn-bg: #fff2cc;
+      --bad: #b42318;
+      --bad-bg: #fee4df;
+      --info: #0f5e9c;
+      --info-bg: #e4f2fd;
+      --shadow: 0 8px 22px rgba(31, 41, 55, .08);
+    }
+    body { font-family: 'Manrope', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    button, input { font: inherit; }
+    nav { display: flex; align-items: center; justify-content: space-between; max-width: 1280px; margin: 0 auto; padding: 1rem 1.5rem; border-bottom: 1px solid var(--line); background: var(--panel); }
+    .nav-brand { display: flex; align-items: center; gap: .5rem; font-weight: 800; font-size: .95rem; text-decoration: none; color: var(--text); }
+    .nav-brand img { width: 24px; height: 24px; }
+    .nav-back { font-size: .85rem; color: var(--muted); text-decoration: none; }
+    .shell { max-width: 1280px; margin: 0 auto; padding: 1.25rem 1.5rem 2.5rem; }
+    .hero { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 1rem; align-items: stretch; margin-bottom: 1rem; }
+    .hero-main, .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); min-width: 0; }
+    .hero-main { padding: 1.25rem; }
+    h1 { font-size: 2rem; line-height: 1.12; margin-bottom: .45rem; letter-spacing: 0; }
+    .subtitle { color: var(--muted); line-height: 1.6; max-width: 760px; }
+    .register { padding: 1rem; }
+    .register label { display: block; font-size: .76rem; font-weight: 700; color: var(--muted); margin-bottom: .4rem; text-transform: uppercase; letter-spacing: .04em; }
+    .input-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .5rem; }
+    input { width: 100%; border: 1px solid var(--line); border-radius: 7px; padding: .7rem .85rem; min-height: 42px; background: #fff; }
+    input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(249, 115, 22, .14); }
+    .btn { border: 1px solid var(--accent); background: var(--accent); color: #fff; border-radius: 7px; padding: .7rem .95rem; min-height: 42px; font-weight: 800; cursor: pointer; white-space: nowrap; }
+    .btn.secondary { background: #fff; color: var(--text); border-color: var(--line); }
+    .btn:disabled { opacity: .55; cursor: wait; }
+    .layout { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 1rem; align-items: start; }
+    .panel h2 { font-size: .95rem; padding: .9rem 1rem; border-bottom: 1px solid var(--line); }
+    .sites { padding: .5rem; display: flex; flex-direction: column; gap: .45rem; }
+    .site-item { width: 100%; border: 1px solid var(--line); background: #fff; border-radius: 7px; padding: .75rem; text-align: left; cursor: pointer; }
+    .site-item.active { border-color: var(--accent); box-shadow: inset 3px 0 0 var(--accent); }
+    .site-domain { font-weight: 800; overflow-wrap: anywhere; }
+    .site-meta { color: var(--muted); font-size: .78rem; margin-top: .25rem; }
+    .site-actions { display: flex; gap: .4rem; margin-top: .65rem; flex-wrap: wrap; }
+    .mini { border: 1px solid var(--line); background: #f8fafc; color: var(--text); border-radius: 6px; padding: .34rem .5rem; font-size: .76rem; font-weight: 700; cursor: pointer; }
+    .summary { display: grid; grid-template-columns: 150px repeat(4, minmax(110px, 1fr)); gap: .75rem; padding: 1rem; border-bottom: 1px solid var(--line); }
+    .score { display: flex; flex-direction: column; justify-content: center; align-items: center; border: 1px solid var(--line); border-radius: 8px; min-height: 110px; background: #fff; }
+    .score-value { font-size: 2.4rem; font-weight: 800; line-height: 1; }
+    .score-label { color: var(--muted); font-size: .75rem; margin-top: .3rem; }
+    .metric { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: .85rem; min-height: 84px; }
+    .metric .label { color: var(--muted); font-size: .72rem; text-transform: uppercase; letter-spacing: .04em; font-weight: 800; }
+    .metric .value { margin-top: .45rem; font-size: 1.25rem; font-weight: 800; overflow-wrap: anywhere; }
+    .results-body { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 1rem; padding: 1rem; }
+    .issues { display: flex; flex-direction: column; gap: .65rem; }
+    .issue { border: 1px solid var(--line); border-radius: 8px; padding: .85rem; background: #fff; }
+    .issue-top { display: flex; justify-content: space-between; gap: .75rem; align-items: flex-start; }
+    .issue-title { font-weight: 800; }
+    .issue-detail, .issue-fix { color: var(--muted); margin-top: .45rem; line-height: 1.5; }
+    .issue-fix strong { color: var(--text); }
+    .badge { display: inline-flex; align-items: center; border-radius: 999px; padding: .25rem .55rem; font-size: .72rem; font-weight: 800; white-space: nowrap; }
+    .critical { color: var(--bad); background: var(--bad-bg); }
+    .warning { color: var(--warn); background: var(--warn-bg); }
+    .info { color: var(--info); background: var(--info-bg); }
+    .ok { color: var(--ok); background: var(--ok-bg); }
+    .facts { display: flex; flex-direction: column; gap: .65rem; }
+    .fact { border: 1px solid var(--line); border-radius: 8px; padding: .75rem; background: #fff; }
+    .fact-label { color: var(--muted); font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; }
+    .fact-value { margin-top: .35rem; font-weight: 700; overflow-wrap: anywhere; }
+    .empty { padding: 2rem; color: var(--muted); text-align: center; }
+    .notice { margin-top: .75rem; color: var(--muted); font-size: .78rem; line-height: 1.5; }
+    @media (max-width: 980px) {
+      .hero, .layout, .results-body { grid-template-columns: 1fr; }
+      .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .score { grid-column: 1 / -1; }
+    }
+    @media (max-width: 560px) {
+      nav, .shell { padding-left: .85rem; padding-right: .85rem; }
+      h1 { font-size: 1.55rem; }
+      .input-row, .summary { grid-template-columns: 1fr; }
+      .btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="nav-brand"><img src="/favicon.svg" alt="FMS"><span>FreeMarketingStore</span></a>
+    <a href="/" class="nav-back">&larr; All tools</a>
+  </nav>
+
+  <main class="shell">
+    <section class="hero">
+      <div class="hero-main">
+        <h1>Website SEO Audit</h1>
+        <p class="subtitle">Register websites, run server-side crawl checks, and get prioritized issues for indexing, robots.txt, sitemaps, metadata, social previews, and basic page health.</p>
+        <p class="notice">This free version stores registrations in your browser. A Pro version should add accounts, scheduled audits, alerting, Search Console imports, and historical charts.</p>
+      </div>
+      <form class="panel register" id="register-form">
+        <label for="site-url">Register or audit a website</label>
+        <div class="input-row">
+          <input id="site-url" type="url" placeholder="https://example.com" autocomplete="url" required>
+          <button class="btn" id="audit-btn" type="submit">Run audit</button>
+        </div>
+        <p class="notice" id="status-line">Tip: start with your public homepage URL.</p>
+      </form>
+    </section>
+
+    <section class="layout">
+      <aside class="panel">
+        <h2>Registered Sites</h2>
+        <div class="sites" id="sites"></div>
+      </aside>
+
+      <section class="panel">
+        <h2>Audit Report</h2>
+        <div id="report" class="empty">Run an audit to see current SEO status and issues.</div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const storageKey = 'fms-site-audit-sites-v1';
+    const form = document.getElementById('register-form');
+    const input = document.getElementById('site-url');
+    const auditBtn = document.getElementById('audit-btn');
+    const statusLine = document.getElementById('status-line');
+    const sitesEl = document.getElementById('sites');
+    const reportEl = document.getElementById('report');
+    let sites = loadSites();
+    let activeId = sites[0]?.id || null;
+
+    function loadSites() {
+      try { return JSON.parse(localStorage.getItem(storageKey) || '[]'); }
+      catch (_) { return []; }
+    }
+
+    function saveSites() {
+      localStorage.setItem(storageKey, JSON.stringify(sites));
+    }
+
+    function normalizeUrl(value) {
+      const trimmed = value.trim();
+      if (!trimmed) throw new Error('Enter a website URL.');
+      return /^https?:\/\//i.test(trimmed) ? trimmed : 'https://' + trimmed;
+    }
+
+    function domainFor(url) {
+      try { return new URL(url).hostname; }
+      catch (_) { return url; }
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, ch => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+      }[ch]));
+    }
+
+    function badge(text, cls) {
+      return '<span class="badge ' + cls + '">' + escapeHtml(text) + '</span>';
+    }
+
+    function severityCounts(issues) {
+      return issues.reduce((acc, issue) => {
+        acc[issue.severity] = (acc[issue.severity] || 0) + 1;
+        return acc;
+      }, { critical: 0, warning: 0, info: 0 });
+    }
+
+    function scoreClass(score) {
+      if (score >= 85) return 'ok';
+      if (score >= 65) return 'warning';
+      return 'critical';
+    }
+
+    function renderSites() {
+      if (!sites.length) {
+        sitesEl.innerHTML = '<div class="empty">No sites registered yet.</div>';
+        return;
+      }
+      sitesEl.innerHTML = sites.map(site => {
+        const counts = severityCounts(site.lastAudit?.issues || []);
+        const score = site.lastAudit?.score;
+        return '<button class="site-item ' + (site.id === activeId ? 'active' : '') + '" data-id="' + site.id + '">' +
+          '<div class="site-domain">' + escapeHtml(domainFor(site.url)) + '</div>' +
+          '<div class="site-meta">' + (score == null ? 'Not audited yet' : 'Score ' + score + ' · ' + counts.critical + ' critical · ' + counts.warning + ' warnings') + '</div>' +
+          '<div class="site-actions">' +
+            '<span class="mini" data-action="audit" data-id="' + site.id + '">Audit</span>' +
+            '<span class="mini" data-action="open" data-id="' + site.id + '">Open</span>' +
+            '<span class="mini" data-action="delete" data-id="' + site.id + '">Delete</span>' +
+          '</div>' +
+        '</button>';
+      }).join('');
+    }
+
+    function renderReport() {
+      const site = sites.find(item => item.id === activeId);
+      if (!site) {
+        reportEl.className = 'empty';
+        reportEl.innerHTML = 'Run an audit to see current SEO status and issues.';
+        return;
+      }
+      const audit = site.lastAudit;
+      if (!audit) {
+        reportEl.className = 'empty';
+        reportEl.innerHTML = '<strong>' + escapeHtml(domainFor(site.url)) + '</strong><br>Registered but not audited yet.';
+        return;
+      }
+      const counts = severityCounts(audit.issues || []);
+      const issueHtml = audit.issues.length ? audit.issues.map(issue => (
+        '<article class="issue">' +
+          '<div class="issue-top"><div><div class="issue-title">' + escapeHtml(issue.title) + '</div><div class="issue-detail">' + escapeHtml(issue.detail) + '</div></div>' +
+          badge(issue.severity, issue.severity) + '</div>' +
+          '<div class="issue-fix"><strong>Fix:</strong> ' + escapeHtml(issue.fix) + '</div>' +
+        '</article>'
+      )).join('') : '<article class="issue">' + badge('No issues found', 'ok') + '<div class="issue-detail">No crawl or SEO basics failed in this audit.</div></article>';
+
+      const sitemaps = (audit.sitemaps || []).map(sitemap => (
+        '<div class="fact"><div class="fact-label">Sitemap</div><div class="fact-value">' + escapeHtml(sitemap.status || sitemap.error || 'unknown') + ' · ' + escapeHtml(sitemap.urlCount || 0) + ' URLs</div><div class="site-meta">' + escapeHtml(sitemap.url) + '</div></div>'
+      )).join('');
+
+      reportEl.className = '';
+      reportEl.innerHTML =
+        '<div class="summary">' +
+          '<div class="score"><div class="score-value ' + scoreClass(audit.score) + '">' + audit.score + '</div><div class="score-label">SEO health score</div></div>' +
+          '<div class="metric"><div class="label">Critical</div><div class="value">' + counts.critical + '</div></div>' +
+          '<div class="metric"><div class="label">Warnings</div><div class="value">' + counts.warning + '</div></div>' +
+          '<div class="metric"><div class="label">Info</div><div class="value">' + counts.info + '</div></div>' +
+          '<div class="metric"><div class="label">Checked</div><div class="value">' + new Date(audit.checkedAt).toLocaleString() + '</div></div>' +
+        '</div>' +
+        '<div class="results-body">' +
+          '<div class="issues">' + issueHtml + '</div>' +
+          '<aside class="facts">' +
+            '<div class="fact"><div class="fact-label">Final URL</div><div class="fact-value">' + escapeHtml(audit.page.finalUrl) + '</div></div>' +
+            '<div class="fact"><div class="fact-label">Title</div><div class="fact-value">' + escapeHtml(audit.page.title || 'Missing') + '</div></div>' +
+            '<div class="fact"><div class="fact-label">Description</div><div class="fact-value">' + escapeHtml(audit.page.description || 'Missing') + '</div></div>' +
+            '<div class="fact"><div class="fact-label">Canonical</div><div class="fact-value">' + escapeHtml(audit.page.canonical || 'Missing') + '</div></div>' +
+            '<div class="fact"><div class="fact-label">Robots</div><div class="fact-value">' + escapeHtml(audit.robots?.status || audit.robots?.error || 'unknown') + '</div><div class="site-meta">' + (audit.robots?.allowsSearch === false ? 'Blocks search crawling' : 'Search crawl allowed or not blocked') + '</div></div>' +
+            sitemaps +
+          '</aside>' +
+        '</div>';
+    }
+
+    async function runAudit(url) {
+      auditBtn.disabled = true;
+      statusLine.textContent = 'Auditing ' + domainFor(url) + '...';
+      try {
+        const response = await fetch('/api/audit?url=' + encodeURIComponent(url));
+        const data = await response.json();
+        if (!response.ok || data.error) throw new Error(data.error || 'Audit failed.');
+        const normalized = data.page.requestedUrl;
+        let site = sites.find(item => item.url === normalized || domainFor(item.url) === domainFor(normalized));
+        if (!site) {
+          site = { id: String(Date.now()), url: normalized, createdAt: new Date().toISOString(), audits: [] };
+          sites.unshift(site);
+        }
+        site.url = normalized;
+        site.lastAudit = data;
+        site.audits = [data, ...(site.audits || [])].slice(0, 10);
+        activeId = site.id;
+        saveSites();
+        renderSites();
+        renderReport();
+        statusLine.textContent = 'Audit complete for ' + domainFor(normalized) + '.';
+      } catch (error) {
+        statusLine.textContent = error.message || String(error);
+      } finally {
+        auditBtn.disabled = false;
+      }
+    }
+
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      try { runAudit(normalizeUrl(input.value)); }
+      catch (error) { statusLine.textContent = error.message; }
+    });
+
+    sitesEl.addEventListener('click', event => {
+      const actionEl = event.target.closest('[data-action]');
+      const itemEl = event.target.closest('.site-item');
+      const id = actionEl?.dataset.id || itemEl?.dataset.id;
+      const site = sites.find(item => item.id === id);
+      if (!site) return;
+      if (actionEl?.dataset.action === 'audit') runAudit(site.url);
+      else if (actionEl?.dataset.action === 'open') window.open(site.url, '_blank', 'noopener');
+      else if (actionEl?.dataset.action === 'delete') {
+        sites = sites.filter(item => item.id !== id);
+        activeId = sites[0]?.id || null;
+        saveSites();
+        renderSites();
+        renderReport();
+      } else {
+        activeId = id;
+        renderSites();
+        renderReport();
+      }
+    });
+
+    renderSites();
+    renderReport();
+  </script>
+</body>
+</html>

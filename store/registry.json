@@ -145,6 +145,15 @@
       "section": "seo"
     },
     {
+      "id": "site-audit",
+      "name": "Website SEO Audit",
+      "description": "Register websites, run crawl checks, and see prioritized indexing, sitemap, metadata, and robots issues.",
+      "icon": "📈",
+      "iconBg": "#0f5e9c",
+      "category": "seo",
+      "section": "seo"
+    },
+    {
       "id": "keyword-planner",
       "name": "Keyword Planner",
       "description": "Seed keyword to long-tail, questions, comparisons. Intent categorization. CSV export.",
