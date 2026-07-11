@@ -33,9 +33,14 @@
     .nav-links { display: flex; align-items: center; gap: .9rem; font-size: .84rem; font-weight: 700; }
     .nav-links a { color: var(--muted); }
     .shell { max-width: 1200px; margin: 0 auto; padding: 1.25rem 1.5rem 2.5rem; }
-    .hero { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); padding: 1.25rem; margin-bottom: 1rem; }
+    .hero { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 1rem; align-items: stretch; margin-bottom: 1rem; }
+    .hero-main, .quick-audit { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); padding: 1.25rem; min-width: 0; }
     h1 { font-size: 2rem; line-height: 1.12; margin-bottom: .45rem; letter-spacing: 0; }
     .subtitle { color: var(--muted); line-height: 1.6; max-width: 760px; }
+    label { display: block; color: var(--muted); font-size: .76rem; font-weight: 800; margin-bottom: .45rem; text-transform: uppercase; letter-spacing: .04em; }
+    .input-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .5rem; }
+    input { width: 100%; min-height: 42px; border: 1px solid var(--line); border-radius: 7px; padding: .7rem .85rem; font: inherit; }
+    input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(249, 115, 22, .14); }
     .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
     .card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); padding: 1rem; min-width: 0; }
     .card h2 { font-size: 1rem; margin-bottom: .45rem; }
@@ -44,14 +49,16 @@
     .button:hover { text-decoration: none; background: #ea580c; }
     .button.secondary { background: #fff; color: var(--text); border: 1px solid var(--line); }
     .status { display: grid; gap: .55rem; margin-top: .7rem; }
+    .pills { display: flex; gap: .4rem; flex-wrap: wrap; margin-top: .8rem; }
+    .pill { border: 1px solid var(--line); border-radius: 999px; padding: .28rem .55rem; color: var(--muted); font-size: .74rem; font-weight: 800; background: #f8fafc; }
     .row { display: flex; justify-content: space-between; gap: .75rem; border-top: 1px solid var(--line); padding-top: .55rem; color: var(--muted); }
     .value { color: var(--text); font-weight: 800; text-align: right; overflow-wrap: anywhere; }
     .ok { color: var(--ok); }
     .warn { color: var(--warn); }
     .bad { color: var(--bad); }
     .wide { grid-column: span 2; }
-    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } .wide { grid-column: auto; } nav { align-items: flex-start; flex-direction: column; gap: .75rem; } }
-    @media (max-width: 560px) { nav, .shell { padding-left: .9rem; padding-right: .9rem; } h1 { font-size: 1.55rem; } .nav-links { flex-wrap: wrap; } }
+    @media (max-width: 900px) { .hero, .grid { grid-template-columns: 1fr; } .wide { grid-column: auto; } nav { align-items: flex-start; flex-direction: column; gap: .75rem; } }
+    @media (max-width: 560px) { nav, .shell { padding-left: .9rem; padding-right: .9rem; } h1 { font-size: 1.55rem; } .nav-links { flex-wrap: wrap; } .input-row { grid-template-columns: 1fr; } .button { width: 100%; } }
   </style>
 </head>
 <body>
@@ -59,45 +66,99 @@
     <a href="/" class="brand"><img src="/favicon.svg" alt="FMS"><span>FreeMarketingStore</span></a>
     <div class="nav-links">
       <a href="/seo/site-audit/">Website Audit</a>
-      <a href="/sitemap.xml">Sitemap</a>
       <a href="/">Store</a>
     </div>
   </nav>
 
   <main class="shell">
     <section class="hero">
-      <h1>Marketing Console</h1>
-      <p class="subtitle">Operational entry point for FreeMarketingStore. The first console module is website auditing; future modules should add accounts, saved teams, scheduled checks, Search Console imports, and alerting.</p>
+      <div class="hero-main">
+        <h1>Website Audit Console</h1>
+        <p class="subtitle">Run a complete website audit, review registered sites stored in this browser, and jump into the detailed report for SEO, indexing, load shape, assets, links, accessibility, privacy, and security headers.</p>
+        <div class="pills">
+          <span class="pill">SEO</span>
+          <span class="pill">Security headers</span>
+          <span class="pill">Assets</span>
+          <span class="pill">Links</span>
+          <span class="pill">Accessibility</span>
+          <span class="pill">Structured data</span>
+        </div>
+      </div>
+      <form class="quick-audit" id="quick-audit">
+        <label for="quick-url">Audit a website</label>
+        <div class="input-row">
+          <input id="quick-url" type="text" placeholder="freegamestore.online" autocomplete="url" required>
+          <button class="button" type="submit">Run audit</button>
+        </div>
+      </form>
     </section>
 
     <section class="grid">
       <article class="card wide">
-        <h2>Website Audit Monitoring</h2>
-        <p>Register your websites, run crawl audits, and review prioritized issues for SEO, indexability, load shape, broken assets, accessibility basics, privacy signals, and security headers.</p>
+        <h2>Current Audit Module</h2>
+        <p>The audit module is live now. It accepts a domain or URL, runs the server-side assessment, stores recent site reports in this browser, and gives AI-ready fix prompts for every issue.</p>
         <a class="button" href="/seo/site-audit/">Open Website Audit</a>
       </article>
 
       <article class="card">
-        <h2>Console Status</h2>
+        <h2>Runtime Status</h2>
         <div class="status">
-          <div class="row"><span>Console route</span><span class="value ok">/console/</span></div>
+          <div class="row"><span>Audit API</span><span class="value ok">Live</span></div>
           <div class="row"><span>Deploy target</span><span class="value">freemarketingstore.pages.dev</span></div>
-          <div class="row"><span>CI/CD</span><span class="value warn">GitHub Actions</span></div>
+          <div class="row"><span>CI/CD</span><span class="value ok">GitHub Actions</span></div>
         </div>
       </article>
 
       <article class="card">
         <h2>Registered Sites</h2>
-        <p>The free audit tool stores registered sites in browser localStorage for now. Persisted organization-level projects should move to an API database.</p>
-        <a class="button secondary" href="/seo/site-audit/">View local sites</a>
+        <p id="site-summary">Loading local site state...</p>
+        <a class="button secondary" href="/seo/site-audit/">Review reports</a>
       </article>
 
       <article class="card">
-        <h2>Search Console</h2>
-        <p>Not connected yet. The next mature step is OAuth for Google Search Console and a per-site indexing coverage panel.</p>
-        <a class="button secondary" href="/seo/site-audit/">Run technical audit</a>
+        <h2>Next Platform Step</h2>
+        <p>Add account-backed projects, scheduled audits, alerting, history charts, and Google Search Console import. The public sitemap remains available for crawlers but is not a console workflow.</p>
+        <a class="button secondary" href="/seo/site-audit/">Run manual audit</a>
       </article>
     </section>
   </main>
+  <script>
+    const storageKey = 'fms-site-audit-sites-v1';
+    const form = document.getElementById('quick-audit');
+    const input = document.getElementById('quick-url');
+    const summary = document.getElementById('site-summary');
+
+    function domainFor(url) {
+      try { return new URL(url).hostname; }
+      catch (_) { return url; }
+    }
+
+    function loadSites() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (_) {
+        return [];
+      }
+    }
+
+    const sites = loadSites();
+    if (!sites.length) {
+      summary.textContent = 'No sites are registered in this browser yet. Run an audit to create the first local report.';
+    } else {
+      const audited = sites.filter(site => site.lastAudit);
+      const latest = audited[0];
+      summary.textContent = audited.length
+        ? sites.length + ' local sites. Latest: ' + domainFor(latest.url) + ' scored ' + latest.lastAudit.score + '.'
+        : sites.length + ' local sites registered. None audited yet.';
+    }
+
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      const value = input.value.trim();
+      if (!value) return;
+      window.location.href = '/seo/site-audit/?url=' + encodeURIComponent(value);
+    });
+  </script>
 </body>
 </html>

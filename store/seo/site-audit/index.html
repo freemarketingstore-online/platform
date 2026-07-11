@@ -366,6 +366,13 @@
 
     renderSites();
     renderReport();
+
+    const initialUrl = new URLSearchParams(window.location.search).get('url');
+    if (initialUrl) {
+      input.value = initialUrl;
+      try { runAudit(normalizeUrl(initialUrl)); }
+      catch (error) { statusLine.textContent = error.message; }
+    }
   </script>
 </body>
 </html>
