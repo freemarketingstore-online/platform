@@ -63,6 +63,7 @@
     .summary { display: grid; grid-template-columns: 150px repeat(4, minmax(110px, 1fr)); gap: .75rem; padding: 1rem; border-bottom: 1px solid var(--line); }
     .score { display: flex; flex-direction: column; justify-content: center; align-items: center; border: 1px solid var(--line); border-radius: 8px; min-height: 110px; background: #fff; }
     .score-value { font-size: 2.4rem; font-weight: 800; line-height: 1; }
+    .score-value.critical, .score-value.warning, .score-value.ok { background: transparent; }
     .score-label { color: var(--muted); font-size: .75rem; margin-top: .3rem; }
     .metric { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: .85rem; min-height: 84px; }
     .metric .label { color: var(--muted); font-size: .72rem; text-transform: uppercase; letter-spacing: .04em; font-weight: 800; }
@@ -265,7 +266,9 @@
       statusLine.textContent = 'Auditing ' + domainFor(url) + '...';
       try {
         const response = await fetch('/api/audit?url=' + encodeURIComponent(url));
-        const data = await response.json();
+        const contentType = response.headers.get('content-type') || '';
+        const data = contentType.includes('application/json') ? await response.json() : null;
+        if (!data) throw new Error('Audit service returned an unreadable response.');
         if (!response.ok || data.error) throw new Error(data.error || 'Audit failed.');
         const normalized = data.page.requestedUrl;
         let site = sites.find(item => item.url === normalized || domainFor(item.url) === domainFor(normalized));
