@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Marketing Console — FreeMarketingStore</title>
-  <meta name="description" content="FreeMarketingStore console for website audits, crawl monitoring, security checks, and marketing operations.">
+  <meta name="description" content="FreeMarketingStore PWA console for website audits, crawl monitoring, Search Console setup, Cloudflare verification, security checks, and marketing operations.">
   <link rel="canonical" href="https://freemarketingstore.pages.dev/console/">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="manifest" href="/manifest.webmanifest">
@@ -71,6 +71,7 @@
     <div class="nav-links">
       <a href="/console/sites/">Sites</a>
       <a href="/console/search-console/">Search Console</a>
+      <a href="/docs/">Docs</a>
       <a href="/seo/site-audit/">Website Audit</a>
       <a href="/">Store</a>
     </div>
@@ -79,8 +80,8 @@
   <main class="shell">
     <section class="hero">
       <div class="hero-main">
-        <h1>Website Audit Console</h1>
-        <p class="subtitle">Run a complete website audit, review registered sites stored in this browser, and jump into the detailed report for SEO, indexing, load shape, assets, links, accessibility, privacy, and security headers.</p>
+        <h1>Website Health Console</h1>
+        <p class="subtitle">Run complete website audits, review registered sites stored in this browser, prepare Search Console imports, and track SEO, indexing, load shape, assets, links, accessibility, privacy, and security headers.</p>
         <div class="pills">
           <span class="pill">SEO</span>
           <span class="pill">Security headers</span>
@@ -88,6 +89,7 @@
           <span class="pill">Links</span>
           <span class="pill">Accessibility</span>
           <span class="pill">Structured data</span>
+          <span class="pill">Search Console</span>
         </div>
       </div>
       <form class="quick-audit" id="quick-audit">
@@ -101,8 +103,8 @@
 
     <section class="grid">
       <article class="card wide">
-        <h2>Current Audit Module</h2>
-        <p>The audit module is live now. It accepts a domain or URL, runs the server-side assessment, stores recent site reports in this browser, and gives AI-ready fix prompts for every issue.</p>
+        <h2>Website Audit Module</h2>
+        <p>The audit module accepts a domain or URL, runs the server-side assessment, stores recent site reports in this browser, and gives AI-ready fix prompts for every issue.</p>
         <a class="button" href="/seo/site-audit/">Open Website Audit</a>
       </article>
 
@@ -110,6 +112,7 @@
         <h2>Runtime Status</h2>
         <div class="status">
           <div class="row"><span>Audit API</span><span class="value ok">Live</span></div>
+          <div class="row"><span>Search Console API</span><span class="value warn">Needs secrets</span></div>
           <div class="row"><span>Deploy target</span><span class="value">freemarketingstore.pages.dev</span></div>
           <div class="row"><span>CI/CD</span><span class="value ok">GitHub Actions</span></div>
         </div>
@@ -125,6 +128,12 @@
         <h2>Search Console</h2>
         <p>Connect Google, prepare URL Inspection imports, and verify owned domains automatically through Cloudflare DNS when credentials are configured.</p>
         <a class="button secondary" href="/console/search-console/">Open Search Console</a>
+      </article>
+
+      <article class="card">
+        <h2>Platform Docs</h2>
+        <p>Review deployed routes, API endpoints, required environment variables, and the next profile-backed roadmap.</p>
+        <a class="button secondary" href="/docs/">Read docs</a>
       </article>
     </section>
   </main>

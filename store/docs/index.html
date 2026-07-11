@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Platform Docs — FreeMarketingStore</title>
+  <meta name="description" content="FreeMarketingStore platform documentation for website audits, Search Console integration, Cloudflare verification, PWA status, and deployment.">
+  <link rel="canonical" href="https://freemarketingstore.pages.dev/docs/">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#f97316">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { --accent: #f97316; --bg: #f7f8fb; --panel: #fff; --text: #1a1a1a; --muted: #64748b; --line: #e2e8f0; --ok: #12805c; --warn: #9a5b00; --shadow: 0 8px 22px rgba(31, 41, 55, .08); }
+    body { font-family: 'Manrope', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    nav { display: flex; align-items: center; justify-content: space-between; max-width: 1180px; margin: 0 auto; padding: 1rem 1.5rem; background: var(--panel); border-bottom: 1px solid var(--line); }
+    .brand { display: flex; align-items: center; gap: .5rem; color: var(--text); font-weight: 800; }
+    .brand img { width: 24px; height: 24px; }
+    .nav-links { display: flex; gap: .9rem; align-items: center; font-size: .84rem; font-weight: 700; }
+    .nav-links a { color: var(--muted); }
+    .shell { max-width: 1180px; margin: 0 auto; padding: 1.25rem 1.5rem 2.5rem; }
+    .hero, .card, .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); }
+    .hero { padding: 1.25rem; margin-bottom: 1rem; }
+    h1 { font-size: 2rem; line-height: 1.12; margin-bottom: .45rem; letter-spacing: 0; }
+    .subtitle, p, li { color: var(--muted); line-height: 1.6; }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .85rem; margin-bottom: 1rem; }
+    .card { padding: 1rem; min-width: 0; }
+    .card h2, .panel h2 { font-size: 1rem; margin-bottom: .45rem; }
+    .pill-row { display: flex; gap: .4rem; flex-wrap: wrap; margin-top: .8rem; }
+    .pill { border: 1px solid var(--line); border-radius: 999px; padding: .28rem .55rem; color: var(--muted); font-size: .74rem; font-weight: 800; background: #f8fafc; }
+    .panel { padding: 1rem; margin-bottom: 1rem; }
+    .rows { display: grid; gap: .5rem; margin-top: .75rem; }
+    .row { display: flex; justify-content: space-between; gap: .75rem; border-top: 1px solid var(--line); padding-top: .55rem; color: var(--muted); }
+    .value { color: var(--text); font-weight: 800; text-align: right; overflow-wrap: anywhere; }
+    code { background: #f8fafc; border: 1px solid var(--line); border-radius: 6px; padding: .1rem .35rem; }
+    ul { padding-left: 1.2rem; margin-top: .5rem; }
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } nav { align-items: flex-start; flex-direction: column; gap: .75rem; } }
+    @media (max-width: 560px) { nav, .shell { padding-left: .9rem; padding-right: .9rem; } h1 { font-size: 1.55rem; } .nav-links { flex-wrap: wrap; } .row { flex-direction: column; } .value { text-align: left; } }
+  </style>
+  <script src="/pwa.js" defer></script>
+</head>
+<body>
+  <nav>
+    <a href="/" class="brand"><img src="/favicon.svg" alt="FMS"><span>FreeMarketingStore</span></a>
+    <div class="nav-links">
+      <a href="/console/">Console</a>
+      <a href="/console/search-console/">Search Console</a>
+      <a href="/seo/site-audit/">Website Audit</a>
+      <a href="/">Store</a>
+    </div>
+  </nav>
+
+  <main class="shell">
+    <section class="hero">
+      <h1>Platform Docs</h1>
+      <p class="subtitle">Operational notes for the FreeMarketingStore PWA, website audit engine, Search Console scaffold, Cloudflare DNS verification flow, and deployment pipeline.</p>
+      <div class="pill-row">
+        <span class="pill">Cloudflare Pages</span>
+        <span class="pill">PWA</span>
+        <span class="pill">Website Audit</span>
+        <span class="pill">Search Console</span>
+        <span class="pill">Cloudflare DNS</span>
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <h2>Website Audit</h2>
+        <p>Server-side checks cover crawlability, indexability, metadata, load shape, assets, links, accessibility basics, security headers, and PWA hints.</p>
+        <p><a href="/seo/site-audit/">Open audit tool</a></p>
+      </article>
+      <article class="card">
+        <h2>Search Console</h2>
+        <p>The integration screen and API scaffold are live. OAuth and Cloudflare DNS automation need runtime secrets and durable session storage before normal user sign-in.</p>
+        <p><a href="/console/search-console/">Open Search Console module</a></p>
+      </article>
+      <article class="card">
+        <h2>Deployment</h2>
+        <p>GitHub Actions builds static assets, compiles Pages Functions with Wrangler, deploys to Cloudflare Pages, and smoke tests key routes and APIs.</p>
+        <p><a href="https://github.com/freemarketingstore-online/platform">Open repository</a></p>
+      </article>
+    </section>
+
+    <section class="panel">
+      <h2>Runtime Configuration</h2>
+      <p>Search Console automation needs these Cloudflare Pages variables before it can verify domains automatically.</p>
+      <div class="rows">
+        <div class="row"><span>Google OAuth</span><span class="value"><code>GOOGLE_CLIENT_ID</code> + <code>GOOGLE_CLIENT_SECRET</code></span></div>
+        <div class="row"><span>Redirect URI</span><span class="value"><code>GOOGLE_REDIRECT_URI</code> or default callback</span></div>
+        <div class="row"><span>Cloudflare DNS</span><span class="value"><code>CLOUDFLARE_API_TOKEN</code> with Zone Read + DNS Edit</span></div>
+        <div class="row"><span>Profiles</span><span class="value">D1/KV/session storage still required</span></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Next Maturity Steps</h2>
+      <ul>
+        <li>Add account-backed profiles and encrypted Google refresh-token storage.</li>
+        <li>Persist sites, audit history, Search Console imports, and alert state server-side.</li>
+        <li>Schedule audits and retries for DNS verification propagation.</li>
+        <li>Merge crawl health with Google URL Inspection status in each site dashboard.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

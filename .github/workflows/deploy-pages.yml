@@ -56,7 +56,7 @@ jobs:
 
       - name: Smoke test
         run: |
-          for path in / /console/ /console/search-console/ /seo/site-audit/ /sitemap.xml /api/search-console/status /api/audit?url=https%3A%2F%2Ffreemarketingstore.pages.dev%2F; do
+          for path in / /console/ /console/search-console/ /docs/ /seo/site-audit/ /sitemap.xml /api/search-console/status /api/audit?url=https%3A%2F%2Ffreemarketingstore.pages.dev%2F; do
             for i in 1 2 3 4 5; do
               status=$(curl -s -o /tmp/fms-smoke -w "%{http_code}" "https://freemarketingstore.pages.dev$path")
               if [ "$status" = "200" ]; then

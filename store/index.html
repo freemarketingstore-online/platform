@@ -3,17 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>FreeMarketingStore — 22 AI-Powered Marketing Tools</title>
-<meta name="description" content="22 free marketing tools: complete website audit, AI content writer, domain finder, campaign planner, SEO tools, social scheduling. No signup.">
-<meta property="og:title" content="FreeMarketingStore — AI-Powered Marketing Tools">
-<meta property="og:description" content="22 free marketing tools. Website audits, campaign planners, AI content writer, SEO tools, social media scheduling. No signup required.">
+<title>FreeMarketingStore — Marketing Tools and Website Health Console</title>
+<meta name="description" content="22 free marketing tools plus a PWA website health console for SEO audits, security checks, Search Console setup, and Cloudflare DNS verification.">
+<meta property="og:title" content="FreeMarketingStore — Marketing Tools and Website Health Console">
+<meta property="og:description" content="Free marketing tools plus a PWA console for website audits, crawlability, security checks, Search Console setup, and Cloudflare DNS verification.">
 <meta property="og:image" content="https://freemarketingstore.pages.dev/favicon.svg">
 <link rel="canonical" href="https://freemarketingstore.pages.dev/">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="manifest" href="/manifest.webmanifest">
   <meta name="theme-color" content="#f97316">
   <link rel="apple-touch-icon" href="/icons/icon-192.png">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"FreeMarketingStore","url":"https://freemarketingstore.pages.dev/","applicationCategory":"BusinessApplication","operatingSystem":"Web","description":"A collection of free marketing tools for website audits, content, SEO, campaigns, and social media planning.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"FreeMarketingStore","url":"https://freemarketingstore.pages.dev/","applicationCategory":"BusinessApplication","operatingSystem":"Web","description":"A collection of free marketing tools and a PWA console for website audits, Search Console setup, content, SEO, campaigns, and social media planning.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -30,6 +30,11 @@ nav a{color:var(--muted)}nav a:hover{color:var(--text);text-decoration:none}
 .hero h1 span{color:var(--accent)}
 .hero p{color:var(--muted);font-size:.95rem;max-width:600px;margin:0 auto .8rem;line-height:1.6}
 .badge{display:inline-block;padding:.25rem .7rem;border-radius:99px;font-size:.75rem;font-weight:600;background:var(--panel);border:1px solid var(--line);color:var(--muted);margin:.15rem}
+.platform{max-width:1100px;margin:0 auto 1rem;padding:0 1.5rem;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.8rem}
+.platform-card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:1rem;text-align:left;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.platform-card h2{font-size:.95rem;margin-bottom:.25rem}
+.platform-card p{font-size:.76rem;color:var(--muted);line-height:1.55;margin-bottom:.55rem}
+.platform-card a{font-size:.76rem;font-weight:700}
 .filters{max-width:1100px;margin:0 auto;padding:.8rem 1.5rem;display:flex;gap:.4rem;flex-wrap:wrap;justify-content:center}
 .filter-btn{background:var(--panel);border:1px solid var(--line);color:var(--muted);padding:.35rem .8rem;border-radius:99px;font-size:.72rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s}
 .filter-btn:hover{border-color:var(--accent);color:var(--text)}
@@ -50,18 +55,24 @@ nav a{color:var(--muted)}nav a:hover{color:var(--text);text-decoration:none}
 .xstore-grid{display:flex;justify-content:center;gap:.4rem;flex-wrap:wrap}
 footer{border-top:1px solid var(--line);padding:1.2rem;text-align:center;font-size:.72rem;color:var(--muted);background:var(--panel)}
 footer a{color:var(--accent)}
+@media(max-width:900px){.platform{grid-template-columns:1fr}}
 </style>
   <script src="/pwa.js" defer></script>
 </head>
 <body>
 <header>
 <a href="/" class="brand"><span class="brand-emoji">📣</span><span class="brand-name">FreeMarketingStore</span></a>
-<nav><a href="https://openfrontier.pages.dev">Open Frontier</a><a href="/console/">Console</a><a href="/">All Tools</a><a href="/seo/site-audit/">Website Audit</a><a href="/seo/domain-finder/">Domains</a><a href="/content/ai-content-writer/">AI Writer</a></nav>
+<nav><a href="https://openfrontier.pages.dev">Open Frontier</a><a href="/console/">Console</a><a href="/console/search-console/">Search Console</a><a href="/docs/">Docs</a><a href="/">All Tools</a><a href="/seo/site-audit/">Website Audit</a></nav>
 </header>
 <section class="hero">
 <h1>Free<span>Marketing</span>Store</h1>
-<p>22 AI-powered marketing tools. Website audits, campaign planners, content writers, domain search, social scheduling. No signup, no tracking, runs in your browser.</p>
-<span class="badge">22 Tools</span><span class="badge">No Signup</span><span class="badge" style="background:rgba(139,92,246,.1);border-color:rgba(139,92,246,.3);color:#8b5cf6">AI-Powered</span>
+<p>22 marketing tools plus a PWA website health console. Run technical audits, review crawlability and security issues, prepare Search Console imports, and automate Cloudflare DNS verification once credentials are configured.</p>
+<span class="badge">22 Tools</span><span class="badge">PWA Console</span><span class="badge">Search Console Ready</span><span class="badge" style="background:rgba(139,92,246,.1);border-color:rgba(139,92,246,.3);color:#8b5cf6">AI-Powered</span>
+</section>
+<section class="platform">
+<article class="platform-card"><h2>Website Health Console</h2><p>Register sites, run server-side audits, and review prioritized issues for SEO, indexing, load shape, assets, accessibility, privacy, and security headers.</p><a href="/console/">Open console</a></article>
+<article class="platform-card"><h2>Search Console Setup</h2><p>Connect Google, inspect configured runtime status, and prepare automatic Cloudflare DNS verification for owned domains.</p><a href="/console/search-console/">Open Search Console</a></article>
+<article class="platform-card"><h2>Platform Docs</h2><p>See current architecture, API endpoints, deployment checks, required environment variables, and the next profile-backed roadmap.</p><a href="/docs/">Read docs</a></article>
 </section>
 <div class="filters">
 <button class="filter-btn active" data-cat="all">All</button>

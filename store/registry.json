@@ -146,8 +146,8 @@
     },
     {
       "id": "site-audit",
-      "name": "Website SEO Audit",
-      "description": "Register websites, run crawl checks, and see prioritized indexing, sitemap, metadata, and robots issues.",
+      "name": "Website Audit",
+      "description": "Register websites, run health checks, and see prioritized crawlability, indexing, metadata, load, accessibility, and security issues.",
       "icon": "📈",
       "iconBg": "#0f5e9c",
       "category": "seo",

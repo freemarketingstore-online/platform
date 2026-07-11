@@ -58,6 +58,13 @@
       "description": "Connect Search Console and verify domains.",
       "url": "/console/search-console/",
       "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Platform Docs",
+      "short_name": "Docs",
+      "description": "Read platform and audit documentation.",
+      "url": "/docs/",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }
