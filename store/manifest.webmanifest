@@ -1,0 +1,56 @@
+{
+  "name": "FreeMarketingStore",
+  "short_name": "FMS",
+  "description": "FreeMarketingStore website audit and marketing tools.",
+  "id": "/?source=pwa",
+  "start_url": "/console/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "browser"],
+  "background_color": "#f7f8fb",
+  "theme_color": "#f97316",
+  "orientation": "any",
+  "categories": ["business", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Website Audit",
+      "short_name": "Audit",
+      "description": "Run a website audit.",
+      "url": "/seo/site-audit/",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Audited Sites",
+      "short_name": "Sites",
+      "description": "View local audited sites.",
+      "url": "/console/sites/",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

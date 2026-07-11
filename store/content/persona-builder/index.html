@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Customer Persona Builder - FreeMarketingStore</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#f97316">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Manrope',system-ui,sans-serif;background:#fafafa;color:#1a1a1a;min-height:100vh;padding:24px}
@@ -60,6 +63,7 @@ textarea{resize:vertical;min-height:80px}
 .persona-delete:hover{background:rgba(0,0,0,.4)}
 #canvas-export{position:absolute;left:-9999px}
 </style>
+  <script src="/pwa.js" defer></script>
 </head>
 <body>
 <div class="container">
@@ -330,7 +334,8 @@ function downloadHTML(id) {
   const card = document.getElementById('card-'+id);
   if(!card) return;
   const p = personas.find(x=>x.id===id);
-  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${esc(p.name)} Persona</title><style>body{font-family:Manrope,sans-serif;background:#fafafa;padding:40px;display:flex;justify-content:center}.card{max-width:400px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.08)}</style></head><body><div class="card">${card.innerHTML}</div></body></html>`;
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${esc(p.name)} Persona</title><style>body{font-family:Manrope,sans-serif;background:#fafafa;padding:40px;display:flex;justify-content:center}.card{max-width:400px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.08)}</style>
+</head><body><div class="card">${card.innerHTML}</div></body></html>`;
   const blob = new Blob([html],{type:'text/html'});
   const link = document.createElement('a');
   link.download = p.name.replace(/\s+/g,'-').toLowerCase()+'-persona.html';
@@ -339,7 +344,8 @@ function downloadHTML(id) {
 }
 
 function exportAll() {
-  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>All Personas</title><style>body{font-family:Manrope,sans-serif;background:#fafafa;padding:40px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:20px}</style></head><body><h1>Customer Personas</h1><div class="grid">${personas.map(p=>buildCard(p)).join('')}</div></body></html>`;
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>All Personas</title><style>body{font-family:Manrope,sans-serif;background:#fafafa;padding:40px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:20px}</style>
+</head><body><h1>Customer Personas</h1><div class="grid">${personas.map(p=>buildCard(p)).join('')}</div></body></html>`;
   const blob = new Blob([html],{type:'text/html'});
   const link = document.createElement('a');
   link.download = 'all-personas.html';

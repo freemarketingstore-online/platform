@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Customer Journey Mapper - FreeMarketingStore</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#f97316">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Manrope',system-ui,sans-serif;background:#fafafa;color:#1a1a1a;min-height:100vh;padding:24px}
@@ -67,6 +70,7 @@ h1{font-size:28px;font-weight:800;margin-bottom:8px}
 .pain-opp-section.opp h5{color:#10b981}
 #export-canvas{position:absolute;left:-9999px}
 </style>
+  <script src="/pwa.js" defer></script>
 </head>
 <body>
 <div class="container">
@@ -313,7 +317,8 @@ function exportPNG() {
 function exportHTML() {
   const name = document.getElementById('journey-name').value || 'Customer Journey';
   const emotionEmoji = { happy: '😊', neutral: '😐', frustrated: '😤' };
-  let html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${esc(name)}</title><style>body{font-family:Manrope,sans-serif;background:#fafafa;padding:40px}h1{text-align:center;margin-bottom:30px}.journey{display:flex;gap:16px;overflow-x:auto}.stage{flex:1;min-width:180px}.stage-h{padding:14px;border-radius:8px;color:#fff;text-align:center;font-weight:700;font-size:14px}.stage-b{background:#fff;border:1px solid #e5e7eb;border-radius:0 0 8px 8px;padding:14px;font-size:13px}.emoji{text-align:center;font-size:24px;margin:8px 0}h4{font-size:11px;text-transform:uppercase;color:#6b7280;margin:10px 0 4px}ul{list-style:none;padding:0}li{padding:2px 0}</style></head><body><h1>${esc(name)}</h1><div class="journey">`;
+  let html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${esc(name)}</title><style>body{font-family:Manrope,sans-serif;background:#fafafa;padding:40px}h1{text-align:center;margin-bottom:30px}.journey{display:flex;gap:16px;overflow-x:auto}.stage{flex:1;min-width:180px}.stage-h{padding:14px;border-radius:8px;color:#fff;text-align:center;font-weight:700;font-size:14px}.stage-b{background:#fff;border:1px solid #e5e7eb;border-radius:0 0 8px 8px;padding:14px;font-size:13px}.emoji{text-align:center;font-size:24px;margin:8px 0}h4{font-size:11px;text-transform:uppercase;color:#6b7280;margin:10px 0 4px}ul{list-style:none;padding:0}li{padding:2px 0}</style>
+</head><body><h1>${esc(name)}</h1><div class="journey">`;
   data.forEach((d, i) => {
     html += `<div class="stage"><div class="stage-h" style="background:${STAGE_COLORS[i]}">${d.stage}</div><div class="stage-b"><div class="emoji">${emotionEmoji[d.emotion]}</div>`;
     if (d.touchpoints.length) html += `<h4>Touchpoints</h4><ul>${d.touchpoints.map(t => '<li>' + esc(t) + '</li>').join('')}</ul>`;

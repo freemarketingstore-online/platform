@@ -6,6 +6,9 @@
   <title>Campaign Planner — FreeMarketingStore</title>
   <meta name="description" content="Step-by-step wizard to build a full marketing campaign brief from goal to tactics.">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#f97316">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -226,6 +229,7 @@
 
     .hidden { display: none; }
   </style>
+  <script src="/pwa.js" defer></script>
 </head>
 <body>
   <nav>
@@ -582,7 +586,8 @@
 
     document.getElementById('download-html').addEventListener('click', () => {
       const content = document.getElementById('brief-output').innerHTML;
-      const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Campaign Brief</title><style>body{font-family:system-ui;max-width:700px;margin:2rem auto;padding:0 1.5rem;line-height:1.6}h2{color:#f97316}h3{color:#6b7280;text-transform:uppercase;font-size:0.85rem;letter-spacing:0.04em}</style></head><body>${content}</body></html>`;
+      const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Campaign Brief</title><style>body{font-family:system-ui;max-width:700px;margin:2rem auto;padding:0 1.5rem;line-height:1.6}h2{color:#f97316}h3{color:#6b7280;text-transform:uppercase;font-size:0.85rem;letter-spacing:0.04em}</style>
+</head><body>${content}</body></html>`;
       const blob = new Blob([html], { type: 'text/html' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
