@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Website SEO Audit — FreeMarketingStore</title>
-  <meta name="description" content="Register websites, run technical SEO crawl checks, and see prioritized indexing, sitemap, metadata, and crawlability issues.">
+  <title>Website Audit — FreeMarketingStore</title>
+  <meta name="description" content="Register websites, run technical SEO, crawlability, loading, accessibility, privacy, and security checks with prioritized fix prompts.">
   <link rel="canonical" href="https://freemarketingstore.pages.dev/seo/site-audit/">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -109,9 +109,9 @@
   <main class="shell">
     <section class="hero">
       <div class="hero-main">
-        <h1>Website SEO Audit</h1>
-        <p class="subtitle">Register websites, run server-side crawl checks, and get prioritized issues for indexing, robots.txt, sitemaps, metadata, social previews, and basic page health.</p>
-        <p class="notice">This free version stores registrations in your browser. A Pro version should add accounts, scheduled audits, alerting, Search Console imports, and historical charts.</p>
+        <h1>Website Audit</h1>
+        <p class="subtitle">Register websites, run server-side checks, and get prioritized issues for SEO, indexing, robots.txt, sitemaps, metadata, loading, assets, links, accessibility, privacy, and security headers.</p>
+        <p class="notice">This free version stores registrations in your browser. A Pro version should add accounts, scheduled audits, alerting, Search Console imports, browser-based Lighthouse runs, and historical charts.</p>
       </div>
       <form class="panel register" id="register-form">
         <label for="site-url">Register or audit a website</label>
@@ -148,7 +148,10 @@
     let activeId = sites[0]?.id || null;
 
     function loadSites() {
-      try { return JSON.parse(localStorage.getItem(storageKey) || '[]'); }
+      try {
+        const parsed = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        return Array.isArray(parsed) ? parsed : [];
+      }
       catch (_) { return []; }
     }
 
@@ -188,6 +191,13 @@
       if (score >= 85) return 'ok';
       if (score >= 65) return 'warning';
       return 'critical';
+    }
+
+    function formatBytes(bytes) {
+      const value = Number(bytes || 0);
+      if (!value) return 'Unknown';
+      if (value > 1024 * 1024) return (value / 1024 / 1024).toFixed(1) + ' MB';
+      return Math.round(value / 1024) + ' KB';
     }
 
     function renderSites() {
@@ -238,6 +248,27 @@
       const sitemaps = (audit.sitemaps || []).map(sitemap => (
         '<div class="fact"><div class="fact-label">Sitemap</div><div class="fact-value">' + escapeHtml(sitemap.status || sitemap.error || 'unknown') + ' · ' + escapeHtml(sitemap.urlCount || 0) + ' URLs</div><div class="site-meta">' + escapeHtml(sitemap.url) + '</div></div>'
       )).join('');
+      const security = audit.security || {};
+      const headers = security.headers || {};
+      const load = audit.load || {};
+      const missingHeaders = [
+        ['CSP', headers.contentSecurityPolicy],
+        ['HSTS', headers.strictTransportSecurity],
+        ['XCTO', headers.xContentTypeOptions],
+        ['Referrer', headers.referrerPolicy],
+        ['Permissions', headers.permissionsPolicy],
+        ['Frame', headers.xFrameOptions || /frame-ancestors/i.test(headers.contentSecurityPolicy || '')],
+      ].filter(([, value]) => !value).map(([name]) => name);
+      const loadFacts =
+            '<div class="fact"><div class="fact-label">Load</div><div class="fact-value">' + escapeHtml(audit.page.responseMs || 'unknown') + ' ms · ' + escapeHtml(formatBytes(audit.page.bytes)) + '</div><div class="site-meta">Homepage HTML response</div></div>' +
+            '<div class="fact"><div class="fact-label">Assets</div><div class="fact-value">' + escapeHtml(load.assetCount ?? 'unknown') + ' referenced</div><div class="site-meta">' + escapeHtml(load.sampledAssetCount ?? 0) + ' sampled · ' + escapeHtml(formatBytes(load.sampledAssetBytes)) + ' sampled bytes</div></div>' +
+            '<div class="fact"><div class="fact-label">Asset Problems</div><div class="fact-value">' + escapeHtml((load.failedAssets || []).length) + ' failed · ' + escapeHtml((load.slowAssets || []).length) + ' slow</div></div>' +
+            '<div class="fact"><div class="fact-label">Links</div><div class="fact-value">' + escapeHtml(audit.page.internalLinks) + ' internal · ' + escapeHtml(audit.page.externalLinks) + ' external</div><div class="site-meta">' + escapeHtml((load.failedInternalLinks || []).length) + ' sampled broken internal links</div></div>' +
+            '<div class="fact"><div class="fact-label">Security</div><div class="fact-value">' + escapeHtml(security.https ? 'HTTPS' : 'Not HTTPS') + '</div><div class="site-meta">' + escapeHtml(missingHeaders.length ? 'Missing: ' + missingHeaders.join(', ') : 'Core headers present') + '</div></div>' +
+            '<div class="fact"><div class="fact-label">Mixed Content</div><div class="fact-value">' + escapeHtml((load.mixedContent || []).length) + '</div></div>' +
+            '<div class="fact"><div class="fact-label">Third-party Hosts</div><div class="fact-value">' + escapeHtml((load.thirdPartyHosts || []).length) + '</div><div class="site-meta">' + escapeHtml((load.thirdPartyHosts || []).slice(0, 4).join(', ') || 'None detected in parsed assets') + '</div></div>' +
+            '<div class="fact"><div class="fact-label">Accessibility</div><div class="fact-value">' + escapeHtml(audit.page.images?.missingAlt || 0) + ' missing alt</div><div class="site-meta">' + escapeHtml(audit.page.images?.total || 0) + ' images · lang ' + escapeHtml(audit.page.lang || 'missing') + '</div></div>' +
+            '<div class="fact"><div class="fact-label">Structure</div><div class="fact-value">H1 ' + escapeHtml(audit.page.headingCounts?.h1 ?? audit.page.h1Count) + ' · H2 ' + escapeHtml(audit.page.headingCounts?.h2 ?? 0) + '</div><div class="site-meta">' + escapeHtml(audit.page.structuredDataCount || 0) + ' JSON-LD blocks · ' + escapeHtml(audit.page.forms?.length || 0) + ' forms</div></div>';
 
       reportEl.className = '';
       reportEl.innerHTML =
@@ -256,6 +287,7 @@
             '<div class="fact"><div class="fact-label">Description</div><div class="fact-value">' + escapeHtml(audit.page.description || 'Missing') + '</div></div>' +
             '<div class="fact"><div class="fact-label">Canonical</div><div class="fact-value">' + escapeHtml(audit.page.canonical || 'Missing') + '</div></div>' +
             '<div class="fact"><div class="fact-label">Robots</div><div class="fact-value">' + escapeHtml(audit.robots?.status || audit.robots?.error || 'unknown') + '</div><div class="site-meta">' + (audit.robots?.allowsSearch === false ? 'Blocks search crawling' : 'Search crawl allowed or not blocked') + '</div></div>' +
+            loadFacts +
             sitemaps +
           '</aside>' +
         '</div>';
@@ -270,6 +302,7 @@
         const data = contentType.includes('application/json') ? await response.json() : null;
         if (!data) throw new Error('Audit service returned an unreadable response.');
         if (!response.ok || data.error) throw new Error(data.error || 'Audit failed.');
+        if (!data.page || !Array.isArray(data.issues)) throw new Error('Audit service returned an incomplete report.');
         const normalized = data.page.requestedUrl;
         let site = sites.find(item => item.url === normalized || domainFor(item.url) === domainFor(normalized));
         if (!site) {
