@@ -8,6 +8,7 @@ Live site: https://freemarketingstore.pages.dev/
 
 - Public tool store with 22 browser-first marketing tools.
 - PWA console at `/console/`.
+- Free profile scaffold at `/console/profile/`.
 - Audited sites list at `/console/sites/`.
 - Website audit app at `/seo/site-audit/`.
 - Search Console integration screen at `/console/search-console/`.
@@ -57,6 +58,15 @@ Required Cloudflare Pages environment variables:
 
 See [docs/search-console-cloudflare.md](docs/search-console-cloudflare.md).
 
+## Product Boundary
+
+FMS can have free sign-in. The boundary is not account vs no account; it is diagnostics vs execution.
+
+- FMS free accounts store sites, audit history, Search Console setup, issue prompts, and marketing readiness dashboards.
+- PMS pro accounts run campaigns, publish posts, send emails, connect execution channels, and optimize based on campaign metrics.
+
+See [docs/product-boundary.md](docs/product-boundary.md).
+
 ## Local Development
 
 Build the Pages artifact:
@@ -93,7 +103,9 @@ Pushes to `main` deploy to Cloudflare Pages project `freemarketingstore` and smo
 
 - `/`
 - `/console/`
+- `/console/profile/`
 - `/console/search-console/`
+- `/docs/`
 - `/seo/site-audit/`
 - `/sitemap.xml`
 - `/api/search-console/status`

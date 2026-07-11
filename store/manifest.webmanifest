@@ -53,6 +53,13 @@
       "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
     },
     {
+      "name": "Free Profile",
+      "short_name": "Profile",
+      "description": "View free profile and account storage status.",
+      "url": "/console/profile/",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
       "name": "Search Console",
       "short_name": "GSC",
       "description": "Connect Search Console and verify domains.",

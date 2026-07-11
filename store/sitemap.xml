@@ -2,6 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://freemarketingstore.pages.dev/</loc><priority>1.0</priority></url>
   <url><loc>https://freemarketingstore.pages.dev/console/</loc><priority>0.85</priority></url>
+  <url><loc>https://freemarketingstore.pages.dev/console/profile/</loc><priority>0.8</priority></url>
   <url><loc>https://freemarketingstore.pages.dev/console/sites/</loc><priority>0.8</priority></url>
   <url><loc>https://freemarketingstore.pages.dev/console/search-console/</loc><priority>0.8</priority></url>
   <url><loc>https://freemarketingstore.pages.dev/docs/</loc><priority>0.8</priority></url>

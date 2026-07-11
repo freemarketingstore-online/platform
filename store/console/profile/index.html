@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Profile — FreeMarketingStore</title>
+  <meta name="description" content="FreeMarketingStore free profile status for saved sites, audit history, Search Console connections, and marketing readiness dashboards.">
+  <link rel="canonical" href="https://freemarketingstore.pages.dev/console/profile/">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#f97316">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { --accent: #f97316; --bg: #f7f8fb; --panel: #fff; --text: #1a1a1a; --muted: #64748b; --line: #e2e8f0; --ok: #12805c; --ok-bg: #e7f7ef; --warn: #9a5b00; --warn-bg: #fff2cc; --shadow: 0 8px 22px rgba(31, 41, 55, .08); }
+    body { font-family: 'Manrope', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    nav { display: flex; align-items: center; justify-content: space-between; max-width: 1180px; margin: 0 auto; padding: 1rem 1.5rem; background: var(--panel); border-bottom: 1px solid var(--line); }
+    .brand { display: flex; align-items: center; gap: .5rem; color: var(--text); font-weight: 800; }
+    .brand img { width: 24px; height: 24px; }
+    .nav-links { display: flex; gap: .9rem; align-items: center; font-size: .84rem; font-weight: 700; }
+    .nav-links a { color: var(--muted); }
+    .shell { max-width: 1180px; margin: 0 auto; padding: 1.25rem 1.5rem 2.5rem; }
+    .hero, .card, .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); }
+    .hero { padding: 1.25rem; margin-bottom: 1rem; display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 1rem; align-items: start; }
+    h1 { font-size: 2rem; line-height: 1.12; margin-bottom: .45rem; letter-spacing: 0; }
+    .subtitle, p { color: var(--muted); line-height: 1.6; }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .85rem; margin-bottom: 1rem; }
+    .card, .panel { padding: 1rem; min-width: 0; }
+    .card h2, .panel h2 { font-size: 1rem; margin-bottom: .45rem; }
+    .badge { display: inline-flex; align-items: center; border-radius: 999px; padding: .28rem .6rem; font-size: .74rem; font-weight: 800; margin-top: .55rem; }
+    .ok { color: var(--ok); background: var(--ok-bg); }
+    .warn { color: var(--warn); background: var(--warn-bg); }
+    .button { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; border-radius: 7px; padding: .62rem .85rem; border: 1px solid var(--accent); background: var(--accent); color: #fff; font-weight: 800; white-space: nowrap; }
+    .button:hover { text-decoration: none; background: #ea580c; }
+    .button.secondary { background: #fff; color: var(--text); border-color: var(--line); }
+    .rows { display: grid; gap: .45rem; margin-top: .8rem; }
+    .row { display: flex; justify-content: space-between; gap: .75rem; border-top: 1px solid var(--line); padding-top: .55rem; color: var(--muted); }
+    .value { color: var(--text); font-weight: 800; text-align: right; overflow-wrap: anywhere; }
+    @media (max-width: 900px) { .hero, .grid { grid-template-columns: 1fr; } nav { align-items: flex-start; flex-direction: column; gap: .75rem; } }
+    @media (max-width: 560px) { nav, .shell { padding-left: .9rem; padding-right: .9rem; } h1 { font-size: 1.55rem; } .nav-links { flex-wrap: wrap; } .row { flex-direction: column; } .value { text-align: left; } .button { width: 100%; } }
+  </style>
+  <script src="/pwa.js" defer></script>
+</head>
+<body>
+  <nav>
+    <a href="/" class="brand"><img src="/favicon.svg" alt="FMS"><span>FreeMarketingStore</span></a>
+    <div class="nav-links">
+      <a href="/console/">Console</a>
+      <a href="/console/sites/">Sites</a>
+      <a href="/console/search-console/">Search Console</a>
+      <a href="/docs/">Docs</a>
+      <a href="/">Store</a>
+    </div>
+  </nav>
+
+  <main class="shell">
+    <section class="hero">
+      <div>
+        <h1>Free Profile</h1>
+        <p class="subtitle">FMS accounts stay free. They save websites, audits, Search Console setup, and readiness dashboards. Campaign execution, publishing, and sending belong in ProMarketingStore.</p>
+      </div>
+      <div>
+        <a class="button" href="/console/sites/">View local sites</a>
+        <p style="margin-top:.65rem">Server-side profile sign-in needs a session secret and durable storage binding before it replaces browser localStorage.</p>
+      </div>
+    </section>
+
+    <section class="grid" id="status-grid"></section>
+
+    <section class="panel">
+      <h2>Product Boundary</h2>
+      <div class="rows">
+        <div class="row"><span>FMS free account</span><span class="value">Diagnostics, saved sites, audit history, Search Console readiness</span></div>
+        <div class="row"><span>PMS pro account</span><span class="value">Campaign agents, publishing, email sending, analytics, optimization</span></div>
+        <div class="row"><span>Upgrade trigger</span><span class="value">Turn a readiness profile into an executed campaign</span></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const statusGrid = document.getElementById('status-grid');
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, ch => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+      }[ch]));
+    }
+    function badge(ok, readyText, waitingText) {
+      return '<span class="badge ' + (ok ? 'ok' : 'warn') + '">' + escapeHtml(ok ? readyText : waitingText) + '</span>';
+    }
+    async function loadStatus() {
+      try {
+        const response = await fetch('/api/profile/status');
+        const data = await response.json();
+        statusGrid.innerHTML =
+          '<article class="card"><h2>Free Sign-in</h2><p>Durable identity for saved sites and history.</p>' + badge(data.capabilities.freeSignIn, 'Configured', 'Needs storage') + '<div class="rows"><div class="row"><span>Current storage</span><span class="value">' + escapeHtml(data.currentStorage) + '</span></div></div></article>' +
+          '<article class="card"><h2>Saved Audits</h2><p>Server-side websites, audit history, and dashboard state.</p>' + badge(data.capabilities.auditHistory, 'Configured', 'Browser only') + '<div class="rows"><div class="row"><span>Tier</span><span class="value">Free</span></div></div></article>' +
+          '<article class="card"><h2>Execution Boundary</h2><p>FMS will not publish posts or send email. That remains PMS.</p>' + badge(!data.capabilities.campaignExecution, 'Separated', 'Review') + '<div class="rows"><div class="row"><span>Campaign execution</span><span class="value">PMS Pro</span></div></div></article>';
+      } catch (error) {
+        statusGrid.innerHTML = '<article class="card"><h2>Status unavailable</h2><p>' + escapeHtml(error.message || String(error)) + '</p></article>';
+      }
+    }
+    loadStatus();
+  </script>
+</body>
+</html>
