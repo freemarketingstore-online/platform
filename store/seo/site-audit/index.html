@@ -72,8 +72,9 @@
     .issue { border: 1px solid var(--line); border-radius: 8px; padding: .85rem; background: #fff; }
     .issue-top { display: flex; justify-content: space-between; gap: .75rem; align-items: flex-start; }
     .issue-title { font-weight: 800; }
-    .issue-detail, .issue-fix { color: var(--muted); margin-top: .45rem; line-height: 1.5; }
+    .issue-detail, .issue-fix, .issue-prompt { color: var(--muted); margin-top: .45rem; line-height: 1.5; }
     .issue-fix strong { color: var(--text); }
+    .prompt-box { margin-top: .6rem; background: #f8fafc; border: 1px solid var(--line); border-radius: 7px; padding: .7rem; color: var(--text); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .78rem; white-space: pre-wrap; overflow-wrap: anywhere; }
     .badge { display: inline-flex; align-items: center; border-radius: 999px; padding: .25rem .55rem; font-size: .72rem; font-weight: 800; white-space: nowrap; }
     .critical { color: var(--bad); background: var(--bad-bg); }
     .warning { color: var(--warn); background: var(--warn-bg); }
@@ -222,11 +223,14 @@
         return;
       }
       const counts = severityCounts(audit.issues || []);
-      const issueHtml = audit.issues.length ? audit.issues.map(issue => (
+      const issueHtml = audit.issues.length ? audit.issues.map((issue, index) => (
         '<article class="issue">' +
           '<div class="issue-top"><div><div class="issue-title">' + escapeHtml(issue.title) + '</div><div class="issue-detail">' + escapeHtml(issue.detail) + '</div></div>' +
           badge(issue.severity, issue.severity) + '</div>' +
           '<div class="issue-fix"><strong>Fix:</strong> ' + escapeHtml(issue.fix) + '</div>' +
+          '<div class="issue-prompt"><strong>AI prompt:</strong></div>' +
+          '<div class="prompt-box" id="prompt-' + index + '">' + escapeHtml(issue.aiPrompt || issue.fix) + '</div>' +
+          '<button class="mini" data-action="copy-prompt" data-prompt-id="prompt-' + index + '" type="button">Copy prompt</button>' +
         '</article>'
       )).join('') : '<article class="issue">' + badge('No issues found', 'ok') + '<div class="issue-detail">No crawl or SEO basics failed in this audit.</div></article>';
 
@@ -308,6 +312,19 @@
         activeId = id;
         renderSites();
         renderReport();
+      }
+    });
+
+    reportEl.addEventListener('click', async event => {
+      const button = event.target.closest('[data-action="copy-prompt"]');
+      if (!button) return;
+      const prompt = document.getElementById(button.dataset.promptId)?.textContent || '';
+      try {
+        await navigator.clipboard.writeText(prompt);
+        button.textContent = 'Copied';
+        setTimeout(() => { button.textContent = 'Copy prompt'; }, 1200);
+      } catch (_) {
+        button.textContent = 'Select prompt text';
       }
     });
 
