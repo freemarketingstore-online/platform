@@ -33,11 +33,12 @@
     a { color: var(--accent); text-decoration: none; }
     a:hover { text-decoration: underline; }
     button, input { font: inherit; }
-    nav { display: flex; align-items: center; justify-content: space-between; max-width: 1280px; margin: 0 auto; padding: 1rem 1.5rem; border-bottom: 1px solid var(--line); background: var(--panel); }
+    nav { display: flex; align-items: center; justify-content: space-between; max-width: 1440px; margin: 0 auto; padding: 1rem 1.5rem; border-bottom: 1px solid var(--line); background: var(--panel); }
     .nav-brand { display: flex; align-items: center; gap: .5rem; font-weight: 800; font-size: .95rem; text-decoration: none; color: var(--text); }
     .nav-brand img { width: 24px; height: 24px; }
-    .nav-back { font-size: .85rem; color: var(--muted); text-decoration: none; }
-    .shell { max-width: 1280px; margin: 0 auto; padding: 1.25rem 1.5rem 2.5rem; }
+    .nav-links { display: flex; align-items: center; gap: .9rem; font-size: .85rem; font-weight: 700; }
+    .nav-links a { color: var(--muted); }
+    .shell { max-width: 1440px; margin: 0 auto; padding: 1.25rem 1.5rem 2.5rem; }
     .hero { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 1rem; align-items: stretch; margin-bottom: 1rem; }
     .hero-main, .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); min-width: 0; }
     .hero-main { padding: 1.25rem; }
@@ -51,7 +52,7 @@
     .btn { border: 1px solid var(--accent); background: var(--accent); color: #fff; border-radius: 7px; padding: .7rem .95rem; min-height: 42px; font-weight: 800; cursor: pointer; white-space: nowrap; }
     .btn.secondary { background: #fff; color: var(--text); border-color: var(--line); }
     .btn:disabled { opacity: .55; cursor: wait; }
-    .layout { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 1rem; align-items: start; }
+    .layout { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 1rem; align-items: start; }
     .panel h2 { font-size: .95rem; padding: .9rem 1rem; border-bottom: 1px solid var(--line); }
     .sites { padding: .5rem; display: flex; flex-direction: column; gap: .45rem; }
     .site-item { width: 100%; border: 1px solid var(--line); background: #fff; border-radius: 7px; padding: .75rem; text-align: left; cursor: pointer; }
@@ -60,7 +61,11 @@
     .site-meta { color: var(--muted); font-size: .78rem; margin-top: .25rem; }
     .site-actions { display: flex; gap: .4rem; margin-top: .65rem; flex-wrap: wrap; }
     .mini { border: 1px solid var(--line); background: #f8fafc; color: var(--text); border-radius: 6px; padding: .34rem .5rem; font-size: .76rem; font-weight: 700; cursor: pointer; }
-    .summary { display: grid; grid-template-columns: 150px repeat(4, minmax(110px, 1fr)); gap: .75rem; padding: 1rem; border-bottom: 1px solid var(--line); }
+    .report-head { display: flex; justify-content: space-between; gap: 1rem; align-items: flex-start; padding: 1rem; border-bottom: 1px solid var(--line); }
+    .report-domain { font-size: 1.1rem; font-weight: 800; overflow-wrap: anywhere; }
+    .report-url { color: var(--muted); font-size: .8rem; margin-top: .25rem; overflow-wrap: anywhere; }
+    .report-actions { display: flex; gap: .45rem; flex-wrap: wrap; justify-content: flex-end; }
+    .summary { display: grid; grid-template-columns: 150px repeat(4, minmax(110px, 1fr)); gap: .75rem; padding: 1rem; border-bottom: 1px solid var(--line); background: #fbfcfe; }
     .score { display: flex; flex-direction: column; justify-content: center; align-items: center; border: 1px solid var(--line); border-radius: 8px; min-height: 110px; background: #fff; }
     .score-value { font-size: 2.4rem; font-weight: 800; line-height: 1; }
     .score-value.critical, .score-value.warning, .score-value.ok { background: transparent; }
@@ -68,7 +73,7 @@
     .metric { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: .85rem; min-height: 84px; }
     .metric .label { color: var(--muted); font-size: .72rem; text-transform: uppercase; letter-spacing: .04em; font-weight: 800; }
     .metric .value { margin-top: .45rem; font-size: 1.25rem; font-weight: 800; overflow-wrap: anywhere; }
-    .results-body { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 1rem; padding: 1rem; }
+    .results-body { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 1rem; padding: 1rem; }
     .issues { display: flex; flex-direction: column; gap: .65rem; }
     .issue { border: 1px solid var(--line); border-radius: 8px; padding: .85rem; background: #fff; }
     .issue-top { display: flex; justify-content: space-between; gap: .75rem; align-items: flex-start; }
@@ -81,6 +86,7 @@
     .warning { color: var(--warn); background: var(--warn-bg); }
     .info { color: var(--info); background: var(--info-bg); }
     .ok { color: var(--ok); background: var(--ok-bg); }
+    .section-title { color: var(--muted); font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; margin: .25rem 0 -.25rem; }
     .facts { display: flex; flex-direction: column; gap: .65rem; }
     .fact { border: 1px solid var(--line); border-radius: 8px; padding: .75rem; background: #fff; }
     .fact-label { color: var(--muted); font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; }
@@ -91,19 +97,27 @@
       .hero, .layout, .results-body { grid-template-columns: 1fr; }
       .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .score { grid-column: 1 / -1; }
+      .report-head { flex-direction: column; }
+      .report-actions { justify-content: flex-start; }
     }
     @media (max-width: 560px) {
       nav, .shell { padding-left: .85rem; padding-right: .85rem; }
       h1 { font-size: 1.55rem; }
       .input-row, .summary { grid-template-columns: 1fr; }
       .btn { width: 100%; }
+      nav { align-items: flex-start; flex-direction: column; gap: .75rem; }
+      .nav-links { flex-wrap: wrap; }
     }
   </style>
 </head>
 <body>
   <nav>
     <a href="/" class="nav-brand"><img src="/favicon.svg" alt="FMS"><span>FreeMarketingStore</span></a>
-    <a href="/console/" class="nav-back">&larr; Console</a>
+    <div class="nav-links">
+      <a href="/console/">&larr; Console</a>
+      <a href="/console/sites/">Sites</a>
+      <a href="/">Store</a>
+    </div>
   </nav>
 
   <main class="shell">
@@ -230,6 +244,10 @@
       return Math.round(value / 1024) + ' KB';
     }
 
+    function checkedLabel(value) {
+      return value ? new Date(value).toLocaleString() : 'Not checked';
+    }
+
     function renderSites() {
       if (!sites.length) {
         sitesEl.innerHTML = '<div class="empty">No sites registered yet.</div>';
@@ -283,6 +301,8 @@
       const security = audit.security || {};
       const headers = security.headers || {};
       const load = audit.load || {};
+      const hasSecurity = Boolean(audit.security);
+      const hasLoad = Boolean(audit.load);
       const missingHeaders = [
         ['CSP', headers.contentSecurityPolicy],
         ['HSTS', headers.strictTransportSecurity],
@@ -291,29 +311,42 @@
         ['Permissions', headers.permissionsPolicy],
         ['Frame', headers.xFrameOptions || /frame-ancestors/i.test(headers.contentSecurityPolicy || '')],
       ].filter(([, value]) => !value).map(([name]) => name);
+      const securityValue = hasSecurity ? (security.https ? 'HTTPS' : 'Not HTTPS') : 'Not checked';
+      const securityMeta = hasSecurity ? (missingHeaders.length ? 'Missing: ' + missingHeaders.join(', ') : 'Core headers present') : 'Run a fresh audit to include security headers';
       const loadFacts =
+            '<div class="section-title">Performance</div>' +
             '<div class="fact"><div class="fact-label">Load</div><div class="fact-value">' + escapeHtml(audit.page.responseMs || 'unknown') + ' ms · ' + escapeHtml(formatBytes(audit.page.bytes)) + '</div><div class="site-meta">Homepage HTML response</div></div>' +
-            '<div class="fact"><div class="fact-label">Assets</div><div class="fact-value">' + escapeHtml(load.assetCount ?? 'unknown') + ' referenced</div><div class="site-meta">' + escapeHtml(load.sampledAssetCount ?? 0) + ' sampled · ' + escapeHtml(formatBytes(load.sampledAssetBytes)) + ' sampled bytes</div></div>' +
-            '<div class="fact"><div class="fact-label">Asset Problems</div><div class="fact-value">' + escapeHtml((load.failedAssets || []).length) + ' failed · ' + escapeHtml((load.slowAssets || []).length) + ' slow</div></div>' +
-            '<div class="fact"><div class="fact-label">Links</div><div class="fact-value">' + escapeHtml(audit.page.internalLinks) + ' internal · ' + escapeHtml(audit.page.externalLinks) + ' external</div><div class="site-meta">' + escapeHtml((load.failedInternalLinks || []).length) + ' sampled broken internal links</div></div>' +
-            '<div class="fact"><div class="fact-label">Security</div><div class="fact-value">' + escapeHtml(security.https ? 'HTTPS' : 'Not HTTPS') + '</div><div class="site-meta">' + escapeHtml(missingHeaders.length ? 'Missing: ' + missingHeaders.join(', ') : 'Core headers present') + '</div></div>' +
-            '<div class="fact"><div class="fact-label">Mixed Content</div><div class="fact-value">' + escapeHtml((load.mixedContent || []).length) + '</div></div>' +
-            '<div class="fact"><div class="fact-label">Third-party Hosts</div><div class="fact-value">' + escapeHtml((load.thirdPartyHosts || []).length) + '</div><div class="site-meta">' + escapeHtml((load.thirdPartyHosts || []).slice(0, 4).join(', ') || 'None detected in parsed assets') + '</div></div>' +
+            '<div class="fact"><div class="fact-label">Assets</div><div class="fact-value">' + escapeHtml(hasLoad ? load.assetCount : 'Not checked') + (hasLoad ? ' referenced' : '') + '</div><div class="site-meta">' + (hasLoad ? escapeHtml(load.sampledAssetCount ?? 0) + ' sampled · ' + escapeHtml(formatBytes(load.sampledAssetBytes)) + ' sampled bytes' : 'Run a fresh audit to include asset sampling') + '</div></div>' +
+            '<div class="fact"><div class="fact-label">Asset Problems</div><div class="fact-value">' + (hasLoad ? escapeHtml((load.failedAssets || []).length) + ' failed · ' + escapeHtml((load.slowAssets || []).length) + ' slow' : 'Not checked') + '</div></div>' +
+            '<div class="fact"><div class="fact-label">Links</div><div class="fact-value">' + escapeHtml(audit.page.internalLinks ?? 0) + ' internal · ' + escapeHtml(audit.page.externalLinks ?? 0) + ' external</div><div class="site-meta">' + (hasLoad ? escapeHtml((load.failedInternalLinks || []).length) + ' sampled broken internal links' : 'Run a fresh audit to sample internal links') + '</div></div>' +
+            '<div class="section-title">Security</div>' +
+            '<div class="fact"><div class="fact-label">Security</div><div class="fact-value">' + escapeHtml(securityValue) + '</div><div class="site-meta">' + escapeHtml(securityMeta) + '</div></div>' +
+            '<div class="fact"><div class="fact-label">Mixed Content</div><div class="fact-value">' + (hasLoad ? escapeHtml((load.mixedContent || []).length) : 'Not checked') + '</div></div>' +
+            '<div class="fact"><div class="fact-label">Third-party Hosts</div><div class="fact-value">' + (hasLoad ? escapeHtml((load.thirdPartyHosts || []).length) : 'Not checked') + '</div><div class="site-meta">' + (hasLoad ? escapeHtml((load.thirdPartyHosts || []).slice(0, 4).join(', ') || 'None detected in parsed assets') : 'Run a fresh audit to include third-party assets') + '</div></div>' +
+            '<div class="section-title">Page Structure</div>' +
             '<div class="fact"><div class="fact-label">Accessibility</div><div class="fact-value">' + escapeHtml(audit.page.images?.missingAlt || 0) + ' missing alt</div><div class="site-meta">' + escapeHtml(audit.page.images?.total || 0) + ' images · lang ' + escapeHtml(audit.page.lang || 'missing') + '</div></div>' +
             '<div class="fact"><div class="fact-label">Structure</div><div class="fact-value">H1 ' + escapeHtml(audit.page.headingCounts?.h1 ?? audit.page.h1Count) + ' · H2 ' + escapeHtml(audit.page.headingCounts?.h2 ?? 0) + '</div><div class="site-meta">' + escapeHtml(audit.page.structuredDataCount || 0) + ' JSON-LD blocks · ' + escapeHtml(audit.page.forms?.length || 0) + ' forms</div></div>';
 
       reportEl.className = '';
       reportEl.innerHTML =
+        '<div class="report-head">' +
+          '<div><div class="report-domain">' + escapeHtml(domainFor(site.url)) + '</div><div class="report-url">' + escapeHtml(audit.page.finalUrl || site.url) + '</div></div>' +
+          '<div class="report-actions">' +
+            '<a class="mini" href="/console/sites/">All sites</a>' +
+            '<button class="mini" data-action="audit-site" type="button">Re-audit</button>' +
+          '</div>' +
+        '</div>' +
         '<div class="summary">' +
-          '<div class="score"><div class="score-value ' + scoreClass(audit.score) + '">' + audit.score + '</div><div class="score-label">SEO health score</div></div>' +
+          '<div class="score"><div class="score-value ' + scoreClass(audit.score) + '">' + audit.score + '</div><div class="score-label">Website health score</div></div>' +
           '<div class="metric"><div class="label">Critical</div><div class="value">' + counts.critical + '</div></div>' +
           '<div class="metric"><div class="label">Warnings</div><div class="value">' + counts.warning + '</div></div>' +
           '<div class="metric"><div class="label">Info</div><div class="value">' + counts.info + '</div></div>' +
-          '<div class="metric"><div class="label">Checked</div><div class="value">' + new Date(audit.checkedAt).toLocaleString() + '</div></div>' +
+          '<div class="metric"><div class="label">Checked</div><div class="value">' + escapeHtml(checkedLabel(audit.checkedAt)) + '</div></div>' +
         '</div>' +
         '<div class="results-body">' +
           '<div class="issues">' + issueHtml + '</div>' +
           '<aside class="facts">' +
+            '<div class="section-title">SEO & Indexing</div>' +
             '<div class="fact"><div class="fact-label">Final URL</div><div class="fact-value">' + escapeHtml(audit.page.finalUrl) + '</div></div>' +
             '<div class="fact"><div class="fact-label">Title</div><div class="fact-value">' + escapeHtml(audit.page.title || 'Missing') + '</div></div>' +
             '<div class="fact"><div class="fact-label">Description</div><div class="fact-value">' + escapeHtml(audit.page.description || 'Missing') + '</div></div>' +
@@ -392,6 +425,12 @@
     });
 
     reportEl.addEventListener('click', async event => {
+      const auditSiteButton = event.target.closest('[data-action="audit-site"]');
+      if (auditSiteButton) {
+        const site = sites.find(item => item.id === activeId);
+        if (site) runAudit(site.url);
+        return;
+      }
       const button = event.target.closest('[data-action="copy-prompt"]');
       if (!button) return;
       const prompt = document.getElementById(button.dataset.promptId)?.textContent || '';
