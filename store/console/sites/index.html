@@ -112,7 +112,7 @@
     const sitesEl = document.getElementById('sites');
     const summaryEl = document.getElementById('summary');
     const searchEl = document.getElementById('search');
-    let sites = loadSites();
+    let sites = sortSites(loadSites());
 
     function loadSites() {
       try {
@@ -127,6 +127,14 @@
       localStorage.setItem(storageKey, JSON.stringify(sites));
     }
 
+    function siteTime(site) {
+      return Date.parse(site.lastAudit?.checkedAt || site.createdAt || '') || 0;
+    }
+
+    function sortSites(items) {
+      return [...items].sort((a, b) => siteTime(b) - siteTime(a));
+    }
+
     function escapeHtml(value) {
       return String(value ?? '').replace(/[&<>"']/g, ch => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
@@ -134,8 +142,17 @@
     }
 
     function domainFor(url) {
-      try { return new URL(url).hostname; }
+      try { return new URL(url).hostname || url; }
       catch (_) { return url; }
+    }
+
+    function safeHttpUrl(url) {
+      try {
+        const parsed = new URL(url);
+        return ['http:', 'https:'].includes(parsed.protocol) ? parsed.href : '';
+      } catch (_) {
+        return '';
+      }
     }
 
     function scoreClass(score) {
@@ -159,7 +176,6 @@
 
     function renderSummary(filtered) {
       const audited = sites.filter(site => site.lastAudit);
-      const issueTotal = audited.reduce((sum, site) => sum + (site.lastAudit?.issues || []).length, 0);
       const average = audited.length ? Math.round(audited.reduce((sum, site) => sum + Number(site.lastAudit.score || 0), 0) / audited.length) : 0;
       summaryEl.innerHTML =
         '<article class="metric"><div class="metric-label">Registered</div><div class="metric-value">' + sites.length + '</div></article>' +
@@ -170,7 +186,7 @@
 
     function render() {
       const query = searchEl.value.trim().toLowerCase();
-      const filtered = sites.filter(site => domainFor(site.url).toLowerCase().includes(query) || String(site.url || '').toLowerCase().includes(query));
+      const filtered = sortSites(sites).filter(site => domainFor(site.url).toLowerCase().includes(query) || String(site.url || '').toLowerCase().includes(query));
       renderSummary(filtered);
       if (!sites.length) {
         sitesEl.innerHTML = '<div class="empty">No sites yet. Run your first audit from the console.</div>';
@@ -184,13 +200,14 @@
         const counts = countsFor(site);
         const score = site.lastAudit?.score;
         const issueText = score == null ? 'No report yet' : counts.critical + ' critical · ' + counts.warning + ' warnings · ' + counts.info + ' info';
+        const openUrl = safeHttpUrl(site.url);
         return '<article class="site" data-id="' + escapeHtml(site.id) + '">' +
           '<div><div class="domain">' + escapeHtml(domainFor(site.url)) + '</div><div class="meta">' + escapeHtml(site.url) + '</div><div class="meta">' + escapeHtml(checkedLabel(site)) + ' · ' + escapeHtml(issueText) + '</div></div>' +
           '<div class="score ' + scoreClass(score) + '">' + escapeHtml(score ?? 'New') + '</div>' +
           '<div class="actions">' +
             '<a class="button primary" href="/seo/site-audit/?site=' + encodeURIComponent(site.id) + '">Report</a>' +
             '<a class="button" href="/seo/site-audit/?url=' + encodeURIComponent(site.url) + '">Re-audit</a>' +
-            '<a class="button" href="' + escapeHtml(site.url) + '" target="_blank" rel="noopener">Open</a>' +
+            (openUrl ? '<a class="button" href="' + escapeHtml(openUrl) + '" target="_blank" rel="noopener">Open</a>' : '') +
             '<button class="button" type="button" data-action="delete" data-id="' + escapeHtml(site.id) + '">Delete</button>' +
           '</div>' +
         '</article>';

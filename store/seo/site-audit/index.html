@@ -147,7 +147,9 @@
     const searchParams = new URLSearchParams(window.location.search);
     let sites = loadSites();
     const requestedSiteId = searchParams.get('site');
-    let activeId = sites.some(site => site.id === requestedSiteId) ? requestedSiteId : sites[0]?.id || null;
+    const initialUrl = searchParams.get('url');
+    const requestedSiteExists = sites.some(site => site.id === requestedSiteId);
+    let activeId = initialUrl || requestedSiteId && !requestedSiteExists ? null : requestedSiteExists ? requestedSiteId : sites[0]?.id || null;
 
     function loadSites() {
       try {
@@ -161,6 +163,10 @@
       localStorage.setItem(storageKey, JSON.stringify(sites));
     }
 
+    function makeId() {
+      return window.crypto?.randomUUID ? window.crypto.randomUUID() : String(Date.now()) + '-' + Math.random().toString(16).slice(2);
+    }
+
     function normalizeUrl(value) {
       const trimmed = value.trim();
       if (!trimmed) throw new Error('Enter a website URL.');
@@ -168,8 +174,17 @@
     }
 
     function domainFor(url) {
-      try { return new URL(url).hostname; }
+      try { return new URL(url).hostname || url; }
       catch (_) { return url; }
+    }
+
+    function safeHttpUrl(url) {
+      try {
+        const parsed = new URL(url);
+        return ['http:', 'https:'].includes(parsed.protocol) ? parsed.href : '';
+      } catch (_) {
+        return '';
+      }
     }
 
     function escapeHtml(value) {
@@ -202,6 +217,12 @@
       window.history.replaceState({}, '', url);
     }
 
+    function clearSiteRoute() {
+      const url = new URL(window.location.href);
+      url.search = '';
+      window.history.replaceState({}, '', url);
+    }
+
     function formatBytes(bytes) {
       const value = Number(bytes || 0);
       if (!value) return 'Unknown';
@@ -217,13 +238,13 @@
       sitesEl.innerHTML = sites.map(site => {
         const counts = severityCounts(site.lastAudit?.issues || []);
         const score = site.lastAudit?.score;
-        return '<button class="site-item ' + (site.id === activeId ? 'active' : '') + '" data-id="' + site.id + '">' +
+        return '<button class="site-item ' + (site.id === activeId ? 'active' : '') + '" data-id="' + escapeHtml(site.id) + '">' +
           '<div class="site-domain">' + escapeHtml(domainFor(site.url)) + '</div>' +
           '<div class="site-meta">' + (score == null ? 'Not audited yet' : 'Score ' + score + ' · ' + counts.critical + ' critical · ' + counts.warning + ' warnings') + '</div>' +
           '<div class="site-actions">' +
-            '<span class="mini" data-action="audit" data-id="' + site.id + '">Audit</span>' +
-            '<span class="mini" data-action="open" data-id="' + site.id + '">Open</span>' +
-            '<span class="mini" data-action="delete" data-id="' + site.id + '">Delete</span>' +
+            '<span class="mini" data-action="audit" data-id="' + escapeHtml(site.id) + '">Audit</span>' +
+            '<span class="mini" data-action="open" data-id="' + escapeHtml(site.id) + '">Open</span>' +
+            '<span class="mini" data-action="delete" data-id="' + escapeHtml(site.id) + '">Delete</span>' +
           '</div>' +
         '</button>';
       }).join('');
@@ -233,7 +254,9 @@
       const site = sites.find(item => item.id === activeId);
       if (!site) {
         reportEl.className = 'empty';
-        reportEl.innerHTML = 'Run an audit to see current SEO status and issues.';
+        reportEl.innerHTML = requestedSiteId && !requestedSiteExists && !initialUrl
+          ? 'That local site report was not found in this browser. Open the Sites page or run a new audit.'
+          : 'Run an audit to see current SEO status and issues.';
         return;
       }
       const audit = site.lastAudit;
@@ -315,12 +338,13 @@
         const normalized = data.page.requestedUrl;
         let site = sites.find(item => item.url === normalized || domainFor(item.url) === domainFor(normalized));
         if (!site) {
-          site = { id: String(Date.now()), url: normalized, createdAt: new Date().toISOString(), audits: [] };
+          site = { id: makeId(), url: normalized, createdAt: new Date().toISOString(), audits: [] };
           sites.unshift(site);
         }
         site.url = normalized;
         site.lastAudit = data;
         site.audits = [data, ...(site.audits || [])].slice(0, 10);
+        sites = [site, ...sites.filter(item => item.id !== site.id)];
         activeId = site.id;
         saveSites();
         renderSites();
@@ -347,13 +371,18 @@
       const site = sites.find(item => item.id === id);
       if (!site) return;
       if (actionEl?.dataset.action === 'audit') runAudit(site.url);
-      else if (actionEl?.dataset.action === 'open') window.open(site.url, '_blank', 'noopener');
+      else if (actionEl?.dataset.action === 'open') {
+        const url = safeHttpUrl(site.url);
+        if (url) window.open(url, '_blank', 'noopener');
+      }
       else if (actionEl?.dataset.action === 'delete') {
         sites = sites.filter(item => item.id !== id);
         activeId = sites[0]?.id || null;
         saveSites();
         renderSites();
         renderReport();
+        if (activeId) setSiteRoute(activeId);
+        else clearSiteRoute();
       } else {
         activeId = id;
         setSiteRoute(id);
@@ -378,7 +407,6 @@
     renderSites();
     renderReport();
 
-    const initialUrl = searchParams.get('url');
     if (initialUrl) {
       input.value = initialUrl;
       try { runAudit(normalizeUrl(initialUrl)); }

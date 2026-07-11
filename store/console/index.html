@@ -130,8 +130,12 @@
     const summary = document.getElementById('site-summary');
 
     function domainFor(url) {
-      try { return new URL(url).hostname; }
+      try { return new URL(url).hostname || url; }
       catch (_) { return url; }
+    }
+
+    function siteTime(site) {
+      return Date.parse(site.lastAudit?.checkedAt || site.createdAt || '') || 0;
     }
 
     function loadSites() {
@@ -143,7 +147,7 @@
       }
     }
 
-    const sites = loadSites();
+    const sites = loadSites().sort((a, b) => siteTime(b) - siteTime(a));
     if (!sites.length) {
       summary.textContent = 'No sites are registered in this browser yet. Run an audit to create the first local report.';
     } else {
