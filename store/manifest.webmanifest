@@ -51,6 +51,13 @@
       "description": "View local audited sites.",
       "url": "/console/sites/",
       "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Search Console",
+      "short_name": "GSC",
+      "description": "Connect Search Console and verify domains.",
+      "url": "/console/search-console/",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }

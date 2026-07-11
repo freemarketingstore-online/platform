@@ -3,6 +3,7 @@
   <url><loc>https://freemarketingstore.pages.dev/</loc><priority>1.0</priority></url>
   <url><loc>https://freemarketingstore.pages.dev/console/</loc><priority>0.85</priority></url>
   <url><loc>https://freemarketingstore.pages.dev/console/sites/</loc><priority>0.8</priority></url>
+  <url><loc>https://freemarketingstore.pages.dev/console/search-console/</loc><priority>0.8</priority></url>
   <url><loc>https://freemarketingstore.pages.dev/campaigns/ab-calculator/</loc><priority>0.7</priority></url>
   <url><loc>https://freemarketingstore.pages.dev/campaigns/campaign-planner/</loc><priority>0.8</priority></url>
   <url><loc>https://freemarketingstore.pages.dev/campaigns/content-calendar/</loc><priority>0.7</priority></url>

@@ -272,6 +272,114 @@ function scoreFromIssues(issues) {
   return score;
 }
 
+function healthCheck(label, status, detail) {
+  return { label, status, detail };
+}
+
+function scoreChecks(checks) {
+  if (!checks.length) return 0;
+  const values = checks.map((check) => {
+    if (check.status === 'pass') return 100;
+    if (check.status === 'info') return 85;
+    if (check.status === 'warn') return 65;
+    return 20;
+  });
+  return Math.round(values.reduce((sum, value) => sum + value, 0) / values.length);
+}
+
+function statusFromChecks(checks) {
+  if (checks.some((check) => check.status === 'fail')) return 'fail';
+  if (checks.some((check) => check.status === 'warn')) return 'warn';
+  return 'pass';
+}
+
+function makeHealthSection(label, checks) {
+  return {
+    label,
+    score: scoreChecks(checks),
+    status: statusFromChecks(checks),
+    checks,
+  };
+}
+
+function buildHealth({ page, robots, sitemaps, security, load, manifest, issues }) {
+  const sitemapOk = (sitemaps || []).some((sitemap) => sitemap.ok && sitemap.urlCount > 0);
+  const hasIndexBlocker = issues.some((issue) => issue.severity === 'critical' && ['availability', 'indexing'].includes(issue.category));
+  const canonicalUrl = page.canonical ? toAbsoluteUrl(page.canonical, page.finalUrl || page.requestedUrl) : '';
+  const canonicalSameOrigin = canonicalUrl ? (() => {
+    try {
+      return new URL(canonicalUrl).origin === new URL(page.finalUrl || page.requestedUrl).origin;
+    } catch {
+      return false;
+    }
+  })() : false;
+
+  const sections = {
+    crawlability: makeHealthSection('Crawlability', [
+      healthCheck('Homepage fetch', page.status && page.status < 400 ? 'pass' : 'fail', page.status ? `HTTP ${page.status}` : 'Homepage could not be fetched'),
+      healthCheck('HTML response', /html/i.test(page.contentType || '') ? 'pass' : 'warn', page.contentType || 'Unknown content type'),
+      healthCheck('Robots meta', /noindex|none/i.test(page.robotsMeta || '') ? 'fail' : 'pass', page.robotsMeta || 'No blocking robots meta'),
+      healthCheck('robots.txt', robots?.ok ? 'pass' : 'warn', robots?.ok ? `HTTP ${robots.status}` : robots?.error || 'Not reachable'),
+      healthCheck('Crawler access', robots?.allowsSearch === false ? 'fail' : 'pass', robots?.allowsSearch === false ? 'User-agent * blocks /' : 'Not blocked'),
+      healthCheck('Sitemap', sitemapOk ? 'pass' : 'fail', sitemapOk ? `${sitemaps.reduce((sum, sitemap) => sum + (sitemap.urlCount || 0), 0)} URLs found` : 'No valid sitemap URLs found'),
+      healthCheck('Canonical', canonicalUrl ? (canonicalSameOrigin ? 'pass' : 'warn') : 'warn', canonicalUrl || 'Missing canonical URL'),
+    ]),
+    performance: makeHealthSection('Load & Performance', [
+      healthCheck('Homepage response time', page.responseMs <= 1000 ? 'pass' : page.responseMs <= 2500 ? 'warn' : 'fail', `${page.responseMs || 'unknown'} ms`),
+      healthCheck('HTML payload', page.bytes <= 250000 ? 'pass' : page.bytes <= 900000 ? 'warn' : 'fail', page.bytes ? `${Math.round(page.bytes / 1024)} KB` : 'Unknown'),
+      healthCheck('Asset count', load?.assetCount <= 40 ? 'pass' : load?.assetCount <= 80 ? 'warn' : 'fail', load ? `${load.assetCount} referenced assets` : 'Not checked'),
+      healthCheck('Sampled asset weight', !load ? 'warn' : load.sampledAssetBytes <= 750000 ? 'pass' : load.sampledAssetBytes <= 2000000 ? 'warn' : 'fail', load ? `${Math.round((load.sampledAssetBytes || 0) / 1024)} KB sampled` : 'Not checked'),
+      healthCheck('Failed assets', load?.failedAssets?.length ? 'fail' : 'pass', load ? `${load.failedAssets.length} failed sampled assets` : 'Not checked'),
+      healthCheck('Slow assets', load?.slowAssets?.length ? 'warn' : 'pass', load ? `${load.slowAssets.length} slow sampled assets` : 'Not checked'),
+    ]),
+    security: makeHealthSection('Security', [
+      healthCheck('HTTPS', security?.https ? 'pass' : 'fail', security?.https ? 'Final URL uses HTTPS' : 'Final URL is not HTTPS'),
+      healthCheck('HSTS', security?.headers?.strictTransportSecurity ? 'pass' : 'warn', security?.headers?.strictTransportSecurity || 'Missing Strict-Transport-Security'),
+      healthCheck('Content Security Policy', security?.headers?.contentSecurityPolicy ? 'pass' : 'warn', security?.headers?.contentSecurityPolicy ? 'Present' : 'Missing Content-Security-Policy'),
+      healthCheck('MIME sniffing protection', security?.headers?.xContentTypeOptions ? 'pass' : 'info', security?.headers?.xContentTypeOptions || 'Missing X-Content-Type-Options'),
+      healthCheck('Referrer policy', security?.headers?.referrerPolicy ? 'pass' : 'info', security?.headers?.referrerPolicy || 'Missing Referrer-Policy'),
+      healthCheck('Permissions policy', security?.headers?.permissionsPolicy ? 'pass' : 'info', security?.headers?.permissionsPolicy || 'Missing Permissions-Policy'),
+      healthCheck('Clickjacking protection', security?.headers?.xFrameOptions || /frame-ancestors/i.test(security?.headers?.contentSecurityPolicy || '') ? 'pass' : 'info', 'X-Frame-Options or CSP frame-ancestors'),
+      healthCheck('Mixed content', load?.mixedContent?.length ? 'fail' : 'pass', load ? `${load.mixedContent.length} HTTP assets on HTTPS page` : 'Not checked'),
+      healthCheck('Insecure form actions', page.forms.some((form) => form.actionUrl?.startsWith('http://')) ? 'fail' : 'pass', `${page.forms.length} forms checked`),
+    ]),
+    metadata: makeHealthSection('SEO Metadata', [
+      healthCheck('Title', page.title ? page.title.length > 65 || page.title.length < 20 ? 'warn' : 'pass' : 'fail', page.title || 'Missing title'),
+      healthCheck('Meta description', page.description ? page.description.length > 170 || page.description.length < 80 ? 'warn' : 'pass' : 'fail', page.description || 'Missing description'),
+      healthCheck('H1', page.h1Count === 1 ? 'pass' : page.h1Count === 0 ? 'warn' : 'info', `${page.h1Count} H1 elements`),
+      healthCheck('Viewport', page.viewport ? 'pass' : 'warn', page.viewport || 'Missing viewport meta'),
+      healthCheck('Open Graph', page.ogTitle && page.ogDescription && page.ogImage ? 'pass' : 'info', page.ogImage ? 'OG tags mostly present' : 'Missing OG image or text tags'),
+      healthCheck('Structured data', page.structuredDataCount ? 'pass' : 'info', `${page.structuredDataCount} JSON-LD blocks`),
+    ]),
+    accessibility: makeHealthSection('Accessibility Basics', [
+      healthCheck('Language', page.lang ? 'pass' : 'info', page.lang || 'Missing html lang'),
+      healthCheck('Image alt coverage', !page.images.total || page.images.missingAlt / page.images.total <= 0.1 ? 'pass' : page.images.missingAlt / page.images.total <= 0.25 ? 'warn' : 'fail', `${page.images.missingAlt} of ${page.images.total} images missing alt`),
+      healthCheck('Heading outline', page.headingCounts.h1 === 1 && page.headingCounts.h2 > 0 ? 'pass' : page.headingCounts.h1 === 1 ? 'info' : 'warn', `H1 ${page.headingCounts.h1 || 0}, H2 ${page.headingCounts.h2 || 0}`),
+      healthCheck('Forms detected', page.forms.length ? 'info' : 'pass', page.forms.length ? `${page.forms.length} forms need manual label/validation review` : 'No forms detected'),
+    ]),
+    quality: makeHealthSection('Links & Resources', [
+      healthCheck('Internal links', page.internalLinks > 0 ? 'pass' : 'info', `${page.internalLinks || 0} internal links`),
+      healthCheck('External links', page.externalLinks <= 100 ? 'pass' : 'warn', `${page.externalLinks || 0} external links`),
+      healthCheck('Broken sampled internal links', load?.failedInternalLinks?.length ? 'fail' : 'pass', load ? `${load.failedInternalLinks.length} failed sampled links` : 'Not checked'),
+      healthCheck('Third-party hosts', load?.thirdPartyHosts?.length <= 6 ? 'pass' : 'warn', load ? `${load.thirdPartyHosts.length} third-party hosts` : 'Not checked'),
+      healthCheck('Cookie-setting response', security?.setCookieCount ? 'info' : 'pass', `${security?.setCookieCount || 0} Set-Cookie headers on homepage`),
+    ]),
+    application: makeHealthSection('Web App / PWA', [
+      healthCheck('Web app manifest', manifest?.ok ? 'pass' : page.manifestUrl ? 'warn' : 'info', manifest?.ok ? `HTTP ${manifest.status}` : page.manifestUrl || 'No manifest link'),
+      healthCheck('Manifest display mode', manifest?.display && manifest.display !== 'browser' ? 'pass' : manifest?.ok ? 'warn' : 'info', manifest?.display || 'Not available'),
+      healthCheck('Service worker hint', page.serviceWorkerHint ? 'pass' : 'info', page.serviceWorkerHint ? 'Registration code detected' : 'No service worker registration detected in HTML'),
+      healthCheck('Install icons', manifest?.iconCount >= 2 ? 'pass' : manifest?.ok ? 'warn' : 'info', manifest?.ok ? `${manifest.iconCount} icons listed` : 'Not checked'),
+    ]),
+  };
+
+  const sectionValues = Object.values(sections);
+  return {
+    status: hasIndexBlocker ? 'fail' : statusFromChecks(sectionValues.map((section) => ({ status: section.status }))),
+    score: Math.round(sectionValues.reduce((sum, section) => sum + section.score, 0) / sectionValues.length),
+    sections,
+  };
+}
+
 async function audit(target) {
   const targetUrl = normalizeTarget(target);
   const checkedAt = new Date().toISOString();
@@ -302,6 +410,8 @@ async function audit(target) {
     inlineStyles: 0,
     structuredDataCount: 0,
     viewport: '',
+    manifestUrl: '',
+    serviceWorkerHint: false,
   };
 
   if (home.error) {
@@ -312,7 +422,7 @@ async function audit(target) {
       'Make the public homepage return a 200 HTML response at the canonical URL.',
       'Verify with curl for the homepage, /robots.txt, and /sitemap.xml, then rerun the audit.',
     ].join('\n'));
-    return { checkedAt, page, robots: null, sitemaps: [], security: null, load: null, score: scoreFromIssues(issues), issues };
+    return { checkedAt, page, robots: null, sitemaps: [], security: null, load: null, manifest: null, score: scoreFromIssues(issues), health: null, issues };
   }
 
   if (!home.ok) {
@@ -346,6 +456,8 @@ async function audit(target) {
   page.ogDescription = meta(html, 'property', 'og:description');
   page.ogImage = meta(html, 'property', 'og:image');
   page.viewport = meta(html, 'name', 'viewport');
+  page.manifestUrl = linkRel(html, 'manifest') ? toAbsoluteUrl(linkRel(html, 'manifest'), page.finalUrl) : '';
+  page.serviceWorkerHint = /navigator\.serviceWorker|serviceWorker\.register|\/sw\.js/i.test(html);
   page.structuredDataCount = countMatches(html, /<script\b[^>]*type=["']application\/ld\+json["'][^>]*>/gi);
   page.inlineScripts = tagMatches(html, 'script').filter((tag) => !attr(tag, 'src')).length;
   page.inlineStyles = countMatches(html, /<style\b/gi);
@@ -420,6 +532,29 @@ async function audit(target) {
       return acc;
     }, {}),
   };
+
+  let manifest = null;
+  if (page.manifestUrl) {
+    const manifestFetch = await fetchText(page.manifestUrl, { accept: 'application/manifest+json,application/json,*/*', limit: 160000 });
+    let manifestBody = {};
+    try {
+      manifestBody = manifestFetch.body ? JSON.parse(manifestFetch.body) : {};
+    } catch {
+      manifestBody = {};
+    }
+    manifest = {
+      url: page.manifestUrl,
+      status: manifestFetch.status || null,
+      ok: Boolean(manifestFetch.ok && manifestBody && typeof manifestBody === 'object' && (manifestBody.name || manifestBody.short_name)),
+      name: manifestBody.name || '',
+      shortName: manifestBody.short_name || '',
+      display: manifestBody.display || '',
+      startUrl: manifestBody.start_url || '',
+      scope: manifestBody.scope || '',
+      iconCount: Array.isArray(manifestBody.icons) ? manifestBody.icons.length : 0,
+      error: manifestFetch.error || '',
+    };
+  }
   const sampledLinks = unique(anchorUrls).filter((href) => new URL(href).origin === finalOrigin).slice(0, 12);
   const linkResults = await Promise.all(sampledLinks.map((href) => fetchResourceMeta(href, { timeout: 6000 })));
   load.failedInternalLinks = linkResults.filter((link) => link.error || link.status >= 400).slice(0, 8);
@@ -710,6 +845,8 @@ async function audit(target) {
     ].join('\n'));
   }
 
+  const health = buildHealth({ page, robots, sitemaps, security, load, manifest, issues });
+
   return {
     checkedAt,
     page,
@@ -717,7 +854,9 @@ async function audit(target) {
     sitemaps,
     security,
     load,
+    manifest,
     score: scoreFromIssues(issues),
+    health,
     issues,
   };
 }

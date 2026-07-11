@@ -1,8 +1,9 @@
-const CACHE_VERSION = 'fms-pwa-v1';
+const CACHE_VERSION = 'fms-pwa-v2';
 const CORE_CACHE = [
   '/',
   '/console/',
   '/console/sites/',
+  '/console/search-console/',
   '/seo/site-audit/',
   '/manifest.webmanifest',
   '/pwa.js',
