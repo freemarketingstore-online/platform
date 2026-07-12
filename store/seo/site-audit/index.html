@@ -156,7 +156,7 @@
 
     <section class="layout">
       <aside class="panel">
-        <h2>Registered Sites</h2>
+        <h2>Current Website</h2>
         <div class="sites" id="sites"></div>
       </aside>
 
@@ -180,7 +180,7 @@
     const requestedSiteId = searchParams.get('site');
     const initialUrl = searchParams.get('url');
     const requestedSiteExists = sites.some(site => site.id === requestedSiteId);
-    let activeId = initialUrl || requestedSiteId && !requestedSiteExists ? null : requestedSiteExists ? requestedSiteId : sites[0]?.id || null;
+    let activeId = requestedSiteExists ? requestedSiteId : null;
     let accountMode = false;
 
     function loadSites() {
@@ -203,7 +203,8 @@
         if (!Array.isArray(data.sites)) return false;
         sites = data.sites;
         accountMode = true;
-        if (!activeId || !sites.some(site => site.id === activeId)) activeId = sites[0]?.id || null;
+        if (requestedSiteId && sites.some(site => site.id === requestedSiteId)) activeId = requestedSiteId;
+        else if (activeId && !sites.some(site => site.id === activeId)) activeId = null;
         statusLine.textContent = 'Signed in. Audits save to your free FMS profile.';
         return true;
       } catch (_) {
@@ -313,23 +314,25 @@
     }
 
     function renderSites() {
-      if (!sites.length) {
-        sitesEl.innerHTML = '<div class="empty">No sites registered yet.</div>';
+      const site = sites.find(item => item.id === activeId);
+      if (!site) {
+        sitesEl.innerHTML =
+          '<div class="empty">No website selected.<br><a class="mini" href="/console/sites/">View all sites</a></div>';
         return;
       }
-      sitesEl.innerHTML = sites.map(site => {
-        const counts = severityCounts(site.lastAudit?.issues || []);
-        const score = site.lastAudit?.score;
-        return '<button class="site-item ' + (site.id === activeId ? 'active' : '') + '" data-id="' + escapeHtml(site.id) + '">' +
+      const counts = severityCounts(site.lastAudit?.issues || []);
+      const score = site.lastAudit?.score;
+      sitesEl.innerHTML =
+        '<div class="site-item active" data-id="' + escapeHtml(site.id) + '">' +
           '<div class="site-domain">' + escapeHtml(domainFor(site.url)) + '</div>' +
           '<div class="site-meta">' + (score == null ? 'Not audited yet' : 'Score ' + score + ' · ' + counts.critical + ' critical · ' + counts.warning + ' warnings') + '</div>' +
           '<div class="site-actions">' +
-            '<span class="mini" data-action="audit" data-id="' + escapeHtml(site.id) + '">Audit</span>' +
-            '<span class="mini" data-action="open" data-id="' + escapeHtml(site.id) + '">Open</span>' +
+            '<span class="mini" data-action="audit" data-id="' + escapeHtml(site.id) + '">Re-audit</span>' +
+            '<span class="mini" data-action="open" data-id="' + escapeHtml(site.id) + '">Open website</span>' +
+            '<a class="mini" href="/console/sites/">All sites</a>' +
             '<span class="mini" data-action="delete" data-id="' + escapeHtml(site.id) + '">Delete</span>' +
           '</div>' +
-        '</button>';
-      }).join('');
+        '</div>';
     }
 
     function renderReport() {
@@ -484,15 +487,12 @@
       }
       else if (actionEl?.dataset.action === 'delete') {
         sites = sites.filter(item => item.id !== id);
-        activeId = sites[0]?.id || null;
+        activeId = null;
         saveSites();
         renderSites();
         renderReport();
-        if (activeId) setSiteRoute(activeId);
-        else clearSiteRoute();
+        clearSiteRoute();
       } else {
-        activeId = id;
-        setSiteRoute(id);
         renderSites();
         renderReport();
       }
