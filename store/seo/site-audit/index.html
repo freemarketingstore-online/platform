@@ -181,6 +181,7 @@
     const initialUrl = searchParams.get('url');
     const requestedSiteExists = sites.some(site => site.id === requestedSiteId);
     let activeId = initialUrl || requestedSiteId && !requestedSiteExists ? null : requestedSiteExists ? requestedSiteId : sites[0]?.id || null;
+    let accountMode = false;
 
     function loadSites() {
       try {
@@ -192,6 +193,33 @@
 
     function saveSites() {
       localStorage.setItem(storageKey, JSON.stringify(sites));
+    }
+
+    async function loadAccountSites() {
+      try {
+        const auth = await fetch('/api/auth/status').then(response => response.json());
+        if (!auth.authenticated) return false;
+        const data = await fetch('/api/sites').then(response => response.json());
+        if (!Array.isArray(data.sites)) return false;
+        sites = data.sites;
+        accountMode = true;
+        if (!activeId || !sites.some(site => site.id === activeId)) activeId = sites[0]?.id || null;
+        statusLine.textContent = 'Signed in. Audits save to your free FMS profile.';
+        return true;
+      } catch (_) {
+        return false;
+      }
+    }
+
+    async function persistAudit(url, report) {
+      if (!accountMode) return null;
+      const response = await fetch('/api/sites/audits', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ url, report }),
+      });
+      if (!response.ok) return null;
+      return response.json();
     }
 
     function makeId() {
@@ -416,11 +444,20 @@
         site.audits = [data, ...(site.audits || [])].slice(0, 10);
         sites = [site, ...sites.filter(item => item.id !== site.id)];
         activeId = site.id;
-        saveSites();
+        if (accountMode) {
+          const saved = await persistAudit(normalized, data);
+          if (saved?.siteId) {
+            activeId = saved.siteId;
+            await loadAccountSites();
+          }
+        } else {
+          saveSites();
+        }
         renderSites();
         renderReport();
         setSiteRoute(site.id);
-        statusLine.textContent = 'Audit complete for ' + domainFor(normalized) + '.';
+        if (accountMode && activeId) setSiteRoute(activeId);
+        statusLine.textContent = 'Audit complete for ' + domainFor(normalized) + (accountMode ? ' and saved to your profile.' : '.');
       } catch (error) {
         statusLine.textContent = error.message || String(error);
       } finally {
@@ -480,14 +517,16 @@
       }
     });
 
-    renderSites();
-    renderReport();
+    loadAccountSites().then(() => {
+      renderSites();
+      renderReport();
 
-    if (initialUrl) {
-      input.value = initialUrl;
-      try { runAudit(normalizeUrl(initialUrl)); }
-      catch (error) { statusLine.textContent = error.message; }
-    }
+      if (initialUrl) {
+        input.value = initialUrl;
+        try { runAudit(normalizeUrl(initialUrl)); }
+        catch (error) { statusLine.textContent = error.message; }
+      }
+    });
   </script>
 </body>
 </html>

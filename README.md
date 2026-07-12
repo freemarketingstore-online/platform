@@ -13,6 +13,29 @@ Live site: https://freemarketingstore.pages.dev/
 - Website audit app at `/seo/site-audit/`.
 - Search Console integration screen at `/console/search-console/`.
 - Server-side audit API at `/api/audit`.
+- Free account APIs under `/api/auth/*`, `/api/profile/status`, and `/api/sites`.
+
+## Free Account Foundation
+
+FMS sign-in is free and stores diagnostic state only. Campaign execution remains PMS.
+
+Implemented account pieces:
+
+- Google sign-in start/callback endpoints.
+- Signed HTTP-only session cookie.
+- D1 schema for users, sessions, sites, and audits.
+- Auth status endpoint.
+- Server-backed sites list.
+- Server-backed audit persistence after a signed-in audit run.
+- Local browser storage fallback when account storage is not configured.
+- Local site import into a signed-in profile.
+
+Required bindings/secrets:
+
+- `FMS_DB` or `DB`: D1 binding using `schema.sql`.
+- `FMS_SESSION_SIGNING_KEY`: secret used to sign session cookies and OAuth state.
+- `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`: Google OAuth credentials.
+- Optional `GOOGLE_AUTH_REDIRECT_URI`, otherwise `/api/auth/google/callback` is used.
 
 ## Website Audit
 
@@ -26,7 +49,7 @@ The audit API accepts a public URL or bare domain and returns a structured repor
 - Accessibility basics such as `html lang`, image alt coverage, and heading outline.
 - PWA/web-app basics such as manifest detection, display mode, icons, and service-worker registration hints.
 
-Reports are currently stored in browser `localStorage` under `fms-site-audit-sites-v1`. Account-backed storage is the next maturity step.
+Anonymous reports are stored in browser `localStorage` under `fms-site-audit-sites-v1`. Signed-in reports are persisted to D1.
 
 ## Search Console and Cloudflare Verification
 
@@ -108,13 +131,15 @@ Pushes to `main` deploy to Cloudflare Pages project `freemarketingstore` and smo
 - `/docs/`
 - `/seo/site-audit/`
 - `/sitemap.xml`
+- `/api/auth/status`
+- `/api/profile/status`
 - `/api/search-console/status`
 - `/api/audit?url=https%3A%2F%2Ffreemarketingstore.pages.dev%2F`
 
 ## Next Platform Work
 
-- Add profile sign-in and durable session storage.
-- Store audited sites, history, Search Console imports, and alert state server-side.
+- Configure production D1 and Google OAuth secrets.
+- Store Search Console imports and alert state server-side.
 - Encrypt Google refresh tokens at rest.
 - Add scheduled audits and issue notifications.
 - Add a per-site dashboard that combines local crawl health, Search Console indexing status, sitemap status, and change history.

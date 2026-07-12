@@ -98,7 +98,7 @@
     <section class="hero">
       <div>
         <h1>Audited Sites</h1>
-        <p class="subtitle">Local list of websites registered through the audit tool in this browser. Open a site to inspect its latest report, rerun the audit, or visit the public homepage.</p>
+        <p class="subtitle" id="source-note">Local list of websites registered through the audit tool in this browser. Sign in from Profile to save sites and audit history server-side.</p>
       </div>
       <div class="search">
         <label for="search">Find a site</label>
@@ -119,7 +119,9 @@
     const sitesEl = document.getElementById('sites');
     const summaryEl = document.getElementById('summary');
     const searchEl = document.getElementById('search');
+    const sourceNote = document.getElementById('source-note');
     let sites = sortSites(loadSites());
+    let accountMode = false;
 
     function loadSites() {
       try {
@@ -132,6 +134,21 @@
 
     function saveSites() {
       localStorage.setItem(storageKey, JSON.stringify(sites));
+    }
+
+    async function loadAccountSites() {
+      try {
+        const auth = await fetch('/api/auth/status').then(response => response.json());
+        if (!auth.authenticated) return false;
+        const data = await fetch('/api/sites').then(response => response.json());
+        if (!Array.isArray(data.sites)) return false;
+        sites = sortSites(data.sites);
+        accountMode = true;
+        sourceNote.textContent = 'Server-backed websites saved to your free FMS profile. Local browser reports can be imported from Profile.';
+        return true;
+      } catch (_) {
+        return false;
+      }
     }
 
     function siteTime(site) {
@@ -222,15 +239,18 @@
     }
 
     searchEl.addEventListener('input', render);
-    sitesEl.addEventListener('click', event => {
+    sitesEl.addEventListener('click', async event => {
       const button = event.target.closest('[data-action="delete"]');
       if (!button) return;
+      if (accountMode) {
+        await fetch('/api/sites/' + encodeURIComponent(button.dataset.id), { method: 'DELETE' });
+      }
       sites = sites.filter(site => site.id !== button.dataset.id);
-      saveSites();
+      if (!accountMode) saveSites();
       render();
     });
 
-    render();
+    loadAccountSites().then(render);
   </script>
 </body>
 </html>

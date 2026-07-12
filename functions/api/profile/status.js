@@ -1,29 +1,22 @@
-const JSON_HEADERS = {
-  'content-type': 'application/json; charset=utf-8',
-  'access-control-allow-origin': '*',
-  'access-control-allow-methods': 'GET, OPTIONS',
-  'access-control-allow-headers': 'content-type, authorization',
-};
-
-function json(data, status = 200) {
-  return new Response(JSON.stringify(data, null, 2), { status, headers: JSON_HEADERS });
-}
+import { authConfigured, currentUser, db, googleAuthConfigured, json, JSON_HEADERS } from '../../_lib/auth.js';
 
 export async function onRequest(context) {
   if (context.request.method === 'OPTIONS') return new Response(null, { headers: JSON_HEADERS });
   if (context.request.method !== 'GET') return json({ error: 'Method not allowed' }, 405);
 
   const env = context.env || {};
-  const hasSessionSecret = Boolean(env.FMS_SESSION_SIGNING_KEY);
-  const hasUserStore = Boolean(env.FMS_DB || env.FMS_KV || env.FMS_SESSIONS);
-  const hasGoogleOAuth = Boolean(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET);
+  const auth = await currentUser(context.request, env);
+  const hasUserStore = Boolean(db(env));
+  const hasGoogleOAuth = googleAuthConfigured(env);
 
   return json({
     product: 'FreeMarketingStore',
     accountTier: 'free',
-    profileConfigured: hasSessionSecret && hasUserStore,
+    profileConfigured: authConfigured(env),
+    authenticated: auth.authenticated,
+    user: auth.user,
     capabilities: {
-      freeSignIn: hasSessionSecret && hasUserStore,
+      freeSignIn: authConfigured(env),
       savedSites: hasUserStore,
       auditHistory: hasUserStore,
       searchConsoleConnection: hasGoogleOAuth && hasUserStore,

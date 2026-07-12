@@ -35,7 +35,8 @@
     .badge { display: inline-flex; align-items: center; border-radius: 999px; padding: .28rem .6rem; font-size: .74rem; font-weight: 800; margin-top: .55rem; }
     .ok { color: var(--ok); background: var(--ok-bg); }
     .warn { color: var(--warn); background: var(--warn-bg); }
-    .button { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; border-radius: 7px; padding: .62rem .85rem; border: 1px solid var(--accent); background: var(--accent); color: #fff; font-weight: 800; white-space: nowrap; }
+    .actions { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .8rem; }
+    .button { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; border-radius: 7px; padding: .62rem .85rem; border: 1px solid var(--accent); background: var(--accent); color: #fff; font-weight: 800; white-space: nowrap; cursor: pointer; }
     .button:hover { text-decoration: none; background: #ea580c; }
     .button.secondary { background: #fff; color: var(--text); border-color: var(--line); }
     .rows { display: grid; gap: .45rem; margin-top: .8rem; }
@@ -65,8 +66,11 @@
         <p class="subtitle">FMS accounts stay free. They save websites, audits, Search Console setup, and readiness dashboards. Campaign execution, publishing, and sending belong in ProMarketingStore.</p>
       </div>
       <div>
-        <a class="button" href="/console/sites/">View local sites</a>
-        <p style="margin-top:.65rem">Server-side profile sign-in needs a session secret and durable storage binding before it replaces browser localStorage.</p>
+        <div class="actions" id="auth-actions">
+          <a class="button" href="/api/auth/google/start?returnTo=%2Fconsole%2Fprofile%2F">Sign in with Google</a>
+          <a class="button secondary" href="/console/sites/">View sites</a>
+        </div>
+        <p id="auth-note" style="margin-top:.65rem">Server-side profile sign-in needs a session secret and durable storage binding before it replaces browser localStorage.</p>
       </div>
     </section>
 
@@ -84,6 +88,9 @@
 
   <script>
     const statusGrid = document.getElementById('status-grid');
+    const authActions = document.getElementById('auth-actions');
+    const authNote = document.getElementById('auth-note');
+    const storageKey = 'fms-site-audit-sites-v1';
     function escapeHtml(value) {
       return String(value ?? '').replace(/[&<>"']/g, ch => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
@@ -92,12 +99,50 @@
     function badge(ok, readyText, waitingText) {
       return '<span class="badge ' + (ok ? 'ok' : 'warn') + '">' + escapeHtml(ok ? readyText : waitingText) + '</span>';
     }
+    function localSites() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (_) {
+        return [];
+      }
+    }
+    async function logout() {
+      await fetch('/api/auth/logout', { method: 'POST' });
+      window.location.reload();
+    }
+    async function importLocalSites() {
+      const sites = localSites();
+      if (!sites.length) return;
+      const response = await fetch('/api/sites/import', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ sites }),
+      });
+      if (!response.ok) throw new Error((await response.json()).error || 'Import failed.');
+      window.location.href = '/console/sites/';
+    }
     async function loadStatus() {
       try {
         const response = await fetch('/api/profile/status');
         const data = await response.json();
+        const localCount = localSites().length;
+        if (data.authenticated) {
+          authActions.innerHTML =
+            '<a class="button" href="/console/sites/">Open saved sites</a>' +
+            (localCount ? '<button class="button secondary" id="import-local" type="button">Import local sites</button>' : '') +
+            '<button class="button secondary" id="logout" type="button">Sign out</button>';
+          authNote.textContent = 'Signed in as ' + (data.user?.email || 'FMS user') + '. FMS profile storage is free and keeps diagnostics separate from PMS execution.';
+          document.getElementById('logout')?.addEventListener('click', logout);
+          document.getElementById('import-local')?.addEventListener('click', async () => {
+            try { await importLocalSites(); }
+            catch (error) { authNote.textContent = error.message || String(error); }
+          });
+        } else if (data.capabilities.freeSignIn) {
+          authNote.textContent = 'Free sign-in is configured. Sign in to save sites and audit history server-side.';
+        }
         statusGrid.innerHTML =
-          '<article class="card"><h2>Free Sign-in</h2><p>Durable identity for saved sites and history.</p>' + badge(data.capabilities.freeSignIn, 'Configured', 'Needs storage') + '<div class="rows"><div class="row"><span>Current storage</span><span class="value">' + escapeHtml(data.currentStorage) + '</span></div></div></article>' +
+          '<article class="card"><h2>Free Sign-in</h2><p>Durable identity for saved sites and history.</p>' + badge(data.authenticated, 'Signed in', data.capabilities.freeSignIn ? 'Ready' : 'Needs storage') + '<div class="rows"><div class="row"><span>Current storage</span><span class="value">' + escapeHtml(data.currentStorage) + '</span></div><div class="row"><span>User</span><span class="value">' + escapeHtml(data.user?.email || 'Not signed in') + '</span></div></div></article>' +
           '<article class="card"><h2>Saved Audits</h2><p>Server-side websites, audit history, and dashboard state.</p>' + badge(data.capabilities.auditHistory, 'Configured', 'Browser only') + '<div class="rows"><div class="row"><span>Tier</span><span class="value">Free</span></div></div></article>' +
           '<article class="card"><h2>Execution Boundary</h2><p>FMS will not publish posts or send email. That remains PMS.</p>' + badge(!data.capabilities.campaignExecution, 'Separated', 'Review') + '<div class="rows"><div class="row"><span>Campaign execution</span><span class="value">PMS Pro</span></div></div></article>';
       } catch (error) {

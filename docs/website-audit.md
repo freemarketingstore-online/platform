@@ -49,6 +49,18 @@ The prompt is written so it can be handed to an implementation agent for the aff
 - Search Console indexing status is not imported until Google OAuth/session storage is complete.
 - Accessibility checks are basic static checks, not a substitute for a full automated and manual accessibility review.
 
+## Persistence
+
+Anonymous audits continue to save in browser `localStorage`.
+
+When FMS account storage is configured and the user is signed in, new audit reports are also persisted through:
+
+- `POST /api/sites/audits`
+- D1 `sites`
+- D1 `audits`
+
+The signed-in sites dashboard reads from `GET /api/sites`.
+
 ## Next Checks to Add
 
 - Full sitemap URL sampling with per-URL status.

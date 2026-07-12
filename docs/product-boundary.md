@@ -27,6 +27,19 @@ If the product performs work on behalf of the user through connected accounts, s
 
 FMS can have accounts and still be free. The account stores diagnostics and planning state, not execution authority.
 
+## FMS Free Account Foundation
+
+The first account slice stores:
+
+- User identity from Google sign-in.
+- Signed session cookies.
+- Saved websites.
+- Audit history per site.
+- Latest audit summary for dashboards.
+- Local browser-site import after sign-in.
+
+The account should not store social publishing credentials or campaign execution state. Those are PMS concerns.
+
 ## PMS Owns
 
 - Paid profile and subscription.
