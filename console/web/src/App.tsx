@@ -12,6 +12,7 @@ import {
   Search,
   ShieldCheck,
   Store,
+  Terminal,
   Trash2,
   UserRound
 } from "lucide-react";
@@ -19,7 +20,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { auditScore, issueCounts, scoreTone } from "@freemarketingstore/audit-core";
 import { AuditedSite, consoleRoutes, SITE_STORAGE_KEY } from "@freemarketingstore/shared";
 
-type Page = "dashboard" | "sites" | "profile" | "search-console";
+type Page = "dashboard" | "audit" | "sites" | "profile" | "search-console";
 
 type AuthStatus = {
   configured?: boolean;
@@ -57,6 +58,7 @@ type SearchConsoleStatus = {
 
 const navItems: Array<{ page: Page; label: string; icon: typeof LayoutDashboard; href: string }> = [
   { page: "dashboard", label: "Overview", icon: LayoutDashboard, href: consoleRoutes.dashboard },
+  { page: "audit", label: "Audit", icon: FileSearch, href: consoleRoutes.audit },
   { page: "sites", label: "Sites", icon: Globe2, href: consoleRoutes.sites },
   { page: "profile", label: "Profile", icon: UserRound, href: consoleRoutes.profile },
   { page: "search-console", label: "Search Console", icon: Search, href: consoleRoutes.searchConsole }
@@ -64,6 +66,7 @@ const navItems: Array<{ page: Page; label: string; icon: typeof LayoutDashboard;
 
 function currentPage(): Page {
   const path = window.location.pathname.replace(/\/+$/, "/");
+  if (path === consoleRoutes.audit) return "audit";
   if (path === consoleRoutes.sites) return "sites";
   if (path === consoleRoutes.profile) return "profile";
   if (path === consoleRoutes.searchConsole) return "search-console";
@@ -117,6 +120,10 @@ function sortSites(sites: AuditedSite[]) {
 function checkedAt(site?: AuditedSite) {
   if (!site?.lastAudit?.checkedAt) return "Not audited";
   return new Date(site.lastAudit.checkedAt).toLocaleString();
+}
+
+function makeId() {
+  return window.crypto?.randomUUID ? window.crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
 function routeTo(page: Page, href: string, setPage: (page: Page) => void) {
@@ -204,10 +211,10 @@ function AppShell({
           })}
         </nav>
         <div className="sidebar-links">
-          <a href={consoleRoutes.audit}>
+          <button className="nav-item" type="button" onClick={() => routeTo("audit", consoleRoutes.audit, setPage)}>
             <FileSearch size={16} />
             <span>Website Audit</span>
-          </a>
+          </button>
           <a href={consoleRoutes.docs}>
             <BarChart3 size={16} />
             <span>Docs</span>
@@ -355,6 +362,260 @@ function Dashboard({
           </button>
         </article>
       </section>
+    </>
+  );
+}
+
+function AuditPage({
+  sites,
+  setSites,
+  accountMode,
+  reload
+}: {
+  sites: AuditedSite[];
+  setSites: (sites: AuditedSite[]) => void;
+  accountMode: boolean;
+  reload: () => Promise<void>;
+}) {
+  const params = new URLSearchParams(window.location.search);
+  const requestedSite = params.get("site") || "";
+  const requestedUrl = params.get("url") || "";
+  const [activeId, setActiveId] = useState(requestedSite);
+  const [input, setInput] = useState(requestedUrl);
+  const [status, setStatus] = useState(requestedUrl ? "Ready to run this audit." : "Enter a public homepage URL.");
+  const [busy, setBusy] = useState(false);
+  const [autoStarted, setAutoStarted] = useState(false);
+  const selected = sites.find((site) => site.id === activeId);
+  const report = selected?.lastAudit as any;
+  const counts = issueCounts(report?.issues || []);
+  const score = auditScore(report);
+  const healthSections = Object.values(report?.health?.sections || {}) as Array<any>;
+
+  async function persistAudit(url: string, auditReport: any) {
+    if (!accountMode) return null;
+    const response = await fetch("/api/sites/audits", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ url, report: auditReport })
+    });
+    if (!response.ok) return null;
+    return response.json().catch(() => null);
+  }
+
+  async function runAudit(rawValue = input) {
+    const url = normalizeUrl(rawValue);
+    if (!url) {
+      setStatus("Enter a public homepage URL.");
+      return;
+    }
+    setBusy(true);
+    setStatus(`Auditing ${domainFor(url)}...`);
+    try {
+      const response = await fetch(`/api/audit?url=${encodeURIComponent(url)}`);
+      const data = await response.json().catch(() => null);
+      if (!response.ok || !data || data.error) throw new Error(data?.error || "Audit failed.");
+      const normalized = data.page?.requestedUrl || url;
+      const existing = sites.find((site) => site.url === normalized || domainFor(site.url) === domainFor(normalized));
+      const site: AuditedSite = {
+        ...(existing || { id: makeId(), createdAt: new Date().toISOString() }),
+        url: normalized,
+        lastAudit: data
+      };
+      let nextSites = sortSites([site, ...sites.filter((item) => item.id !== site.id)]);
+      setSites(nextSites);
+      setActiveId(site.id);
+      if (!accountMode) saveLocalSites(nextSites);
+      const saved = await persistAudit(normalized, data);
+      if (saved?.siteId) {
+        setActiveId(saved.siteId);
+        await reload();
+      }
+      const nextUrl = new URL(window.location.href);
+      nextUrl.search = `?site=${encodeURIComponent(saved?.siteId || site.id)}`;
+      window.history.replaceState({}, "", nextUrl);
+      setStatus(`Audit complete for ${domainFor(normalized)}.`);
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : String(error));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function copyPrompt(prompt: string) {
+    await navigator.clipboard.writeText(prompt);
+    setStatus("Prompt copied.");
+  }
+
+  useEffect(() => {
+    if (requestedSite && sites.some((site) => site.id === requestedSite)) setActiveId(requestedSite);
+  }, [requestedSite, sites]);
+
+  useEffect(() => {
+    if (!requestedUrl || autoStarted) return;
+    setAutoStarted(true);
+    runAudit(requestedUrl);
+  }, [requestedUrl, autoStarted]);
+
+  return (
+    <>
+      <section className="page-head">
+        <div>
+          <p className="eyebrow">Website Audit</p>
+          <h1>{selected ? domainFor(selected.url) : "Audit a website"}</h1>
+          <p className="lede">Run crawlability, SEO, performance shape, security headers, accessibility basics, links, resources, and PWA checks inside the FMS console.</p>
+        </div>
+        <form className="audit-launcher compact" onSubmit={(event) => { event.preventDefault(); runAudit(); }}>
+          <label htmlFor="console-audit-url">Website</label>
+          <div className="input-row">
+            <input
+              id="console-audit-url"
+              value={input}
+              onChange={(event) => setInput(event.target.value)}
+              placeholder="freegamestore.online"
+              autoComplete="url"
+            />
+            <button className="primary-button" type="submit" disabled={busy}>
+              <FileSearch size={17} />
+              <span>{busy ? "Auditing" : "Run audit"}</span>
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <div className="notice">{status}</div>
+
+      {report ? (
+        <>
+          <section className="audit-summary">
+            <article className={`audit-score ${scoreTone(score)}`}>
+              <div>{score ?? "-"}</div>
+              <span>Health score</span>
+            </article>
+            <Metric label="Critical" value={counts.critical} icon={ShieldCheck} />
+            <Metric label="Warnings" value={counts.warning} icon={Activity} />
+            <Metric label="Info" value={counts.info} icon={BarChart3} />
+            <Metric label="Checked" value={report.checkedAt ? new Date(report.checkedAt).toLocaleTimeString() : "-"} icon={CheckCircle2} />
+          </section>
+
+          <section className="audit-layout">
+            <div className="audit-main">
+              <article className="panel">
+                <div className="panel-head">
+                  <div>
+                    <h2>Prioritized issues</h2>
+                    <p>{report.issues?.length ? "Use these prompts in the owning repo." : "No blocking issues found in the latest audit."}</p>
+                  </div>
+                  <a className="secondary-button" href={consoleRoutes.sites}>
+                    <Globe2 size={17} />
+                    <span>All sites</span>
+                  </a>
+                </div>
+                <div className="issue-list">
+                  {report.issues?.length ? (
+                    report.issues.map((issue: any, index: number) => (
+                      <article className="issue-card" key={`${issue.title}-${index}`}>
+                        <div className="issue-card-head">
+                          <div>
+                            <h3>{issue.title || issue.message || "Audit issue"}</h3>
+                            <p>{issue.detail || issue.message}</p>
+                          </div>
+                          <ToneBadge tone={issue.severity === "critical" ? "critical" : issue.severity === "warning" ? "warning" : "neutral"}>
+                            {issue.severity}
+                          </ToneBadge>
+                        </div>
+                        {issue.fix ? <p><strong>Fix:</strong> {issue.fix}</p> : null}
+                        {issue.aiPrompt || issue.fix ? (
+                          <div className="prompt-card">
+                            <pre>{issue.aiPrompt || issue.fix}</pre>
+                            <button className="secondary-button" type="button" onClick={() => copyPrompt(issue.aiPrompt || issue.fix)}>
+                              <Terminal size={17} />
+                              <span>Copy prompt</span>
+                            </button>
+                          </div>
+                        ) : null}
+                      </article>
+                    ))
+                  ) : (
+                    <div className="empty-state">
+                      <CheckCircle2 size={26} />
+                      <p>No issues found.</p>
+                    </div>
+                  )}
+                </div>
+              </article>
+
+              <article className="panel">
+                <div className="panel-head">
+                  <div>
+                    <h2>Health sections</h2>
+                    <p>Grouped checks from the server-side audit.</p>
+                  </div>
+                </div>
+                <div className="health-grid">
+                  {healthSections.map((section) => (
+                    <article className="health-panel" key={section.label}>
+                      <div className="health-panel-head">
+                        <h3>{section.label}</h3>
+                        <div className={`score-pill ${scoreTone(section.score ?? null)}`}>{section.score ?? "-"}</div>
+                      </div>
+                      <div className="check-list">
+                        {(section.checks || []).slice(0, 8).map((check: any) => (
+                          <div className="check-row" key={`${section.label}-${check.label}`}>
+                            <ToneBadge tone={check.status === "pass" ? "good" : check.status === "warn" ? "warning" : "critical"}>{check.status}</ToneBadge>
+                            <div>
+                              <strong>{check.label}</strong>
+                              <p>{check.detail}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </article>
+            </div>
+
+            <aside className="panel audit-sidebar">
+              <div className="panel-head">
+                <div>
+                  <h2>Page facts</h2>
+                  <p>{report.page?.finalUrl || selected?.url}</p>
+                </div>
+              </div>
+              <dl className="facts compact-facts">
+                <div><dt>Title</dt><dd>{report.page?.title || "Missing"}</dd></div>
+                <div><dt>Description</dt><dd>{report.page?.description || "Missing"}</dd></div>
+                <div><dt>Canonical</dt><dd>{report.page?.canonical || "Missing"}</dd></div>
+                <div><dt>Robots</dt><dd>{report.robots?.status || report.robots?.error || "Unknown"}</dd></div>
+                <div><dt>Sitemap</dt><dd>{report.sitemaps?.[0] ? `${report.sitemaps[0].status || "unknown"} · ${report.sitemaps[0].urlCount || 0} URLs` : "Not found"}</dd></div>
+                <div><dt>Load</dt><dd>{report.page?.responseMs || "?"} ms · {Math.round(Number(report.page?.bytes || 0) / 1024)} KB</dd></div>
+                <div><dt>Links</dt><dd>{report.page?.internalLinks ?? 0} internal · {report.page?.externalLinks ?? 0} external</dd></div>
+                <div><dt>Security</dt><dd>{report.security?.https ? "HTTPS" : "Not HTTPS"}</dd></div>
+                <div><dt>PWA</dt><dd>{report.health?.sections?.pwa?.score ?? "Not checked"}</dd></div>
+              </dl>
+              <div className="action-stack">
+                <button className="secondary-button" type="button" onClick={() => selected && runAudit(selected.url)} disabled={busy || !selected}>
+                  <Activity size={17} />
+                  <span>Re-audit</span>
+                </button>
+                {selected && safeUrl(selected.url) ? (
+                  <a className="secondary-button" href={safeUrl(selected.url)} target="_blank" rel="noreferrer">
+                    <ExternalLink size={17} />
+                    <span>Open site</span>
+                  </a>
+                ) : null}
+              </div>
+            </aside>
+          </section>
+        </>
+      ) : (
+        <section className="panel">
+          <div className="empty-state">
+            <FileSearch size={30} />
+            <p>No report selected. Run an audit or open a saved site from Sites.</p>
+          </div>
+        </section>
+      )}
     </>
   );
 }
@@ -670,6 +931,7 @@ export function App() {
       {page === "dashboard" ? (
         <Dashboard sites={sites} auth={auth} profile={profile} searchConsole={searchConsole} setPage={setPage} />
       ) : null}
+      {page === "audit" ? <AuditPage sites={sites} setSites={setSites} accountMode={accountMode} reload={reload} /> : null}
       {page === "sites" ? <SitesPage sites={sites} accountMode={accountMode} setSites={setSites} /> : null}
       {page === "profile" ? <ProfilePage profile={profile} localSites={localSites} reload={reload} /> : null}
       {page === "search-console" ? <SearchConsolePage status={searchConsole} /> : null}

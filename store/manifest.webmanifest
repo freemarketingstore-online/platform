@@ -42,7 +42,7 @@
       "name": "Website Audit",
       "short_name": "Audit",
       "description": "Run a website audit.",
-      "url": "/seo/site-audit/",
+      "url": "/console/audit/",
       "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
     },
     {

@@ -24,7 +24,7 @@ docs/                 Product and operating docs
 - React PWA console at `/console/`.
 - Free profile route at `/console/profile/`.
 - Audited sites route at `/console/sites/`.
-- Website audit app at `/seo/site-audit/`.
+- Website audit app at `/console/audit/`.
 - Search Console integration route at `/console/search-console/`.
 - Server-side audit API at `/api/audit`.
 - Free account APIs under `/api/auth/*`, `/api/profile/status`, and `/api/sites`.
@@ -138,7 +138,7 @@ Pushes to `main` deploy to Cloudflare Pages project `freemarketingstore` and smo
 - `/console/profile/`
 - `/console/search-console/`
 - `/docs/`
-- `/seo/site-audit/`
+- `/console/audit/`
 - `/sitemap.xml`
 - `/api/auth/status`
 - `/api/profile/status`

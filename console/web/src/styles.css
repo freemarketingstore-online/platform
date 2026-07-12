@@ -302,6 +302,38 @@ input:focus {
   margin-bottom: 18px;
 }
 
+.audit-summary {
+  display: grid;
+  grid-template-columns: 160px repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.audit-score {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  min-height: 88px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  box-shadow: var(--shadow);
+}
+
+.audit-score div {
+  font-size: 34px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.audit-score span {
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
 .metric {
   display: flex;
   align-items: center;
@@ -332,6 +364,69 @@ input:focus {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
+}
+
+.audit-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 12px;
+  align-items: start;
+}
+
+.audit-main,
+.issue-list,
+.health-grid,
+.check-list {
+  display: grid;
+  gap: 12px;
+}
+
+.health-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.issue-card,
+.health-panel {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--soft);
+  padding: 14px;
+}
+
+.issue-card-head,
+.health-panel-head,
+.check-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.issue-card p,
+.check-row p {
+  margin-bottom: 0;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.prompt-card {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.prompt-card pre {
+  margin: 0;
+  max-height: 220px;
+}
+
+.audit-sidebar {
+  position: sticky;
+  top: 18px;
+}
+
+.compact-facts div {
+  grid-template-columns: 96px minmax(0, 1fr);
 }
 
 .panel {
@@ -542,8 +637,13 @@ pre {
 
   .hero,
   .page-head,
-  .content-grid {
+  .content-grid,
+  .audit-layout {
     grid-template-columns: 1fr;
+  }
+
+  .audit-sidebar {
+    position: static;
   }
 
   .panel.wide {
@@ -562,6 +662,11 @@ pre {
 
   .metrics-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .audit-summary,
+  .health-grid {
+    grid-template-columns: 1fr;
   }
 
   .site-row {

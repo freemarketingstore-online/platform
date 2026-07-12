@@ -5,7 +5,8 @@ export const consoleRoutes = {
   sites: "/console/sites/",
   profile: "/console/profile/",
   searchConsole: "/console/search-console/",
-  audit: "/seo/site-audit/",
+  audit: "/console/audit/",
+  legacyAudit: "/seo/site-audit/",
   docs: "/docs/",
   store: "/"
 } as const;
