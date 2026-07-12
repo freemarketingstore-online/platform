@@ -31,6 +31,7 @@ type AuthStatus = {
 
 type ProfileStatus = {
   configured?: boolean;
+  profileConfigured?: boolean;
   authenticated?: boolean;
   freeSignIn?: boolean;
   storage?: string;
@@ -795,7 +796,7 @@ function ProfilePage({
             <ToneBadge tone={authenticated ? "good" : "warning"}>{authenticated ? "Signed in" : "Unsigned"}</ToneBadge>
           </div>
           <dl className="facts">
-            <div><dt>Configured</dt><dd>{profile?.configured ? "Yes" : "No"}</dd></div>
+            <div><dt>Configured</dt><dd>{(profile?.profileConfigured ?? profile?.configured) ? "Yes" : "No"}</dd></div>
             <div><dt>Storage</dt><dd>{profile?.currentStorage || profile?.storage || "browser-localStorage"}</dd></div>
             <div><dt>Local sites</dt><dd>{localSites.length}</dd></div>
           </dl>
