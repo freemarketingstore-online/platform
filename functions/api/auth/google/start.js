@@ -1,4 +1,4 @@
-import { base64Url, googleAuthConfigured, json, JSON_HEADERS, redirect, signValue } from '../../../_lib/auth.js';
+import { authConfigured, base64Url, db, googleAuthConfigured, json, JSON_HEADERS, redirect, signValue } from '../../../_lib/auth.js';
 
 const GOOGLE_SCOPES = ['openid', 'email', 'profile'];
 
@@ -12,9 +12,15 @@ export async function onRequest(context) {
 
   const env = context.env || {};
   if (!googleAuthConfigured(env)) {
+    const missing = [];
+    if (!db(env)) missing.push('FMS_DB or DB');
+    if (!env.FMS_SESSION_SIGNING_KEY) missing.push('FMS_SESSION_SIGNING_KEY');
+    if (!env.GOOGLE_CLIENT_ID) missing.push('GOOGLE_CLIENT_ID');
+    if (!env.GOOGLE_CLIENT_SECRET) missing.push('GOOGLE_CLIENT_SECRET');
     return json({
       error: 'FMS Google sign-in is not configured.',
-      missing: ['FMS_DB or DB', 'FMS_SESSION_SIGNING_KEY', 'GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET'],
+      storageConfigured: authConfigured(env),
+      missing,
     }, 501);
   }
 
