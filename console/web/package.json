@@ -1,0 +1,25 @@
+{
+  "name": "@freemarketingstore/console",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "rm -rf ../../store/console/assets && tsc -b && vite build",
+    "dev": "vite --host 127.0.0.1 --port 5177",
+    "typecheck": "tsc -b"
+  },
+  "dependencies": {
+    "@freemarketingstore/audit-core": "workspace:*",
+    "@freemarketingstore/shared": "workspace:*",
+    "@vitejs/plugin-react": "latest",
+    "lucide-react": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "vite": "latest"
+  },
+  "devDependencies": {
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "typescript": "latest"
+  }
+}

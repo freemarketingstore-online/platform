@@ -1,0 +1,19 @@
+{
+  "name": "@freemarketingstore/platform",
+  "version": "0.1.0",
+  "private": true,
+  "description": "FreeMarketingStore Cloudflare Pages platform.",
+  "packageManager": "pnpm@10.30.3",
+  "scripts": {
+    "build": "pnpm --filter @freemarketingstore/console build",
+    "build:pages": "rm -rf .deploy && pnpm build && mkdir .deploy && cp -R store/. .deploy/ && wrangler pages functions build functions --outdir .deploy --build-output-directory .deploy --project-directory .",
+    "check": "pnpm --filter @freemarketingstore/console typecheck && pnpm check:functions && pnpm validate:static",
+    "check:functions": "find functions -name '*.js' -print0 | xargs -0 -n1 node --check",
+    "dev:console": "pnpm --filter @freemarketingstore/console dev",
+    "dev:pages": "pnpm build:pages && wrangler pages dev .deploy --ip 127.0.0.1 --port 8789",
+    "validate:static": "node -e \"JSON.parse(require('fs').readFileSync('store/manifest.webmanifest','utf8'))\""
+  },
+  "devDependencies": {
+    "wrangler": "4.78.0"
+  }
+}

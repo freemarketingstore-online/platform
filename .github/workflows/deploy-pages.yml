@@ -6,6 +6,13 @@ on:
     paths:
       - 'store/**'
       - 'functions/**'
+      - 'console/**'
+      - 'packages/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - 'tsconfig.base.json'
+      - 'wrangler.toml'
       - '.github/workflows/deploy-pages.yml'
   workflow_dispatch:
 
@@ -26,20 +33,18 @@ jobs:
         with:
           node-version: 22
 
-      - name: Install Wrangler
-        run: npm install -g wrangler@4.78.0
+      - name: Enable pnpm
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Build Pages artifact
         run: |
-          rm -rf .deploy
-          mkdir .deploy
-          cp -R store/. .deploy/
-          wrangler pages functions build functions \
-            --outdir .deploy \
-            --build-output-directory .deploy \
-            --project-directory .
+          pnpm build:pages
           test -f .deploy/index.html
           test -f .deploy/index.js
+          test -f .deploy/console/index.html
           test -f .deploy/sitemap.xml
 
       - name: Deploy to Cloudflare Pages
@@ -47,7 +52,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
-          wrangler pages deploy .deploy \
+          pnpm exec wrangler pages deploy .deploy \
             --project-name freemarketingstore \
             --branch main \
             --commit-hash "${GITHUB_SHA}" \

@@ -4,14 +4,28 @@ FreeMarketingStore is a Cloudflare Pages PWA for free marketing tools and websit
 
 Live site: https://freemarketingstore.pages.dev/
 
+## Repository Structure
+
+FMS is a single workspace repo. Public, crawlable pages stay static under `store/`; the authenticated/operational console is a React/Vite PWA built from `console/web` into `store/console`; Cloudflare Pages Functions stay under `functions`.
+
+```text
+console/web/          React/Vite source for /console/*
+functions/            Cloudflare Pages Functions APIs
+packages/shared/      Shared routes, storage keys, and domain types
+packages/audit-core/  Shared audit scoring/counting helpers
+store/                Public static Pages output and SEO-facing tools
+schema.sql            D1 schema for profiles, sessions, sites, and audits
+docs/                 Product and operating docs
+```
+
 ## Current Product Surface
 
 - Public tool store with 22 browser-first marketing tools.
-- PWA console at `/console/`.
-- Free profile scaffold at `/console/profile/`.
-- Audited sites list at `/console/sites/`.
+- React PWA console at `/console/`.
+- Free profile route at `/console/profile/`.
+- Audited sites route at `/console/sites/`.
 - Website audit app at `/seo/site-audit/`.
-- Search Console integration screen at `/console/search-console/`.
+- Search Console integration route at `/console/search-console/`.
 - Server-side audit API at `/api/audit`.
 - Free account APIs under `/api/auth/*`, `/api/profile/status`, and `/api/sites`.
 
@@ -95,27 +109,22 @@ See [docs/product-boundary.md](docs/product-boundary.md).
 Build the Pages artifact:
 
 ```sh
-rm -rf .deploy
-mkdir .deploy
-cp -R store/. .deploy/
-wrangler pages functions build functions \
-  --outdir .deploy \
-  --build-output-directory .deploy \
-  --project-directory .
+corepack enable
+pnpm install
+pnpm build:pages
 ```
 
 Run locally:
 
 ```sh
-wrangler pages dev .deploy --ip 127.0.0.1 --port 8789
+pnpm dev:pages
 ```
 
 Quick checks:
 
 ```sh
 git diff --check
-node -e "JSON.parse(require('fs').readFileSync('store/manifest.webmanifest','utf8'))"
-for f in functions/api/**/*.js functions/api/*.js; do node --check "$f" || exit 1; done
+pnpm check
 ```
 
 ## Deployment

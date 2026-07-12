@@ -1,0 +1,6 @@
+/console/sites/ /console/ 200
+/console/profile/ /console/ 200
+/console/search-console/ /console/ 200
+/console/sites/* /console/ 200
+/console/profile/* /console/ 200
+/console/search-console/* /console/ 200
