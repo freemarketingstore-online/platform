@@ -507,6 +507,15 @@ async function audit(target) {
   const assets = collectAssets(html, page.finalUrl);
   const sampledAssets = assets.slice(0, 24);
   const assetResults = await Promise.all(sampledAssets.map(async (asset) => ({ ...asset, ...(await fetchResourceMeta(asset.url)) })));
+  if (!page.serviceWorkerHint) {
+    const scriptAssets = assets.filter((asset) => asset.kind === 'script').slice(0, 6);
+    const scriptResults = await Promise.all(scriptAssets.map((asset) => fetchText(asset.url, {
+      accept: 'application/javascript,text/javascript,*/*',
+      limit: 500000,
+      timeout: 8000,
+    })));
+    page.serviceWorkerHint = scriptResults.some((script) => /navigator\.serviceWorker|serviceWorker\.register|\/sw\.js/i.test(script.body || ''));
+  }
   const assetBytes = assetResults.reduce((sum, asset) => sum + (asset.contentLength || 0), 0);
   const thirdPartyHosts = unique(assets.map((asset) => {
     try {

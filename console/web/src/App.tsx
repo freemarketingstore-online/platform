@@ -592,7 +592,7 @@ function AuditPage({
                 <div><dt>Load</dt><dd>{report.page?.responseMs || "?"} ms · {Math.round(Number(report.page?.bytes || 0) / 1024)} KB</dd></div>
                 <div><dt>Links</dt><dd>{report.page?.internalLinks ?? 0} internal · {report.page?.externalLinks ?? 0} external</dd></div>
                 <div><dt>Security</dt><dd>{report.security?.https ? "HTTPS" : "Not HTTPS"}</dd></div>
-                <div><dt>PWA</dt><dd>{report.health?.sections?.pwa?.score ?? "Not checked"}</dd></div>
+                <div><dt>PWA</dt><dd>{report.health?.sections?.application?.score ?? "Not checked"}</dd></div>
               </dl>
               <div className="action-stack">
                 <button className="secondary-button" type="button" onClick={() => selected && runAudit(selected.url)} disabled={busy || !selected}>
