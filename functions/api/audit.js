@@ -367,7 +367,7 @@ function buildHealth({ page, robots, sitemaps, security, load, manifest, issues 
     application: makeHealthSection('Web App / PWA', [
       healthCheck('Web app manifest', manifest?.ok ? 'pass' : page.manifestUrl ? 'warn' : 'info', manifest?.ok ? `HTTP ${manifest.status}` : page.manifestUrl || 'No manifest link'),
       healthCheck('Manifest display mode', manifest?.display && manifest.display !== 'browser' ? 'pass' : manifest?.ok ? 'warn' : 'info', manifest?.display || 'Not available'),
-      healthCheck('Service worker hint', page.serviceWorkerHint ? 'pass' : 'info', page.serviceWorkerHint ? 'Registration code detected' : 'No service worker registration detected in HTML'),
+      healthCheck('Service worker hint', page.serviceWorkerHint ? 'pass' : 'info', page.serviceWorkerHint ? 'Registration code detected' : 'No service worker registration detected in HTML or sampled JS'),
       healthCheck('Install icons', manifest?.iconCount >= 2 ? 'pass' : manifest?.ok ? 'warn' : 'info', manifest?.ok ? `${manifest.iconCount} icons listed` : 'Not checked'),
     ]),
   };
